@@ -1,0 +1,19 @@
+export type CrossChainController = {
+  chain_id: number;
+  address: string;
+  created_block: number;
+  last_scanned_block: number | null;
+  rpc_urls: string[] | null;
+  rpc_block_limit: number;
+};
+
+export type FailedBlock = {
+  from_block: number;
+  to_block: number;
+  chain_id: number;
+};
+
+export type RangeStatus = {
+  range: [number, number];
+  status: "scanned" | "failed" | "pending";
+};

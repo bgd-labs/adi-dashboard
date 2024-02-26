@@ -1,0 +1,58 @@
+{
+  "name": "a-di",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "lint": "next lint",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@bgd-labs/frontend-web3-utils": "^1.0.3",
+    "@dicebear/collection": "^7.0.1",
+    "@dicebear/core": "^7.0.1",
+    "@radix-ui/react-tooltip": "^1.0.7",
+    "@resvg/resvg-js": "^2.6.0",
+    "@slack/webhook": "^7.0.2",
+    "@supabase/supabase-js": "^2.39.0",
+    "@t3-oss/env-nextjs": "^0.7.1",
+    "@tanstack/react-query": "^4.36.1",
+    "@trpc/client": "^10.43.6",
+    "@trpc/next": "^10.43.6",
+    "@trpc/react-query": "^10.43.6",
+    "@trpc/server": "^10.43.6",
+    "clsx": "^2.0.0",
+    "next": "^14.0.3",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "server-only": "^0.0.1",
+    "sharp": "^0.33.1",
+    "superjson": "^2.2.1",
+    "tailwind-merge": "^2.1.0",
+    "viem": "^1.19.13",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@next/eslint-plugin-next": "^14.0.3",
+    "@types/eslint": "^8.44.7",
+    "@types/node": "^18.17.0",
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@typescript-eslint/eslint-plugin": "^6.11.0",
+    "@typescript-eslint/parser": "^6.11.0",
+    "autoprefixer": "^10.4.14",
+    "eslint": "^8.54.0",
+    "postcss": "^8.4.31",
+    "prettier": "^3.1.0",
+    "prettier-plugin-tailwindcss": "^0.5.7",
+    "tailwindcss": "^3.3.5",
+    "typescript": "^5.1.6",
+    "webpack-node-externals": "^3.0.0"
+  },
+  "ct3aMetadata": {
+    "initVersion": "7.24.2"
+  },
+  "packageManager": "pnpm@8.9.2"
+}

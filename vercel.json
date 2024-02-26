@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/collect",
+      "schedule": "*/2 * * * *"
+    },
+    {
+      "path": "/api/cron/retry",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/notify",
+      "schedule": "*/10 * * * *"
+    }
+  ]
+}
