@@ -10,19 +10,9 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
-CREATE EXTENSION IF NOT EXISTS "pgsodium" WITH SCHEMA "pgsodium";
+CREATE SCHEMA IF NOT EXISTS "public";
 
-CREATE EXTENSION IF NOT EXISTS "pg_graphql" WITH SCHEMA "graphql";
-
-CREATE EXTENSION IF NOT EXISTS "pg_stat_statements" WITH SCHEMA "extensions";
-
-CREATE EXTENSION IF NOT EXISTS "pgcrypto" WITH SCHEMA "extensions";
-
-CREATE EXTENSION IF NOT EXISTS "pgjwt" WITH SCHEMA "extensions";
-
-CREATE EXTENSION IF NOT EXISTS "supabase_vault" WITH SCHEMA "vault";
-
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
+ALTER SCHEMA "public" OWNER TO "pg_database_owner";
 
 SET default_tablespace = '';
 
@@ -36,13 +26,22 @@ CREATE TABLE IF NOT EXISTS "public"."AddressBook" (
 
 ALTER TABLE "public"."AddressBook" OWNER TO "postgres";
 
+CREATE TABLE IF NOT EXISTS "public"."BridgeExplorers" (
+    "chain_id" bigint NOT NULL,
+    "address" character varying,
+    "explorer_link" "text"
+);
+
+ALTER TABLE "public"."BridgeExplorers" OWNER TO "postgres";
+
 CREATE TABLE IF NOT EXISTS "public"."CrossChainControllers" (
     "chain_id" bigint NOT NULL,
     "address" character varying DEFAULT ''::character varying NOT NULL,
     "rpc_block_limit" bigint DEFAULT '500'::bigint NOT NULL,
     "created_block" bigint DEFAULT '0'::bigint NOT NULL,
     "rpc_urls" "text"[],
-    "last_scanned_block" bigint
+    "last_scanned_block" bigint,
+    "chain_name_alias" "text"
 );
 
 ALTER TABLE "public"."CrossChainControllers" OWNER TO "postgres";
@@ -83,6 +82,14 @@ CREATE TABLE IF NOT EXISTS "public"."Envelopes" (
 );
 
 ALTER TABLE "public"."Envelopes" OWNER TO "postgres";
+
+CREATE TABLE IF NOT EXISTS "public"."Notifications" (
+    "envelope_id" "text" NOT NULL,
+    "transaction_id" "text" NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+ALTER TABLE "public"."Notifications" OWNER TO "postgres";
 
 CREATE TABLE IF NOT EXISTS "public"."Retries" (
     "from_block" bigint NOT NULL,
@@ -139,6 +146,9 @@ ALTER TABLE ONLY "public"."EnvelopeDeliveryAttempted"
 ALTER TABLE ONLY "public"."EnvelopeRegistered"
     ADD CONSTRAINT "EnvelopeRegistered_pkey" PRIMARY KEY ("transaction_hash", "log_index");
 
+ALTER TABLE ONLY "public"."Notifications"
+    ADD CONSTRAINT "Notifications_pkey" PRIMARY KEY ("envelope_id", "transaction_id");
+
 ALTER TABLE ONLY "public"."Retries"
     ADD CONSTRAINT "Retries_pkey" PRIMARY KEY ("from_block", "to_block", "chain_id");
 
@@ -166,6 +176,9 @@ ALTER TABLE ONLY "public"."EnvelopeRegistered"
 ALTER TABLE ONLY "public"."EnvelopeRegistered"
     ADD CONSTRAINT "EnvelopeRegistered_envelope_id_fkey" FOREIGN KEY ("envelope_id") REFERENCES "public"."Envelopes"("id");
 
+ALTER TABLE ONLY "public"."Notifications"
+    ADD CONSTRAINT "Notifications_envelope_id_fkey" FOREIGN KEY ("envelope_id") REFERENCES "public"."Envelopes"("id");
+
 ALTER TABLE ONLY "public"."Retries"
     ADD CONSTRAINT "Retries_chain_id_fkey" FOREIGN KEY ("chain_id") REFERENCES "public"."CrossChainControllers"("chain_id");
 
@@ -187,11 +200,18 @@ ALTER TABLE ONLY "public"."TransactionReceived"
 ALTER TABLE ONLY "public"."TransactionReceived"
     ADD CONSTRAINT "TransactionReceived_origin_chain_id_fkey" FOREIGN KEY ("origin_chain_id") REFERENCES "public"."CrossChainControllers"("chain_id");
 
+ALTER TABLE ONLY "public"."BridgeExplorers"
+    ADD CONSTRAINT "public_BridgeExplorers_chain_id_fkey" FOREIGN KEY ("chain_id") REFERENCES "public"."CrossChainControllers"("chain_id");
+
 ALTER TABLE "public"."AddressBook" ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE "public"."BridgeExplorers" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."CrossChainControllers" ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Enable read access for all users" ON "public"."AddressBook" FOR SELECT USING (true);
+
+CREATE POLICY "Enable read access for all users" ON "public"."BridgeExplorers" FOR SELECT USING (true);
 
 CREATE POLICY "Enable read access for all users" ON "public"."CrossChainControllers" FOR SELECT USING (true);
 
@@ -213,6 +233,8 @@ ALTER TABLE "public"."EnvelopeRegistered" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."Envelopes" ENABLE ROW LEVEL SECURITY;
 
+ALTER TABLE "public"."Notifications" ENABLE ROW LEVEL SECURITY;
+
 ALTER TABLE "public"."Retries" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."TransactionForwardingAttempted" ENABLE ROW LEVEL SECURITY;
@@ -227,6 +249,10 @@ GRANT USAGE ON SCHEMA "public" TO "service_role";
 GRANT ALL ON TABLE "public"."AddressBook" TO "anon";
 GRANT ALL ON TABLE "public"."AddressBook" TO "authenticated";
 GRANT ALL ON TABLE "public"."AddressBook" TO "service_role";
+
+GRANT ALL ON TABLE "public"."BridgeExplorers" TO "anon";
+GRANT ALL ON TABLE "public"."BridgeExplorers" TO "authenticated";
+GRANT ALL ON TABLE "public"."BridgeExplorers" TO "service_role";
 
 GRANT ALL ON TABLE "public"."CrossChainControllers" TO "anon";
 GRANT ALL ON TABLE "public"."CrossChainControllers" TO "authenticated";
@@ -243,6 +269,10 @@ GRANT ALL ON TABLE "public"."EnvelopeRegistered" TO "service_role";
 GRANT ALL ON TABLE "public"."Envelopes" TO "anon";
 GRANT ALL ON TABLE "public"."Envelopes" TO "authenticated";
 GRANT ALL ON TABLE "public"."Envelopes" TO "service_role";
+
+GRANT ALL ON TABLE "public"."Notifications" TO "anon";
+GRANT ALL ON TABLE "public"."Notifications" TO "authenticated";
+GRANT ALL ON TABLE "public"."Notifications" TO "service_role";
 
 GRANT ALL ON TABLE "public"."Retries" TO "anon";
 GRANT ALL ON TABLE "public"."Retries" TO "authenticated";
