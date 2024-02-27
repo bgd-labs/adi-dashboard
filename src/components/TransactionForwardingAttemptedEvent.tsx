@@ -2,6 +2,7 @@ import { EventListItem } from "@/components/EventListItem";
 import { CopyValueCard } from "@/components/CopyValueCard";
 import { type RouterOutput } from "@/server/api/types";
 import { ExplorerLink } from "./ExplorerLink";
+import { BridgeExplorerLink } from "./BridgeExplorerLink";
 
 type TransactionForwardingAttemptedEventProps = {
   event: RouterOutput["events"]["getForwardingAttemptEvents"][0];
@@ -12,6 +13,11 @@ export const TransactionForwardingAttemptedEvent = ({
 }: TransactionForwardingAttemptedEventProps) => {
   return (
     <EventListItem event={event} type="TransactionForwardingAttempted">
+      <BridgeExplorerLink
+        txHash={event.transaction_hash}
+        chainId={event.chain_id!}
+        address={event.bridge_adapter!}
+      />
       <div className="grid items-center gap-2 border bg-white p-4 text-sm md:grid-cols-6">
         <div className="font-semibold md:pl-0">Transaction hash:</div>
         <div className="md:col-span-5">
@@ -39,7 +45,7 @@ export const TransactionForwardingAttemptedEvent = ({
           <CopyValueCard value={event.destination_chain_id} />
         </div>
         <div className="font-semibold md:pl-0">Bridge adapter:</div>
-        <div className="md:col-span-5">
+        <div className="flex items-center md:col-span-5">
           <ExplorerLink
             value={event.bridge_adapter!}
             type="address"

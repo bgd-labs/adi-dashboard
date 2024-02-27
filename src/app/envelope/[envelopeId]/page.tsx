@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { EnvelopeIcon } from "@/components/EnvelopeIcon";
-import { Button } from "@/components/Button";
 import { CopyValueCard } from "@/components/CopyValueCard";
 import { FromTo } from "@/components/FromTo";
 import { ExplorerLink } from "@/components/ExplorerLink";

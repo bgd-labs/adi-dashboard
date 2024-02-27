@@ -6,7 +6,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export interface Database {
+export type Database = {
   public: {
     Tables: {
       AddressBook: {
@@ -28,6 +28,32 @@ export interface Database {
         Relationships: [
           {
             foreignKeyName: "AddressBook_chain_id_fkey"
+            columns: ["chain_id"]
+            isOneToOne: false
+            referencedRelation: "CrossChainControllers"
+            referencedColumns: ["chain_id"]
+          }
+        ]
+      }
+      BridgeExplorers: {
+        Row: {
+          address: string
+          chain_id: number
+          explorer_link: string | null
+        }
+        Insert: {
+          address: string
+          chain_id: number
+          explorer_link?: string | null
+        }
+        Update: {
+          address?: string
+          chain_id?: number
+          explorer_link?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_BridgeExplorers_chain_id_fkey"
             columns: ["chain_id"]
             isOneToOne: false
             referencedRelation: "CrossChainControllers"
