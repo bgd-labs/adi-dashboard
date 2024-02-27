@@ -37,17 +37,17 @@ export type Database = {
       }
       BridgeExplorers: {
         Row: {
-          address: string | null
+          address: string
           chain_id: number
           explorer_link: string | null
         }
         Insert: {
-          address?: string | null
+          address: string
           chain_id: number
           explorer_link?: string | null
         }
         Update: {
-          address?: string | null
+          address?: string
           chain_id?: number
           explorer_link?: string | null
         }

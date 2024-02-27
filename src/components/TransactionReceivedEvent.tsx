@@ -1,6 +1,7 @@
 import { EventListItem } from "@/components/EventListItem";
 import { CopyValueCard } from "@/components/CopyValueCard";
 import { ExplorerLink } from "@/components/ExplorerLink";
+import { BridgeExplorerLink } from "./BridgeExplorerLink";
 import { type RouterOutput } from "@/server/api/types";
 
 type TransactionReceivedEventProps = {
@@ -12,6 +13,11 @@ export const TransactionReceivedEvent = ({
 }: TransactionReceivedEventProps) => {
   return (
     <EventListItem event={event} type="TransactionReceived">
+      <BridgeExplorerLink
+        txHash={event.transaction_hash}
+        chainId={event.chain_id!}
+        address={event.bridge_adapter!}
+      />
       <div className="grid items-center gap-2 border bg-white p-4 text-sm md:grid-cols-6">
         <div className="font-semibold md:pl-0">Transaction hash:</div>
         <div className="md:col-span-5">
