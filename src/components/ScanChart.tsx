@@ -10,7 +10,10 @@ type ChartProps = {
   title?: string;
   chainId: number;
   lastScannedBlock?: number;
-  balance?: string;
+  balance?: {
+    native: string;
+    link: string;
+  };
   address: string;
 };
 
@@ -36,19 +39,24 @@ export const ScanChart = ({
   return (
     <Box>
       <div className="px-6 pb-9 pt-5">
-        <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-2">
-          <div className="mr-auto flex gap-2">
+        <div className="mb-4 flex flex-col gap-2 md:flex-row flex-wrap md:items-center sm:gap-2">
+          <div className="md:mr-auto flex gap-2">
             <ChainIcon chainId={chainId} />
-            <div className="color-brand-900 mr-auto text-sm font-semibold">
+            <div className="color-brand-900 text-sm font-semibold">
               {title}
               <span className="ml-1 text-xs font-normal opacity-40">
                 (~{percentage}% scanned)
               </span>
             </div>
           </div>
-          {balance && (
+          {balance?.native && (
             <div className="w-fit bg-brand-300 px-1.5 py-1 font-mono text-xs opacity-60">
-              {balance}
+              {balance?.native}
+            </div>
+          )}
+          {balance?.link && (
+            <div className="w-fit bg-brand-300 px-1.5 py-1 font-mono text-xs opacity-60">
+              {balance?.link}
             </div>
           )}
           <ExplorerLink
