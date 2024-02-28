@@ -11,7 +11,7 @@ export const EnvelopeListItemSkeleton = () => {
           </div>
           <div className="hidden md:block">
             <div className="xl:hidden">
-              <div className="h-4 w-24 bg-brand-900"></div>
+              <div className="h-4 w-24 bg-brand-900 opacity-20"></div>
             </div>
           </div>
           <div className="hidden text-sm font-semibold text-brand-900 md:block">
