@@ -138,7 +138,7 @@ const EnvelopeDetailPage = async ({
                       />
                       <div
                         className={cn(
-                          "rounded-full bg-brand-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-500 ml-auto sm:ml-0",
+                          "ml-auto rounded-full bg-brand-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-500 sm:ml-0",
                           {
                             ["bg-green-100 text-green-700"]:
                               event.adapter_successful,
@@ -178,7 +178,11 @@ const EnvelopeDetailPage = async ({
                     const oneHourAgo = new Date();
                     oneHourAgo.setHours(oneHourAgo.getHours() - 1);
 
-                    if (registeredAt > oneHourAgo && !isDelivered) {
+                    if (
+                      registeredAt > oneHourAgo &&
+                      !isDelivered &&
+                      !isDestinationAdapterMatch
+                    ) {
                       status = "Pending";
                     } else if (isSameChain && isAdapterSuccessful) {
                       status = "Success";
@@ -201,7 +205,7 @@ const EnvelopeDetailPage = async ({
                         />
                         <div
                           className={cn(
-                            "rounded-full bg-brand-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-500 ml-auto sm:ml-0",
+                            "ml-auto rounded-full bg-brand-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-500 sm:ml-0",
                             {
                               ["bg-green-100 text-green-700"]:
                                 status === "Success",
