@@ -36,23 +36,27 @@ export const ScanChart = ({
   return (
     <Box>
       <div className="px-6 pb-9 pt-5">
-        <div className="mb-4 flex flex-col sm:flex-row sm:items-center gap-1">
-          <div className="flex gap-2 mr-auto">
+        <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-2">
+          <div className="mr-auto flex gap-2">
             <ChainIcon chainId={chainId} />
             <div className="color-brand-900 mr-auto text-sm font-semibold">
               {title}
-              <span className="text-xs font-normal opacity-40 ml-1">
+              <span className="ml-1 text-xs font-normal opacity-40">
                 (~{percentage}% scanned)
               </span>
             </div>
           </div>
+          {balance && (
+            <div className="w-fit bg-brand-300 px-1.5 py-1 font-mono text-xs opacity-60">
+              {balance}
+            </div>
+          )}
           <ExplorerLink
             chainId={chainId}
             value={address}
             type="address"
             hideLabel
           />
-          <div className="text-sm opacity-60">CCC balance: {balance}</div>
         </div>
         <div className="w-full grow">
           <div className="flex h-2">

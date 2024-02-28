@@ -6,6 +6,8 @@ import { prepareBlockIntervals } from "@/server/eventCollection/prepareBlockInte
 import { type RangeStatus } from "@/server/eventCollection/types";
 import { type Hash, formatEther } from "viem";
 
+const CHAIN_IDS_FOR_BALANCE_RETRIEVAL = [1, 137, 43114];
+
 const StatusPage = async () => {
   const crossChainControllers = await getCrossChainControllers();
   const clients = await getClients({ crossChainControllers });
@@ -42,6 +44,9 @@ const StatusPage = async () => {
 
   const balancePromises = crossChainControllers.map(
     async (crossChainController) => {
+      if (!CHAIN_IDS_FOR_BALANCE_RETRIEVAL.includes(crossChainController.chain_id))
+        return null;
+
       const client = clients[crossChainController.chain_id];
       if (!client) return null;
 
@@ -54,9 +59,19 @@ const StatusPage = async () => {
 
   const balanceArray = await Promise.all(balancePromises);
 
+  const chainIdToCurrency: Record<number, string> = {
+    1: 'ETH',
+    137: 'MATIC',
+    43114: 'AVAX',
+  };
+  
   const balances: Record<number, string> = balanceArray.reduce(
     (acc: Record<number, string>, item) => {
-      if (item) acc[item.chain_id] = formatEther(item.balance);
+      if (item) {
+        const formattedBalance = formatEther(item.balance);
+        const currency = chainIdToCurrency[item.chain_id] ?? '';
+        acc[item.chain_id] = `${formattedBalance} ${currency}`.trim();
+      }
       return acc;
     },
     {},
