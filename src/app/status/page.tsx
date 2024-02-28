@@ -78,7 +78,7 @@ const StatusPage = async () => {
           crossChainController.chain_id
         ] as Hash,
         abi: LINK_TOKEN_ABI,
-        client,
+        client: client,
       });
 
       let linkBalance: bigint | null = null;
