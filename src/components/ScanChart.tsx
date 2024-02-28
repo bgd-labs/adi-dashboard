@@ -1,5 +1,6 @@
 import { ChainIcon } from "@/components/ChainIcon";
 import { Box } from "@/components/Box";
+import { ExplorerLink } from "@/components/ExplorerLink";
 import { type RangeStatus } from "@/server/eventCollection/types";
 import { Tooltip } from "@/components/Tooltip";
 import { cn } from "@/utils/cn";
@@ -7,8 +8,10 @@ import { cn } from "@/utils/cn";
 type ChartProps = {
   ranges: RangeStatus[];
   title?: string;
-  chainId?: number;
+  chainId: number;
   lastScannedBlock?: number;
+  balance?: string;
+  address: string;
 };
 
 export const ScanChart = ({
@@ -16,6 +19,8 @@ export const ScanChart = ({
   title,
   chainId,
   lastScannedBlock,
+  balance,
+  address,
 }: ChartProps) => {
   const totalRange = ranges.reduce(
     (total, { range }) => total + (range[1] - range[0]),
@@ -30,23 +35,34 @@ export const ScanChart = ({
 
   return (
     <Box>
-      <div className="flex flex-col items-center gap-4 px-6 py-6 pb-10 sm:flex-row">
-        <ChainIcon chainId={chainId} />
-        <div className="color-brand-900 w-44 text-center font-semibold sm:text-left">
-          {title}
+      <div className="px-6 pb-9 pt-5">
+        <div className="mb-4 flex flex-col sm:flex-row sm:items-center gap-1">
+          <div className="flex gap-2 mr-auto">
+            <ChainIcon chainId={chainId} />
+            <div className="color-brand-900 mr-auto text-sm font-semibold">
+              {title}
+              <span className="text-xs font-normal opacity-40 ml-1">
+                (~{percentage}% scanned)
+              </span>
+            </div>
+          </div>
+          <ExplorerLink
+            chainId={chainId}
+            value={address}
+            type="address"
+            hideLabel
+          />
+          <div className="text-sm opacity-60">CCC balance: {balance}</div>
         </div>
-        <div className="w-14 text-center text-xs font-normal text-brand-500">
-          {percentage}%
-        </div>
-        <div className="w-full grow sm:-mb-6">
-          <div className="flex h-6">
+        <div className="w-full grow">
+          <div className="flex h-2">
             {ranges.map(({ range, status }) => {
               const width = ((range[1] - range[0]) / totalRange) * 100;
 
               return (
                 <div
                   key={status + range[0] + range[1]}
-                  className={cn("h-6", {
+                  className={cn("h-2", {
                     "bg-green-400": status === "scanned",
                     "bg-red-500": status === "failed",
                     "bg-brand-300": status === "pending",
@@ -56,7 +72,7 @@ export const ScanChart = ({
               );
             })}
           </div>
-          <div className="flex h-6 justify-between pt-1">
+          <div className="flex h-2 justify-between pt-2">
             <Tooltip value="Deployment block">
               <div className="font-mono text-xs text-brand-500">
                 {ranges[0]?.range[0]}

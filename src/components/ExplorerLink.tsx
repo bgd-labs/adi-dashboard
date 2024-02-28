@@ -9,15 +9,17 @@ export const ExplorerLink = async ({
   value,
   chainId,
   skipAdapter,
+  hideLabel,
 }: {
   type: "tx" | "address";
   value: string;
   chainId: number;
   skipAdapter?: boolean;
+  hideLabel?: boolean;
 }) => {
   let label;
 
-  if (type === "address") {
+  if (type === "address" && !hideLabel) {
     label = await api.address.get.query({ address: value, chainId });
   }
 
@@ -38,27 +40,30 @@ export const ExplorerLink = async ({
   return (
     <div className="inline-flex items-center">
       <div className="flex items-center gap-2">
-        <div
-          className={cn("flex items-center", {
-            ["rounded-full bg-brand-300 pl-0.5 text-brand-900 -ml-0.5"]: label,
-          })}
-        >
+        {!hideLabel && (
           <div
-            className={cn(
-              "shrink-0 opacity-60 grayscale transition-opacity hover:opacity-100 hover:contrast-100 hover:grayscale-0",
-              {
-                ["contrast-150"]: label,
-              },
-            )}
+            className={cn("flex items-center", {
+              ["-ml-0.5 rounded-full bg-brand-300 pl-0.5 text-brand-900"]:
+                label,
+            })}
           >
-            <ChainIcon chainId={chainId} />
-          </div>
-          {label && (
-            <div className="truncate rounded-r-full bg-brand-300 py-1 pl-1.5 pr-2 text-xs font-semibold text-brand-900">
-              {skipAdapter ? label.replace(/adapter$/, '') : label}
+            <div
+              className={cn(
+                "shrink-0 opacity-60 grayscale transition-opacity hover:opacity-100 hover:contrast-100 hover:grayscale-0",
+                {
+                  ["contrast-150"]: label,
+                },
+              )}
+            >
+              <ChainIcon chainId={chainId} />
             </div>
-          )}
-        </div>
+            {label && (
+              <div className="truncate rounded-r-full bg-brand-300 py-1 pl-1.5 pr-2 text-xs font-semibold text-brand-900">
+                {skipAdapter ? label.replace(/adapter$/, "") : label}
+              </div>
+            )}
+          </div>
+        )}
         <a
           href={url}
           className="block shrink translate-y-[1px] cursor-pointer truncate border-b border-dotted border-transparent font-mono text-sm leading-none opacity-60 hover:border-brand-900 hover:text-brand-900 hover:opacity-100"

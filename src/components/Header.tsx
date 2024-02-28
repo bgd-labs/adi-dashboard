@@ -25,9 +25,9 @@ export const Header = () => {
           </div>
         </Link>
         <Link href="/status">
-          <div className="group absolute right-5 top-6 flex items-center gap-1.5 text-[8px] font-semibold uppercase tracking-wider hover:text-green-400">
+          <div className="group absolute right-5 top-6 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider hover:text-green-400">
             <span className="hidden opacity-50 group-hover:opacity-100 sm:block">
-              Monitoring
+              status
             </span>
             <span className="relative flex h-2.5 w-2.5 items-center justify-center">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-60"></span>
