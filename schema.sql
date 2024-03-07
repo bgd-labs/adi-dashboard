@@ -28,7 +28,7 @@ ALTER TABLE "public"."AddressBook" OWNER TO "postgres";
 
 CREATE TABLE IF NOT EXISTS "public"."BridgeExplorers" (
     "chain_id" bigint NOT NULL,
-    "address" character varying,
+    "address" character varying NOT NULL,
     "explorer_link" "text"
 );
 
@@ -41,7 +41,8 @@ CREATE TABLE IF NOT EXISTS "public"."CrossChainControllers" (
     "created_block" bigint DEFAULT '0'::bigint NOT NULL,
     "rpc_urls" "text"[],
     "last_scanned_block" bigint,
-    "chain_name_alias" "text"
+    "chain_name_alias" "text",
+    "quicknode_rpc_url" "text"
 );
 
 ALTER TABLE "public"."CrossChainControllers" OWNER TO "postgres";
@@ -99,6 +100,19 @@ CREATE TABLE IF NOT EXISTS "public"."Retries" (
 
 ALTER TABLE "public"."Retries" OWNER TO "postgres";
 
+CREATE TABLE IF NOT EXISTS "public"."TransactionCosts" (
+    "tx_hash" character varying NOT NULL,
+    "value" bigint,
+    "token_address" character varying,
+    "token_name" "text",
+    "usd_value" bigint,
+    "from" character varying NOT NULL,
+    "to" character varying NOT NULL,
+    "chain_id" bigint
+);
+
+ALTER TABLE "public"."TransactionCosts" OWNER TO "postgres";
+
 CREATE TABLE IF NOT EXISTS "public"."TransactionForwardingAttempted" (
     "transaction_hash" character varying NOT NULL,
     "log_index" bigint NOT NULL,
@@ -137,6 +151,9 @@ ALTER TABLE "public"."TransactionReceived" OWNER TO "postgres";
 ALTER TABLE ONLY "public"."AddressBook"
     ADD CONSTRAINT "AddressBook_pkey" PRIMARY KEY ("address", "chain_id");
 
+ALTER TABLE ONLY "public"."BridgeExplorers"
+    ADD CONSTRAINT "BridgeExplorers_pkey" PRIMARY KEY ("chain_id", "address");
+
 ALTER TABLE ONLY "public"."CrossChainControllers"
     ADD CONSTRAINT "CrossChainControllers_pkey" PRIMARY KEY ("chain_id");
 
@@ -151,6 +168,9 @@ ALTER TABLE ONLY "public"."Notifications"
 
 ALTER TABLE ONLY "public"."Retries"
     ADD CONSTRAINT "Retries_pkey" PRIMARY KEY ("from_block", "to_block", "chain_id");
+
+ALTER TABLE ONLY "public"."TransactionCosts"
+    ADD CONSTRAINT "TransactionCosts_pkey" PRIMARY KEY ("tx_hash", "from", "to");
 
 ALTER TABLE ONLY "public"."Envelopes"
     ADD CONSTRAINT "envelopes_pkey" PRIMARY KEY ("id");
@@ -203,6 +223,9 @@ ALTER TABLE ONLY "public"."TransactionReceived"
 ALTER TABLE ONLY "public"."BridgeExplorers"
     ADD CONSTRAINT "public_BridgeExplorers_chain_id_fkey" FOREIGN KEY ("chain_id") REFERENCES "public"."CrossChainControllers"("chain_id");
 
+ALTER TABLE ONLY "public"."TransactionCosts"
+    ADD CONSTRAINT "public_TransactionCosts_chain_id_fkey" FOREIGN KEY ("chain_id") REFERENCES "public"."CrossChainControllers"("chain_id");
+
 ALTER TABLE "public"."AddressBook" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."BridgeExplorers" ENABLE ROW LEVEL SECURITY;
@@ -236,6 +259,8 @@ ALTER TABLE "public"."Envelopes" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."Notifications" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."Retries" ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE "public"."TransactionCosts" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."TransactionForwardingAttempted" ENABLE ROW LEVEL SECURITY;
 
@@ -277,6 +302,10 @@ GRANT ALL ON TABLE "public"."Notifications" TO "service_role";
 GRANT ALL ON TABLE "public"."Retries" TO "anon";
 GRANT ALL ON TABLE "public"."Retries" TO "authenticated";
 GRANT ALL ON TABLE "public"."Retries" TO "service_role";
+
+GRANT ALL ON TABLE "public"."TransactionCosts" TO "anon";
+GRANT ALL ON TABLE "public"."TransactionCosts" TO "authenticated";
+GRANT ALL ON TABLE "public"."TransactionCosts" TO "service_role";
 
 GRANT ALL ON TABLE "public"."TransactionForwardingAttempted" TO "anon";
 GRANT ALL ON TABLE "public"."TransactionForwardingAttempted" TO "authenticated";

@@ -68,6 +68,9 @@ export type Database = {
           chain_name_alias: string | null
           created_block: number
           last_scanned_block: number | null
+          native_token_name: string | null
+          native_token_symbol: string | null
+          quicknode_rpc_url: string | null
           rpc_block_limit: number
           rpc_urls: string[] | null
         }
@@ -77,6 +80,9 @@ export type Database = {
           chain_name_alias?: string | null
           created_block?: number
           last_scanned_block?: number | null
+          native_token_name?: string | null
+          native_token_symbol?: string | null
+          quicknode_rpc_url?: string | null
           rpc_block_limit?: number
           rpc_urls?: string[] | null
         }
@@ -86,6 +92,9 @@ export type Database = {
           chain_name_alias?: string | null
           created_block?: number
           last_scanned_block?: number | null
+          native_token_name?: string | null
+          native_token_symbol?: string | null
+          quicknode_rpc_url?: string | null
           rpc_block_limit?: number
           rpc_urls?: string[] | null
         }
@@ -259,6 +268,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "Retries_chain_id_fkey"
+            columns: ["chain_id"]
+            isOneToOne: false
+            referencedRelation: "CrossChainControllers"
+            referencedColumns: ["chain_id"]
+          }
+        ]
+      }
+      TransactionCosts: {
+        Row: {
+          chain_id: number | null
+          from: string
+          to: string
+          token_address: string | null
+          token_name: string | null
+          token_symbol: string | null
+          token_usd_price: number | null
+          tx_hash: string
+          value: number | null
+        }
+        Insert: {
+          chain_id?: number | null
+          from: string
+          to: string
+          token_address?: string | null
+          token_name?: string | null
+          token_symbol?: string | null
+          token_usd_price?: number | null
+          tx_hash: string
+          value?: number | null
+        }
+        Update: {
+          chain_id?: number | null
+          from?: string
+          to?: string
+          token_address?: string | null
+          token_name?: string | null
+          token_symbol?: string | null
+          token_usd_price?: number | null
+          tx_hash?: string
+          value?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_TransactionCosts_chain_id_fkey"
             columns: ["chain_id"]
             isOneToOne: false
             referencedRelation: "CrossChainControllers"
