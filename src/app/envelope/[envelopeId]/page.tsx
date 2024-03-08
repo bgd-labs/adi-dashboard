@@ -13,6 +13,8 @@ import { EnvelopeMessage } from "@/components/EnvelopeMessage";
 import { type Hex } from "viem";
 import { cn } from "@/utils/cn";
 
+const SKIPPED_STATUS_TIMEOUT_HOURS = 10;
+
 const EnvelopeDetailPage = async ({
   params,
 }: {
@@ -175,11 +177,11 @@ const EnvelopeDetailPage = async ({
                     let status = "Failed";
 
                     const registeredAt = new Date(envelope.registered_at!);
-                    const oneHourAgo = new Date();
-                    oneHourAgo.setHours(oneHourAgo.getHours() - 1);
+                    const timeBeforeTimeout = new Date();
+                    timeBeforeTimeout.setHours(timeBeforeTimeout.getHours() - SKIPPED_STATUS_TIMEOUT_HOURS);
 
                     if (
-                      registeredAt > oneHourAgo &&
+                      registeredAt > timeBeforeTimeout &&
                       !isDelivered &&
                       !isDestinationAdapterMatch
                     ) {
