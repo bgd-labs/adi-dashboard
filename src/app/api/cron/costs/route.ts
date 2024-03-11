@@ -11,29 +11,31 @@ export const GET = async (req: Request) => {
 
   const unscannedTxs = await api.transactions.getUnscannedTransactions.query();
 
+  if (unscannedTxs?.length === 0 || !unscannedTxs) {
+    return NextResponse.json({ ok: true });
+  }
+
+  console.log(`Found ${unscannedTxs?.length} unscanned transactions.`);
+
   for (let i = 0; i < unscannedTxs.length; i++) {
     const pair = unscannedTxs[i];
     if (!pair) {
       return;
     }
-    setTimeout(() => {
-      void (async () => {
-        try {
-          console.log(
-            `${i + 1}/${unscannedTxs.length} `,
-            "Calculating transaction costs for:",
-            pair.transaction_hash! as Hash,
-            pair.chain_id!,
-          );
-          await calculateTxCosts(
-            pair.transaction_hash! as Hash,
-            pair.chain_id!,
-          );
-        } catch (error) {
-          console.error("Error calculating transaction costs:", error);
-        }
-      })();
-    }, i * 4000);
+    try {
+      console.log(
+        `${i + 1}/${unscannedTxs.length} `,
+        "Calculating transaction costs for:",
+        pair.transaction_hash! as Hash,
+        pair.chain_id!,
+      );
+      await calculateTxCosts(
+        pair.transaction_hash! as Hash,
+        pair.chain_id as number,
+      );
+    } catch (error) {
+      console.error("Error calculating transaction costs:", error);
+    }
   }
 
   return NextResponse.json({ ok: true });
