@@ -18,6 +18,12 @@ const KNOWN_TOKENS: Record<number, Record<string, TokenInfo>> = {
       symbol: "link",
     },
   },
+  43114: {
+    "0x5947bb275c521040051d82396192181b413227a3": {
+      name: "chainlink",
+      symbol: "link",
+    },
+  },
 };
 
 export const getErc20TokenInfo = async (
