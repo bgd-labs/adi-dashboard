@@ -505,7 +505,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_unscanned_transactions_sql: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          adapter_successful: boolean | null
+          block_number: number | null
+          bridge_adapter: string | null
+          chain_id: number | null
+          destination_bridge_adapter: string | null
+          destination_chain_id: number | null
+          encoded_transaction: string | null
+          envelope_id: string | null
+          log_index: number
+          return_data: string | null
+          timestamp: string | null
+          transaction_hash: string
+          transaction_id: string | null
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

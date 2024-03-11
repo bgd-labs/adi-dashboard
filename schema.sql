@@ -18,6 +18,37 @@ SET default_tablespace = '';
 
 SET default_table_access_method = "heap";
 
+CREATE TABLE IF NOT EXISTS "public"."TransactionForwardingAttempted" (
+    "transaction_hash" character varying NOT NULL,
+    "log_index" bigint NOT NULL,
+    "envelope_id" "text",
+    "block_number" bigint,
+    "chain_id" bigint,
+    "transaction_id" "text",
+    "destination_chain_id" bigint,
+    "bridge_adapter" "text",
+    "destination_bridge_adapter" "text",
+    "adapter_successful" boolean,
+    "return_data" "bytea",
+    "encoded_transaction" "bytea",
+    "timestamp" timestamp with time zone
+);
+
+ALTER TABLE "public"."TransactionForwardingAttempted" OWNER TO "postgres";
+
+CREATE OR REPLACE FUNCTION "public"."get_unscanned_transactions_sql"() RETURNS SETOF "public"."TransactionForwardingAttempted"
+    LANGUAGE "sql"
+    AS $$SELECT *
+FROM "TransactionForwardingAttempted"
+WHERE "transaction_hash" NOT IN (
+    SELECT "transaction_hash" FROM "TransactionCosts"
+    UNION
+    SELECT "transaction_hash" FROM "TransactionGasCosts"
+);
+$$;
+
+ALTER FUNCTION "public"."get_unscanned_transactions_sql"() OWNER TO "postgres";
+
 CREATE TABLE IF NOT EXISTS "public"."AddressBook" (
     "address" character varying NOT NULL,
     "chain_id" bigint NOT NULL,
@@ -116,24 +147,6 @@ CREATE TABLE IF NOT EXISTS "public"."TransactionCosts" (
 );
 
 ALTER TABLE "public"."TransactionCosts" OWNER TO "postgres";
-
-CREATE TABLE IF NOT EXISTS "public"."TransactionForwardingAttempted" (
-    "transaction_hash" character varying NOT NULL,
-    "log_index" bigint NOT NULL,
-    "envelope_id" "text",
-    "block_number" bigint,
-    "chain_id" bigint,
-    "transaction_id" "text",
-    "destination_chain_id" bigint,
-    "bridge_adapter" "text",
-    "destination_bridge_adapter" "text",
-    "adapter_successful" boolean,
-    "return_data" "bytea",
-    "encoded_transaction" "bytea",
-    "timestamp" timestamp with time zone
-);
-
-ALTER TABLE "public"."TransactionForwardingAttempted" OWNER TO "postgres";
 
 CREATE TABLE IF NOT EXISTS "public"."TransactionGasCosts" (
     "transaction_hash" character varying NOT NULL,
@@ -296,6 +309,14 @@ GRANT USAGE ON SCHEMA "public" TO "anon";
 GRANT USAGE ON SCHEMA "public" TO "authenticated";
 GRANT USAGE ON SCHEMA "public" TO "service_role";
 
+GRANT ALL ON TABLE "public"."TransactionForwardingAttempted" TO "anon";
+GRANT ALL ON TABLE "public"."TransactionForwardingAttempted" TO "authenticated";
+GRANT ALL ON TABLE "public"."TransactionForwardingAttempted" TO "service_role";
+
+GRANT ALL ON FUNCTION "public"."get_unscanned_transactions_sql"() TO "anon";
+GRANT ALL ON FUNCTION "public"."get_unscanned_transactions_sql"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."get_unscanned_transactions_sql"() TO "service_role";
+
 GRANT ALL ON TABLE "public"."AddressBook" TO "anon";
 GRANT ALL ON TABLE "public"."AddressBook" TO "authenticated";
 GRANT ALL ON TABLE "public"."AddressBook" TO "service_role";
@@ -331,10 +352,6 @@ GRANT ALL ON TABLE "public"."Retries" TO "service_role";
 GRANT ALL ON TABLE "public"."TransactionCosts" TO "anon";
 GRANT ALL ON TABLE "public"."TransactionCosts" TO "authenticated";
 GRANT ALL ON TABLE "public"."TransactionCosts" TO "service_role";
-
-GRANT ALL ON TABLE "public"."TransactionForwardingAttempted" TO "anon";
-GRANT ALL ON TABLE "public"."TransactionForwardingAttempted" TO "authenticated";
-GRANT ALL ON TABLE "public"."TransactionForwardingAttempted" TO "service_role";
 
 GRANT ALL ON TABLE "public"."TransactionGasCosts" TO "anon";
 GRANT ALL ON TABLE "public"."TransactionGasCosts" TO "authenticated";
