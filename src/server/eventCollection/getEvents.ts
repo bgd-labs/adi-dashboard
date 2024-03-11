@@ -1,7 +1,8 @@
 import { type PublicClient, type Hash } from "viem";
 import { cccEventsAbi } from "../constants/cccEventsAbi";
 import { supabaseAdmin } from "@/server/api/supabase/server";
-import { revalidatePath } from 'next/cache'
+import { revalidatePath } from "next/cache";
+import { calculateTxCosts } from "@/server/eventCollection/calculateTxCosts";
 
 export const getEvents = async ({
   address,
@@ -29,7 +30,7 @@ export const getEvents = async ({
         `Found ${events.length} events for chain ${client.chain?.id}.`,
       );
       // Revalidate all paths if new events are found, see if it helps with the stale data
-      revalidatePath('/', 'layout')
+      revalidatePath("/", "layout");
 
       for (const event of events) {
         const { timestamp } = await client.getBlock({
@@ -65,6 +66,11 @@ export const getEvents = async ({
                 timestamp: dateString,
               },
             ]);
+
+            if (client.chain?.id) {
+              await calculateTxCosts(event.transactionHash, client.chain.id);
+            }
+
             break;
 
           case "EnvelopeDeliveryAttempted":
