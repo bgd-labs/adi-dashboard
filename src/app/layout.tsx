@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { TRPCReactProvider } from "@/trpc/react";
 import { Header, Footer } from "@/components";
+import { env } from "@/env";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -11,6 +12,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "a.DI - Dashboard",
+  metadataBase: new URL(
+    env.ENVIRONMENT_STAGE === "PROD"
+      ? "https://adi.onaave.com"
+      : "https://adi-preprod.onaave.com",
+  ),
   description: "Aave Delivery Insfrastucture Monitoring Dashboard",
   icons: [
     { rel: "icon", url: "/favicon.ico" },
