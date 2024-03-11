@@ -32,4 +32,11 @@ export const transactionsRouter = createTRPCRouter({
 
       return data ?? [];
     }),
+  getUnscannedTransactions: publicProcedure.query(async ({ ctx }) => {
+    const { data } = await ctx.supabaseAdmin.rpc(
+      "get_unscanned_transactions_sql",
+    );
+
+    return data;
+  }),
 });
