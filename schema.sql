@@ -104,7 +104,7 @@ ALTER TABLE "public"."Retries" OWNER TO "postgres";
 
 CREATE TABLE IF NOT EXISTS "public"."TransactionCosts" (
     "transaction_hash" character varying NOT NULL,
-    "value" bigint,
+    "value" numeric,
     "token_address" character varying,
     "token_name" "text",
     "token_usd_price" numeric,
@@ -138,8 +138,8 @@ ALTER TABLE "public"."TransactionForwardingAttempted" OWNER TO "postgres";
 CREATE TABLE IF NOT EXISTS "public"."TransactionGasCosts" (
     "transaction_hash" character varying NOT NULL,
     "chain_id" bigint,
-    "gas_price" bigint,
-    "transaction_fee" bigint,
+    "gas_price" numeric,
+    "transaction_fee" numeric,
     "transaction_fee_usd" numeric,
     "token_usd_price" numeric,
     "token_name" "text",
