@@ -266,42 +266,48 @@ const EnvelopeDetailPage = async ({
                 <div className="mb-3 text-2xl font-semibold text-brand-900">
                   {totalGasCostsUSD} $
                 </div>
-                {gasCosts.length > 0 && (
-                  <div className="flex flex-col gap-2">
-                    {gasCosts.map((cost) => (
-                      <>
-                        <div className="text-sm">
-                          Transaction fee:
+                {gasCosts.length > 0 &&
+                  gasCosts.map((cost) => (
+                    <div
+                      className="flex flex-col gap-2"
+                      key={cost.transaction_fee}
+                    >
+                      <div className="text-sm">
+                        Transaction fee:
+                        <Tooltip
+                          value={`Price on TXN date: ${cost.transaction_fee_usd?.toFixed(
+                            2,
+                          )}$`}
+                        >
                           <div className="ml-2 inline-block rounded bg-brand-300 px-1 py-0.5 font-mono text-xs uppercase text-brand-900">
                             {formatEther(BigInt(cost.transaction_fee!))}
                             <span className="ml-1 font-semibold opacity-40">
                               {cost.token_symbol}
                             </span>
                           </div>
+                        </Tooltip>
+                      </div>
+                      <div className="text-sm">
+                        Gas price:
+                        <div className="ml-2 inline-block rounded bg-brand-300 px-1 py-0.5 font-mono text-xs uppercase text-brand-900">
+                          {formatGwei(BigInt(cost.gas_price!))}
+                          <span className="ml-1 font-semibold opacity-40">
+                            Gwei
+                          </span>
                         </div>
-                        <div className="text-sm">
-                          Gas price:
-                          <div className="ml-2 inline-block rounded bg-brand-300 px-1 py-0.5 font-mono text-xs uppercase text-brand-900">
-                            {formatGwei(BigInt(cost.gas_price!))}
-                            <span className="ml-1 font-semibold opacity-40">
-                              Gwei
-                            </span>
-                          </div>
+                      </div>
+                      <div className="text-sm">
+                        <span className="capitalize">{cost.token_name}</span>{" "}
+                        price on TXN date:
+                        <div className="ml-2 inline-block rounded bg-brand-300 px-1 py-0.5 font-mono text-xs uppercase text-brand-900">
+                          {cost.token_usd_price?.toFixed(2)}
+                          <span className="ml-1 font-semibold opacity-40">
+                            $
+                          </span>
                         </div>
-                        <div className="text-sm">
-                          <span className="capitalize">{cost.token_name}</span>{" "}
-                          price on TXN date:
-                          <div className="ml-2 inline-block rounded bg-brand-300 px-1 py-0.5 font-mono text-xs uppercase text-brand-900">
-                            {cost.token_usd_price?.toFixed(2)}
-                            <span className="ml-1 font-semibold opacity-40">
-                              $
-                            </span>
-                          </div>
-                        </div>
-                      </>
-                    ))}
-                  </div>
-                )}
+                      </div>
+                    </div>
+                  ))}
               </div>
               <div>
                 <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider">
@@ -313,7 +319,7 @@ const EnvelopeDetailPage = async ({
                 {bridgingCosts.length > 0 && (
                   <div className="flex flex-col gap-2">
                     {bridgingCosts.map((cost) => (
-                      <div className="flex flex-wrap items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2" key={cost.value}>
                         <ExplorerLink
                           type="address"
                           value={cost.from}

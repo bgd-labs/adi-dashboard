@@ -14,6 +14,7 @@ export const Header = () => {
               src={logo}
               alt="a.DI"
               className="h-[66px] w-[66px] transition-transform"
+              priority
             />
 
             <div className="relative">
