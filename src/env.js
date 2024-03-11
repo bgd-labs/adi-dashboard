@@ -8,6 +8,8 @@ export const env = createEnv({
     CRON_SECRET: z.string(),
     SLACK_WEBHOOK_URL: z.string(),
     ICON_GENERATOR_KEY: z.string(),
+    ENVIRONMENT_STAGE: z.enum(["PROD", "PREPROD"]),
+    COINGECKO_API_KEY: z.string(),
   },
   client: {
     NEXT_PUBLIC_SUPABASE_URL: z.string(),
@@ -21,6 +23,8 @@ export const env = createEnv({
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     SLACK_WEBHOOK_URL: process.env.SLACK_WEBHOOK_URL,
     ICON_GENERATOR_KEY: process.env.ICON_GENERATOR_KEY,
+    ENVIRONMENT_STAGE: process.env.ENVIRONMENT_STAGE,
+    COINGECKO_API_KEY: process.env.COINGECKO_API_KEY,
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
   emptyStringAsUndefined: true,

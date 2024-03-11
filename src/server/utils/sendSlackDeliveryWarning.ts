@@ -81,7 +81,10 @@ export const sendSlackDeliveryWarning = async ({
         },
         accessory: {
           type: "image",
-          image_url: `https://adi.onaave.com/api/envelope-icon/${envelopeId}?key=${env.ICON_GENERATOR_KEY}`,
+          image_url:
+            env.ENVIRONMENT_STAGE === "PROD"
+              ? `https://adi.onaave.com/api/envelope-icon/${envelopeId}?key=${env.ICON_GENERATOR_KEY}`
+              : `https://adi-preprod.onaave.com/api/envelope-icon/${envelopeId}?key=${env.ICON_GENERATOR_KEY}`,
           alt_text: "Envelope Icon",
         },
       },
@@ -96,7 +99,10 @@ export const sendSlackDeliveryWarning = async ({
               emoji: true,
             },
             style: "primary",
-            url: `https://adi.onaave.com/envelope/${envelopeId}`,
+            url:
+              env.ENVIRONMENT_STAGE === "PROD"
+                ? `https://adi.onaave.com/envelope/${envelopeId}`
+                : `https://adi-preprod.onaave.com/envelope/${envelopeId}`,
           },
         ],
       },

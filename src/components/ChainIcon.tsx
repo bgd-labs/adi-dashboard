@@ -14,6 +14,7 @@ import optimismIcon from "@/assets/chains/optimism.svg";
 import unknownIcon from "@/assets/chains/unknown.svg";
 import polygonZkEvmIcon from "@/assets/chains/polygonZkEvm.svg";
 import scrollIcon from "@/assets/chains/scroll.svg";
+import celoIcon from "@/assets/chains/celo.svg";
 import { Tooltip } from "@/components/Tooltip";
 import { cn } from "@/utils/cn";
 
@@ -46,6 +47,8 @@ const getIcon = (chainId: number) => {
       return avalancheIcon;
     case 534352:
       return scrollIcon;
+    case 42220:
+      return celoIcon;
     default:
       return unknownIcon;
   }

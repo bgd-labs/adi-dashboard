@@ -18,6 +18,37 @@ SET default_tablespace = '';
 
 SET default_table_access_method = "heap";
 
+CREATE TABLE IF NOT EXISTS "public"."TransactionForwardingAttempted" (
+    "transaction_hash" character varying NOT NULL,
+    "log_index" bigint NOT NULL,
+    "envelope_id" "text",
+    "block_number" bigint,
+    "chain_id" bigint,
+    "transaction_id" "text",
+    "destination_chain_id" bigint,
+    "bridge_adapter" "text",
+    "destination_bridge_adapter" "text",
+    "adapter_successful" boolean,
+    "return_data" "bytea",
+    "encoded_transaction" "bytea",
+    "timestamp" timestamp with time zone
+);
+
+ALTER TABLE "public"."TransactionForwardingAttempted" OWNER TO "postgres";
+
+CREATE OR REPLACE FUNCTION "public"."get_unscanned_transactions_sql"() RETURNS SETOF "public"."TransactionForwardingAttempted"
+    LANGUAGE "sql"
+    AS $$SELECT *
+FROM "TransactionForwardingAttempted"
+WHERE "transaction_hash" NOT IN (
+    SELECT "transaction_hash" FROM "TransactionCosts"
+    UNION
+    SELECT "transaction_hash" FROM "TransactionGasCosts"
+);
+$$;
+
+ALTER FUNCTION "public"."get_unscanned_transactions_sql"() OWNER TO "postgres";
+
 CREATE TABLE IF NOT EXISTS "public"."AddressBook" (
     "address" character varying NOT NULL,
     "chain_id" bigint NOT NULL,
@@ -28,7 +59,7 @@ ALTER TABLE "public"."AddressBook" OWNER TO "postgres";
 
 CREATE TABLE IF NOT EXISTS "public"."BridgeExplorers" (
     "chain_id" bigint NOT NULL,
-    "address" character varying,
+    "address" character varying NOT NULL,
     "explorer_link" "text"
 );
 
@@ -41,7 +72,10 @@ CREATE TABLE IF NOT EXISTS "public"."CrossChainControllers" (
     "created_block" bigint DEFAULT '0'::bigint NOT NULL,
     "rpc_urls" "text"[],
     "last_scanned_block" bigint,
-    "chain_name_alias" "text"
+    "chain_name_alias" "text",
+    "quicknode_rpc_url" "text",
+    "native_token_name" "text",
+    "native_token_symbol" "text"
 );
 
 ALTER TABLE "public"."CrossChainControllers" OWNER TO "postgres";
@@ -99,23 +133,33 @@ CREATE TABLE IF NOT EXISTS "public"."Retries" (
 
 ALTER TABLE "public"."Retries" OWNER TO "postgres";
 
-CREATE TABLE IF NOT EXISTS "public"."TransactionForwardingAttempted" (
+CREATE TABLE IF NOT EXISTS "public"."TransactionCosts" (
     "transaction_hash" character varying NOT NULL,
-    "log_index" bigint NOT NULL,
-    "envelope_id" "text",
-    "block_number" bigint,
+    "value" numeric,
+    "token_address" character varying,
+    "token_name" "text",
+    "token_usd_price" numeric,
+    "from" character varying NOT NULL,
+    "to" character varying NOT NULL,
     "chain_id" bigint,
-    "transaction_id" "text",
-    "destination_chain_id" bigint,
-    "bridge_adapter" "text",
-    "destination_bridge_adapter" "text",
-    "adapter_successful" boolean,
-    "return_data" "bytea",
-    "encoded_transaction" "bytea",
-    "timestamp" timestamp with time zone
+    "token_symbol" "text",
+    "value_usd" numeric
 );
 
-ALTER TABLE "public"."TransactionForwardingAttempted" OWNER TO "postgres";
+ALTER TABLE "public"."TransactionCosts" OWNER TO "postgres";
+
+CREATE TABLE IF NOT EXISTS "public"."TransactionGasCosts" (
+    "transaction_hash" character varying NOT NULL,
+    "chain_id" bigint,
+    "gas_price" numeric,
+    "transaction_fee" numeric,
+    "transaction_fee_usd" numeric,
+    "token_usd_price" numeric,
+    "token_name" "text",
+    "token_symbol" "text"
+);
+
+ALTER TABLE "public"."TransactionGasCosts" OWNER TO "postgres";
 
 CREATE TABLE IF NOT EXISTS "public"."TransactionReceived" (
     "transaction_hash" character varying NOT NULL,
@@ -137,6 +181,9 @@ ALTER TABLE "public"."TransactionReceived" OWNER TO "postgres";
 ALTER TABLE ONLY "public"."AddressBook"
     ADD CONSTRAINT "AddressBook_pkey" PRIMARY KEY ("address", "chain_id");
 
+ALTER TABLE ONLY "public"."BridgeExplorers"
+    ADD CONSTRAINT "BridgeExplorers_pkey" PRIMARY KEY ("chain_id", "address");
+
 ALTER TABLE ONLY "public"."CrossChainControllers"
     ADD CONSTRAINT "CrossChainControllers_pkey" PRIMARY KEY ("chain_id");
 
@@ -151,6 +198,12 @@ ALTER TABLE ONLY "public"."Notifications"
 
 ALTER TABLE ONLY "public"."Retries"
     ADD CONSTRAINT "Retries_pkey" PRIMARY KEY ("from_block", "to_block", "chain_id");
+
+ALTER TABLE ONLY "public"."TransactionCosts"
+    ADD CONSTRAINT "TransactionCosts_pkey" PRIMARY KEY ("transaction_hash", "from", "to");
+
+ALTER TABLE ONLY "public"."TransactionGasCosts"
+    ADD CONSTRAINT "TransactionGasCosts_pkey" PRIMARY KEY ("transaction_hash");
 
 ALTER TABLE ONLY "public"."Envelopes"
     ADD CONSTRAINT "envelopes_pkey" PRIMARY KEY ("id");
@@ -203,6 +256,12 @@ ALTER TABLE ONLY "public"."TransactionReceived"
 ALTER TABLE ONLY "public"."BridgeExplorers"
     ADD CONSTRAINT "public_BridgeExplorers_chain_id_fkey" FOREIGN KEY ("chain_id") REFERENCES "public"."CrossChainControllers"("chain_id");
 
+ALTER TABLE ONLY "public"."TransactionCosts"
+    ADD CONSTRAINT "public_TransactionCosts_chain_id_fkey" FOREIGN KEY ("chain_id") REFERENCES "public"."CrossChainControllers"("chain_id");
+
+ALTER TABLE ONLY "public"."TransactionGasCosts"
+    ADD CONSTRAINT "public_TransactionGasCosts_chain_id_fkey" FOREIGN KEY ("chain_id") REFERENCES "public"."CrossChainControllers"("chain_id");
+
 ALTER TABLE "public"."AddressBook" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."BridgeExplorers" ENABLE ROW LEVEL SECURITY;
@@ -237,7 +296,11 @@ ALTER TABLE "public"."Notifications" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."Retries" ENABLE ROW LEVEL SECURITY;
 
+ALTER TABLE "public"."TransactionCosts" ENABLE ROW LEVEL SECURITY;
+
 ALTER TABLE "public"."TransactionForwardingAttempted" ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE "public"."TransactionGasCosts" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."TransactionReceived" ENABLE ROW LEVEL SECURITY;
 
@@ -245,6 +308,14 @@ GRANT USAGE ON SCHEMA "public" TO "postgres";
 GRANT USAGE ON SCHEMA "public" TO "anon";
 GRANT USAGE ON SCHEMA "public" TO "authenticated";
 GRANT USAGE ON SCHEMA "public" TO "service_role";
+
+GRANT ALL ON TABLE "public"."TransactionForwardingAttempted" TO "anon";
+GRANT ALL ON TABLE "public"."TransactionForwardingAttempted" TO "authenticated";
+GRANT ALL ON TABLE "public"."TransactionForwardingAttempted" TO "service_role";
+
+GRANT ALL ON FUNCTION "public"."get_unscanned_transactions_sql"() TO "anon";
+GRANT ALL ON FUNCTION "public"."get_unscanned_transactions_sql"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."get_unscanned_transactions_sql"() TO "service_role";
 
 GRANT ALL ON TABLE "public"."AddressBook" TO "anon";
 GRANT ALL ON TABLE "public"."AddressBook" TO "authenticated";
@@ -278,9 +349,13 @@ GRANT ALL ON TABLE "public"."Retries" TO "anon";
 GRANT ALL ON TABLE "public"."Retries" TO "authenticated";
 GRANT ALL ON TABLE "public"."Retries" TO "service_role";
 
-GRANT ALL ON TABLE "public"."TransactionForwardingAttempted" TO "anon";
-GRANT ALL ON TABLE "public"."TransactionForwardingAttempted" TO "authenticated";
-GRANT ALL ON TABLE "public"."TransactionForwardingAttempted" TO "service_role";
+GRANT ALL ON TABLE "public"."TransactionCosts" TO "anon";
+GRANT ALL ON TABLE "public"."TransactionCosts" TO "authenticated";
+GRANT ALL ON TABLE "public"."TransactionCosts" TO "service_role";
+
+GRANT ALL ON TABLE "public"."TransactionGasCosts" TO "anon";
+GRANT ALL ON TABLE "public"."TransactionGasCosts" TO "authenticated";
+GRANT ALL ON TABLE "public"."TransactionGasCosts" TO "service_role";
 
 GRANT ALL ON TABLE "public"."TransactionReceived" TO "anon";
 GRANT ALL ON TABLE "public"."TransactionReceived" TO "authenticated";

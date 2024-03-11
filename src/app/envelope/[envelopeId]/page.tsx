@@ -3,6 +3,7 @@ import { EnvelopeIcon } from "@/components/EnvelopeIcon";
 import { CopyValueCard } from "@/components/CopyValueCard";
 import { FromTo } from "@/components/FromTo";
 import { ExplorerLink } from "@/components/ExplorerLink";
+import { Tooltip } from "@/components/Tooltip";
 import { api } from "@/trpc/server";
 import { Box } from "@/components/Box";
 import { EnvelopeRegisteredEvent } from "@/components/EnvelopeRegisteredEvent";
@@ -10,8 +11,10 @@ import { TransactionForwardingAttemptedEvent } from "@/components/TransactionFor
 import { TransactionReceivedEvent } from "@/components/TransactionReceivedEvent";
 import { EnvelopeDeliveryAttemptedEvent } from "@/components/EnvelopeDeliveryAttemptedEvent";
 import { EnvelopeMessage } from "@/components/EnvelopeMessage";
-import { type Hex } from "viem";
+import { formatEther, formatGwei, type Hex } from "viem";
 import { cn } from "@/utils/cn";
+
+const SKIPPED_STATUS_TIMEOUT_HOURS = 10;
 
 const EnvelopeDetailPage = async ({
   params,
@@ -48,6 +51,27 @@ const EnvelopeDetailPage = async ({
         index ===
         self.findIndex((e) => e.bridge_adapter === event.bridge_adapter),
     );
+
+    const txHashes = forwardingAttemptEvents.map(
+      (event) => event.transaction_hash,
+    );
+    const uniqueTxHashes = txHashes.filter(
+      (value, index, self) => self.indexOf(value) === index,
+    );
+
+    const bridgingCosts = await api.transactions.getTransactionCosts.query({
+      txHashes: uniqueTxHashes,
+    });
+    const totalBridgingCostsUSD = bridgingCosts
+      .reduce((acc, cost) => acc + cost.value_usd!, 0)
+      .toFixed(2);
+
+    const gasCosts = await api.transactions.getGasCosts.query({
+      txHashes: uniqueTxHashes,
+    });
+    const totalGasCostsUSD = gasCosts
+      .reduce((acc, cost) => acc + cost.transaction_fee_usd!, 0)
+      .toFixed(2);
 
     return (
       <>
@@ -175,11 +199,14 @@ const EnvelopeDetailPage = async ({
                     let status = "Failed";
 
                     const registeredAt = new Date(envelope.registered_at!);
-                    const oneHourAgo = new Date();
-                    oneHourAgo.setHours(oneHourAgo.getHours() - 1);
+                    const timeBeforeTimeout = new Date();
+                    timeBeforeTimeout.setHours(
+                      timeBeforeTimeout.getHours() -
+                        SKIPPED_STATUS_TIMEOUT_HOURS,
+                    );
 
                     if (
-                      registeredAt > oneHourAgo &&
+                      registeredAt > timeBeforeTimeout &&
                       !isDelivered &&
                       !isDestinationAdapterMatch
                     ) {
@@ -229,6 +256,131 @@ const EnvelopeDetailPage = async ({
             )}
           </div>
         </Box>
+        {(gasCosts.length > 0 || bridgingCosts.length > 0) && (
+          <Box>
+            <div className="grid gap-4 px-4 py-6 sm:px-6 md:grid-cols-2">
+              <div>
+                <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider">
+                  Transaction costs
+                </h2>
+                <div className="mb-3 text-2xl font-semibold text-brand-900">
+                  {totalGasCostsUSD} $
+                </div>
+                {gasCosts.length > 0 &&
+                  gasCosts.map((cost) => (
+                    <div
+                      className="flex flex-col gap-2"
+                      key={cost.transaction_fee}
+                    >
+                      <div className="text-sm">
+                        Transaction fee:
+                        <Tooltip
+                          value={`Price on TXN date: ${cost.transaction_fee_usd?.toFixed(
+                            2,
+                          )}$`}
+                        >
+                          <div className="ml-2 inline-block rounded bg-brand-300 px-1 py-0.5 font-mono text-xs uppercase text-brand-900">
+                            {formatEther(BigInt(cost.transaction_fee!))}
+                            <span className="ml-1 font-semibold opacity-40">
+                              {cost.token_symbol}
+                            </span>
+                          </div>
+                        </Tooltip>
+                      </div>
+                      <div className="text-sm">
+                        Gas price:
+                        <div className="ml-2 inline-block rounded bg-brand-300 px-1 py-0.5 font-mono text-xs uppercase text-brand-900">
+                          {formatGwei(BigInt(cost.gas_price!))}
+                          <span className="ml-1 font-semibold opacity-40">
+                            Gwei
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-sm">
+                        <span className="uppercase">{cost.token_symbol}</span>{" "}
+                        price on TXN date:
+                        <div className="ml-2 inline-block rounded bg-brand-300 px-1 py-0.5 font-mono text-xs uppercase text-brand-900">
+                          {cost.token_usd_price?.toFixed(2)}
+                          <span className="ml-1 font-semibold opacity-40">
+                            $
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+              <div>
+                <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider">
+                  Bridging costs
+                </h2>
+                <div className="mb-3 text-2xl font-semibold text-brand-900">
+                  {totalBridgingCostsUSD} $
+                </div>
+                {bridgingCosts.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    {bridgingCosts.map((cost) => (
+                      <div
+                        className="flex flex-wrap items-center gap-2"
+                        key={cost.value}
+                      >
+                        <ExplorerLink
+                          type="address"
+                          value={cost.from}
+                          chainId={cost.chain_id!}
+                          tiny
+                        />
+                        <svg
+                          className="h-4 w-4 text-brand-500"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="1.5"
+                            d="M13.75 6.75L19.25 12L13.75 17.25"
+                          ></path>
+                          <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="1.5"
+                            d="M19 12H4.75"
+                          ></path>
+                        </svg>
+                        <ExplorerLink
+                          type="address"
+                          value={cost.to}
+                          chainId={cost.chain_id!}
+                          tiny
+                        />
+                        <Tooltip
+                          value={`Price on TXN date: ${cost.value_usd?.toFixed(
+                            2,
+                          )} $`}
+                        >
+                          <div className="rounded bg-brand-300 px-1 py-0.5 font-mono text-xs uppercase text-brand-900">
+                            {formatEther(BigInt(cost.value!))}
+                            <span className="ml-1 font-semibold opacity-40">
+                              {cost.token_symbol}
+                            </span>
+                          </div>
+                        </Tooltip>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="px-4 pb-6 text-xs text-brand-500 sm:px-6">
+              Price data provided by{" "}
+              <a href="https://www.coingecko.com/en/api" className="underline">
+                CoinGecko API
+              </a>
+            </div>
+          </Box>
+        )}
         {registeredEvents.map((event) => (
           <EnvelopeRegisteredEvent
             key={event.transaction_hash + event.log_index}

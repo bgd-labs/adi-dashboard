@@ -68,6 +68,9 @@ export type Database = {
           chain_name_alias: string | null
           created_block: number
           last_scanned_block: number | null
+          native_token_name: string | null
+          native_token_symbol: string | null
+          quicknode_rpc_url: string | null
           rpc_block_limit: number
           rpc_urls: string[] | null
         }
@@ -77,6 +80,9 @@ export type Database = {
           chain_name_alias?: string | null
           created_block?: number
           last_scanned_block?: number | null
+          native_token_name?: string | null
+          native_token_symbol?: string | null
+          quicknode_rpc_url?: string | null
           rpc_block_limit?: number
           rpc_urls?: string[] | null
         }
@@ -86,6 +92,9 @@ export type Database = {
           chain_name_alias?: string | null
           created_block?: number
           last_scanned_block?: number | null
+          native_token_name?: string | null
+          native_token_symbol?: string | null
+          quicknode_rpc_url?: string | null
           rpc_block_limit?: number
           rpc_urls?: string[] | null
         }
@@ -266,6 +275,53 @@ export type Database = {
           }
         ]
       }
+      TransactionCosts: {
+        Row: {
+          chain_id: number | null
+          from: string
+          to: string
+          token_address: string | null
+          token_name: string | null
+          token_symbol: string | null
+          token_usd_price: number | null
+          transaction_hash: string
+          value: number | null
+          value_usd: number | null
+        }
+        Insert: {
+          chain_id?: number | null
+          from: string
+          to: string
+          token_address?: string | null
+          token_name?: string | null
+          token_symbol?: string | null
+          token_usd_price?: number | null
+          transaction_hash: string
+          value?: number | null
+          value_usd?: number | null
+        }
+        Update: {
+          chain_id?: number | null
+          from?: string
+          to?: string
+          token_address?: string | null
+          token_name?: string | null
+          token_symbol?: string | null
+          token_usd_price?: number | null
+          transaction_hash?: string
+          value?: number | null
+          value_usd?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_TransactionCosts_chain_id_fkey"
+            columns: ["chain_id"]
+            isOneToOne: false
+            referencedRelation: "CrossChainControllers"
+            referencedColumns: ["chain_id"]
+          }
+        ]
+      }
       TransactionForwardingAttempted: {
         Row: {
           adapter_successful: boolean | null
@@ -333,6 +389,47 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "Envelopes"
             referencedColumns: ["id"]
+          }
+        ]
+      }
+      TransactionGasCosts: {
+        Row: {
+          chain_id: number | null
+          gas_price: number | null
+          token_name: string | null
+          token_symbol: string | null
+          token_usd_price: number | null
+          transaction_fee: number | null
+          transaction_fee_usd: number | null
+          transaction_hash: string
+        }
+        Insert: {
+          chain_id?: number | null
+          gas_price?: number | null
+          token_name?: string | null
+          token_symbol?: string | null
+          token_usd_price?: number | null
+          transaction_fee?: number | null
+          transaction_fee_usd?: number | null
+          transaction_hash: string
+        }
+        Update: {
+          chain_id?: number | null
+          gas_price?: number | null
+          token_name?: string | null
+          token_symbol?: string | null
+          token_usd_price?: number | null
+          transaction_fee?: number | null
+          transaction_fee_usd?: number | null
+          transaction_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_TransactionGasCosts_chain_id_fkey"
+            columns: ["chain_id"]
+            isOneToOne: false
+            referencedRelation: "CrossChainControllers"
+            referencedColumns: ["chain_id"]
           }
         ]
       }
@@ -408,7 +505,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_unscanned_transactions_sql: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          adapter_successful: boolean | null
+          block_number: number | null
+          bridge_adapter: string | null
+          chain_id: number | null
+          destination_bridge_adapter: string | null
+          destination_chain_id: number | null
+          encoded_transaction: string | null
+          envelope_id: string | null
+          log_index: number
+          return_data: string | null
+          timestamp: string | null
+          transaction_hash: string
+          transaction_id: string | null
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

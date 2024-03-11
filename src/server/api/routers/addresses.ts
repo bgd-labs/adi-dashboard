@@ -10,7 +10,7 @@ export const addressRouter = createTRPCRouter({
       const { data } = await ctx.supabaseAdmin
         .from("AddressBook")
         .select("name")
-        .eq("address", address)
+        .ilike("address", address)
         .eq("chain_id", chainId)
         .limit(1)
         .single();
@@ -25,7 +25,7 @@ export const addressRouter = createTRPCRouter({
       const { data } = await ctx.supabaseAdmin
         .from("BridgeExplorers")
         .select("explorer_link")
-        .eq("address", address)
+        .ilike("address", address)
         .eq("chain_id", chainId)
         .limit(1)
         .single();
