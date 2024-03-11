@@ -3,6 +3,7 @@ import * as chains from "viem/chains";
 import { ExplorerLinkCopyButton } from "@/components/ExplorerLinkCopyButton";
 import { api } from "@/trpc/server";
 import { cn } from "@/utils/cn";
+import { Tooltip } from "@/components/Tooltip";
 
 export const ExplorerLink = async ({
   type,
@@ -10,12 +11,14 @@ export const ExplorerLink = async ({
   chainId,
   skipAdapter,
   hideLabel,
+  tiny,
 }: {
   type: "tx" | "address";
   value: string;
   chainId: number;
   skipAdapter?: boolean;
   hideLabel?: boolean;
+  tiny?: boolean;
 }) => {
   let label;
 
@@ -36,6 +39,21 @@ export const ExplorerLink = async ({
   }
 
   const [firstEight, lastEight] = [value.slice(0, 8), value.slice(-8)];
+
+  if (tiny) {
+    return (
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+      <Tooltip value={label || "Unknown"}>
+        <a
+          href={url}
+          className="shrink translate-y-[1px] cursor-pointer truncate border-b border-dotted border-transparent font-mono text-xs leading-none opacity-60 hover:border-brand-900 hover:text-brand-900 hover:opacity-100"
+          target="_blank"
+        >
+          {firstEight}...{lastEight}
+        </a>
+      </Tooltip>
+    );
+  }
 
   return (
     <div className="inline-flex items-center">
