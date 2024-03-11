@@ -258,7 +258,7 @@ const EnvelopeDetailPage = async ({
         </Box>
         {(gasCosts.length > 0 || bridgingCosts.length > 0) && (
           <Box>
-            <div className="grid gap-4 px-4 py-2 py-6 sm:px-6 md:grid-cols-2">
+            <div className="grid gap-4 px-4 py-6 sm:px-6 md:grid-cols-2">
               <div>
                 <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider">
                   Transaction costs
@@ -319,7 +319,10 @@ const EnvelopeDetailPage = async ({
                 {bridgingCosts.length > 0 && (
                   <div className="flex flex-col gap-2">
                     {bridgingCosts.map((cost) => (
-                      <div className="flex flex-wrap items-center gap-2" key={cost.value}>
+                      <div
+                        className="flex flex-wrap items-center gap-2"
+                        key={cost.value}
+                      >
                         <ExplorerLink
                           type="address"
                           value={cost.from}
@@ -369,6 +372,12 @@ const EnvelopeDetailPage = async ({
                   </div>
                 )}
               </div>
+            </div>
+            <div className="px-4 pb-6 text-xs text-brand-500 sm:px-6">
+              Price data provided by{" "}
+              <a href="https://www.coingecko.com/en/api" className="underline">
+                CoinGecko API
+              </a>
             </div>
           </Box>
         )}
