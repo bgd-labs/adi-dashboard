@@ -284,8 +284,9 @@ export type Database = {
           token_name: string | null
           token_symbol: string | null
           token_usd_price: number | null
-          tx_hash: string
+          transaction_hash: string
           value: number | null
+          value_usd: number | null
         }
         Insert: {
           chain_id?: number | null
@@ -295,8 +296,9 @@ export type Database = {
           token_name?: string | null
           token_symbol?: string | null
           token_usd_price?: number | null
-          tx_hash: string
+          transaction_hash: string
           value?: number | null
+          value_usd?: number | null
         }
         Update: {
           chain_id?: number | null
@@ -306,8 +308,9 @@ export type Database = {
           token_name?: string | null
           token_symbol?: string | null
           token_usd_price?: number | null
-          tx_hash?: string
+          transaction_hash?: string
           value?: number | null
+          value_usd?: number | null
         }
         Relationships: [
           {
@@ -386,6 +389,47 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "Envelopes"
             referencedColumns: ["id"]
+          }
+        ]
+      }
+      TransactionGasCosts: {
+        Row: {
+          chain_id: number | null
+          gas_price: number | null
+          token_name: string | null
+          token_symbol: string | null
+          token_usd_price: number | null
+          transaction_fee: number | null
+          transaction_fee_usd: number | null
+          transaction_hash: string
+        }
+        Insert: {
+          chain_id?: number | null
+          gas_price?: number | null
+          token_name?: string | null
+          token_symbol?: string | null
+          token_usd_price?: number | null
+          transaction_fee?: number | null
+          transaction_fee_usd?: number | null
+          transaction_hash: string
+        }
+        Update: {
+          chain_id?: number | null
+          gas_price?: number | null
+          token_name?: string | null
+          token_symbol?: string | null
+          token_usd_price?: number | null
+          transaction_fee?: number | null
+          transaction_fee_usd?: number | null
+          transaction_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_TransactionGasCosts_chain_id_fkey"
+            columns: ["chain_id"]
+            isOneToOne: false
+            referencedRelation: "CrossChainControllers"
+            referencedColumns: ["chain_id"]
           }
         ]
       }
