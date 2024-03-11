@@ -19,18 +19,18 @@ export const GET = async (req: Request) => {
 
   for (let i = 0; i < unscannedTxs.length; i++) {
     const pair = unscannedTxs[i];
-    if (!pair) {
+    if (!pair || typeof pair.chain_id !== 'number') {
       return;
     }
     try {
       console.log(
         `${i + 1}/${unscannedTxs.length} `,
         "Calculating transaction costs for:",
-        pair.transaction_hash! as Hash,
-        pair.chain_id!,
+        pair.transaction_hash as Hash,
+        pair.chain_id,
       );
       await calculateTxCosts(
-        pair.transaction_hash! as Hash,
+        pair.transaction_hash as Hash,
         pair.chain_id as number,
       );
     } catch (error) {

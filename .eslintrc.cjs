@@ -27,6 +27,7 @@ const config = {
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-unsafe-assignment": "off",
     "@typescript-eslint/no-unsafe-return": "off",
+    "@typescript-eslint/no-unnecessary-type-assertion": "off",
     "@typescript-eslint/no-misused-promises": [
       "error",
       {
