@@ -297,7 +297,7 @@ const EnvelopeDetailPage = async ({
                         </div>
                       </div>
                       <div className="text-sm">
-                        <span className="capitalize">{cost.token_name}</span>{" "}
+                        <span className="uppercase">{cost.token_symbol}</span>{" "}
                         price on TXN date:
                         <div className="ml-2 inline-block rounded bg-brand-300 px-1 py-0.5 font-mono text-xs uppercase text-brand-900">
                           {cost.token_usd_price?.toFixed(2)}
