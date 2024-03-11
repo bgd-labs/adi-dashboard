@@ -71,8 +71,8 @@ export const getEvents = async ({
               if (client.chain?.id) {
                 await calculateTxCosts(event.transactionHash, client.chain.id);
               }
-            } catch {
-              console.log("Failed to calculate tx costs");
+            } catch(error) {
+              console.log("Failed to calculate tx costs: ", error);
             }
 
             break;
