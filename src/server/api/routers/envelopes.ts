@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { type Hash } from "viem";
 import { decodeEnvelopeMessage } from "@/server/utils/decodeEnvelopeMessage";
+import { getEnvelopeConsensus } from "@/server/utils/getEnvelopeConsensus";
 
 export const envelopesRouter = createTRPCRouter({
   get: publicProcedure
@@ -45,12 +46,15 @@ export const envelopesRouter = createTRPCRouter({
         messageData,
       );
 
+      const envelopeConsensus = getEnvelopeConsensus(envelope);
+
       const envelopeWithDecodedMessage = {
         ...envelope,
         isDelivered,
         isPending,
         message: messageData,
         decodedMessage,
+        ...envelopeConsensus,
       };
 
       return envelopeWithDecodedMessage;
@@ -80,55 +84,6 @@ export const envelopesRouter = createTRPCRouter({
       }
 
       const envelopeWithDeliveryInfo = data.map((envelope) => {
-        const forwardingAttemptsGroupedByTimestamp =
-          envelope.TransactionForwardingAttempted.reduce(
-            (acc: Record<string, number>, curr) => {
-              const timestamp = curr.timestamp;
-              if (!timestamp) return acc;
-
-              if (!acc[timestamp]) {
-                acc[timestamp] = 0;
-              }
-              acc[timestamp]++;
-              return acc;
-            },
-            {},
-          );
-
-        const firstKey = Object.keys(forwardingAttemptsGroupedByTimestamp)[0];
-        const confirmationsTotal =
-          firstKey !== undefined
-            ? forwardingAttemptsGroupedByTimestamp[firstKey]
-            : 0;
-
-        const envelopeConsensus = {
-          skip: envelope.destination_chain_id === envelope.origin_chain_id,
-          is_reached: envelope.EnvelopeDeliveryAttempted.length > 0,
-          confirmations_total: confirmationsTotal,
-        };
-
-        const transactionReceivedGroupedByTxId =
-          envelope.TransactionReceived.reduce(
-            (acc: Record<string, number>, curr) => {
-              const transactionId = curr.transaction_id;
-              if (!transactionId) return acc;
-
-              if (!acc[transactionId]) {
-                acc[transactionId] = 0;
-              }
-              acc[transactionId]++;
-              return acc;
-            },
-            {},
-          );
-
-        const maxConfirmationCount =
-          Object.values(transactionReceivedGroupedByTxId).length > 0
-            ? Math.max(...Object.values(transactionReceivedGroupedByTxId))
-            : 0;
-
-        const envelopeConfirmations = maxConfirmationCount;
-
         const isDelivered =
           envelope.origin_chain_id === envelope.destination_chain_id
             ? envelope.TransactionForwardingAttempted.some(
@@ -154,14 +109,15 @@ export const envelopesRouter = createTRPCRouter({
           messageData,
         );
 
+        const envelopeConsensus = getEnvelopeConsensus(envelope);
+
         return {
           ...envelope,
           message: messageData,
           decodedMessage,
           is_delivered: isDelivered,
           is_pending: isPending,
-          confirmations: envelopeConfirmations,
-          consensus: envelopeConsensus,
+          ...envelopeConsensus,
         };
       });
 
