@@ -29,7 +29,6 @@ export const getEvents = async ({
       console.log(
         `Found ${events.length} events for chain ${client.chain?.id}.`,
       );
-      // Revalidate all paths if new events are found, see if it helps with the stale data
       revalidatePath("/", "layout");
 
       for (const event of events) {

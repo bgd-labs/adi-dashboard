@@ -95,6 +95,7 @@ const EnvelopeDetailPage = async ({
                   <Consensus
                     value={envelope.confirmations}
                     config={envelope.consensus}
+                    hideIfSkipped
                   />
                   <div className="hidden sm:block">
                     <FromTo
