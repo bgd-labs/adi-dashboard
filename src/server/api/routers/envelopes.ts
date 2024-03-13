@@ -9,7 +9,7 @@ export const envelopesRouter = createTRPCRouter({
     .input(z.object({ envelopeId: z.string() }))
     .query(async ({ input, ctx }) => {
       const { envelopeId } = input;
-      const { data: envelope } = await ctx.supabase
+      const { data: envelope } = await ctx.supabaseAdmin
         .from("Envelopes")
         .select(
           `*, TransactionReceived(chain_id, transaction_id), EnvelopeDeliveryAttempted(chain_id, is_delivered), TransactionForwardingAttempted(chain_id, adapter_successful, timestamp)`,
@@ -70,7 +70,7 @@ export const envelopesRouter = createTRPCRouter({
       const { page, pageSize } = input;
       const startIndex = (page - 1) * pageSize;
 
-      const { data, error, count } = await ctx.supabase
+      const { data, error, count } = await ctx.supabaseAdmin
         .from("Envelopes")
         .select(
           `*, TransactionReceived(chain_id, transaction_id), EnvelopeDeliveryAttempted(chain_id, is_delivered), TransactionForwardingAttempted(chain_id, adapter_successful, timestamp)`,
