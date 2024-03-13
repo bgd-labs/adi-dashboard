@@ -25,7 +25,7 @@ export const Consensus = ({
   const isConsensusReached = config.is_reached;
 
   if (config.skip) {
-    return hideIfSkipped ? null : <div className="sm:w-16"></div>;
+    return hideIfSkipped ? null : <div className="sm:w-16 text-center text-brand-300">—</div>;
   }
 
   return (
