@@ -3,15 +3,17 @@ import { notFound } from "next/navigation";
 
 const EnvelopeListPage = async ({
   params,
+  searchParams,
 }: {
   params: { pageNumber: string };
+  searchParams: Record<string, string | undefined>;
 }) => {
   const page = +params.pageNumber;
   if (isNaN(page)) {
     notFound();
   }
 
-  return <EnvelopeList currentPage={page} perPage={15} />;
+  return <EnvelopeList currentPage={page} perPage={15} searchParams={searchParams} />;
 };
 
 export const revalidate = 30;

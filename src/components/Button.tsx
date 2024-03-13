@@ -1,5 +1,8 @@
+"use client";
+
 import { cn } from "@/utils/cn";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 type Props = {
   children: React.ReactNode;
@@ -59,9 +62,21 @@ export const Button = ({
   );
 
   if (href) {
+    const searchParams = useSearchParams();
+
+    const from = searchParams.get("from");
+    const to = searchParams.get("to");
+    
+
     return (
       <Link
-        href={href}
+        href={{
+          pathname: href,
+          query: {
+            from,
+            to,
+          },
+        }}
         scroll={scroll}
         className={cn(
           "outline-offset[4px] group/button relative cursor-pointer border-none p-0 focus:outline-none",
