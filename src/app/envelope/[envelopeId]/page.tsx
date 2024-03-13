@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { EnvelopeIcon } from "@/components/EnvelopeIcon";
 import { CopyValueCard } from "@/components/CopyValueCard";
 import { FromTo } from "@/components/FromTo";
+import { Consensus } from "@/components/Consensus";
+import { Timestamp } from "@/components/Timestamp";
 import { ExplorerLink } from "@/components/ExplorerLink";
 import { Tooltip } from "@/components/Tooltip";
 import { api } from "@/trpc/server";
@@ -83,19 +85,34 @@ const EnvelopeDetailPage = async ({
                 <h2 className="mb-1 pl-0.5 text-xs font-semibold uppercase tracking-wider">
                   Envelope ID
                 </h2>
-                <div className="flex hidden xl:block">
-                  <CopyValueCard value={params.envelopeId} isBig />
-                </div>
-                <div className="xl:hidden">
-                  <CopyValueCard value={params.envelopeId} isBig isShort />
-                </div>
+                <CopyValueCard value={params.envelopeId} isBig isShort />
               </div>
-              <div className="ml-auto">
-                <FromTo
-                  from={envelope.origin_chain_id}
-                  to={envelope.destination_chain_id}
-                  isBig
-                />
+              <div className="ml-auto text-right">
+                <div className="flex items-center justify-end gap-5">
+                  <div className="hidden md:block">
+                    <Timestamp value={envelope.registered_at} />
+                  </div>
+                  <Consensus
+                    value={envelope.confirmations}
+                    config={envelope.consensus}
+                  />
+                  <div className="hidden sm:block">
+                    <FromTo
+                      from={envelope.origin_chain_id}
+                      to={envelope.destination_chain_id}
+                      isBig
+                    />
+                  </div>
+                  <div className="sm:hidden">
+                    <FromTo
+                      from={envelope.origin_chain_id}
+                      to={envelope.destination_chain_id}
+                    />
+                  </div>
+                </div>
+                <div className="mt-2 md:hidden">
+                  <Timestamp value={envelope.registered_at} />
+                </div>
               </div>
             </div>
             <div className="mt-4 sm:hidden">
