@@ -4,9 +4,11 @@ import { type RouterOutput } from "@/server/api/types";
 export const Consensus = ({
   value,
   config,
+  hideIfSkipped,
 }: {
   value: number;
   config?: RouterOutput["envelopes"]["getAll"]["data"][0]["consensus"];
+  hideIfSkipped?: boolean;
 }) => {
   if (!config?.confirmations_total) {
     return (
@@ -23,15 +25,19 @@ export const Consensus = ({
   const isConsensusReached = config.is_reached;
 
   if (config.skip) {
-    return <div className="sm:w-16"></div>;
+    return hideIfSkipped ? null : <div className="sm:w-16"></div>;
   }
 
   return (
     <div
-      className={cn("sm:rounded-full sm:w-16 sm:border sm:px-2 sm:py-1 text-center text-sm font-semibold", {
-        ["sm:border-green-100 sm:bg-green-50 text-green-500"]: isConsensusReached,
-        ["sm:border-red-200 sm:bg-red-100 text-red-500"]: !isConsensusReached,
-      })}
+      className={cn(
+        "text-center text-sm font-semibold sm:w-16 sm:rounded-full sm:border sm:px-2 sm:py-1",
+        {
+          ["text-green-500 sm:border-green-100 sm:bg-green-50"]:
+            isConsensusReached,
+          ["text-red-500 sm:border-red-200 sm:bg-red-100"]: !isConsensusReached,
+        },
+      )}
     >
       {value}
       <span className="mx-1 font-normal">/</span>
