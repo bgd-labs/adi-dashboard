@@ -431,3 +431,5 @@ const EnvelopeDetailPage = async ({
 };
 
 export default EnvelopeDetailPage;
+
+export const revalidate = 30;
