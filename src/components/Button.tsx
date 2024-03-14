@@ -47,7 +47,7 @@ export const Button = ({
       </span>
       <span
         className={cn(
-          "will-change[transform] ease-cubic-bezier[.3,.7,.4,1] relative block -translate-y-1 translate-x-1 transform select-none border border-brand-900 bg-white px-4 py-1 text-center text-brand-900 transition-all group-active/button:-translate-y-0 group-active/button:translate-x-0 hover:bg-brand-100",
+          "will-change[transform] ease-cubic-bezier[.3,.7,.4,1] relative block -translate-y-1 translate-x-1 transform select-none border border-brand-900 bg-white px-4 py-1 text-center text-brand-900 transition-all hover:bg-brand-100 group-active/button:-translate-y-0 group-active/button:translate-x-0",
           className,
           {
             ["translate-x-0 translate-y-0 border-brand-500 text-brand-500"]:
@@ -66,16 +66,16 @@ export const Button = ({
 
     const from = searchParams.get("from");
     const to = searchParams.get("to");
-    
+
+    const query: Record<string, string | undefined> = {};
+    if (from) query.from = from;
+    if (to) query.to = to;
 
     return (
       <Link
         href={{
           pathname: href,
-          query: {
-            from,
-            to,
-          },
+          query,
         }}
         scroll={scroll}
         className={cn(

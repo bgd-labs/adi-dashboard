@@ -11,6 +11,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectSeparator,
 } from "./Select";
 
 export const EnvelopeFilters = ({
@@ -18,7 +19,7 @@ export const EnvelopeFilters = ({
   from: fromInitial,
   to: toInitial,
 }: {
-  chains: RouterOutput['controllers']['getChains'];
+  chains: RouterOutput["controllers"]["getChains"];
   from?: string;
   to?: string;
 }) => {
@@ -66,7 +67,7 @@ export const EnvelopeFilters = ({
   };
 
   return (
-    <Box className="flex items-center gap-2 bg-brand-100 px-6 py-4">
+    <Box className="flex items-center justify-start gap-2 bg-brand-300 px-6 py-3">
       <Select onValueChange={handleFromValueChange} value={from}>
         <SelectTrigger className="w-[180px] bg-white">
           <SelectValue placeholder="From" />
@@ -77,17 +78,20 @@ export const EnvelopeFilters = ({
               <span className="text-brand-500">Any chain</span>
             </div>
           </SelectItem>
+          <SelectSeparator />
           {chains.map((chain) => (
             <SelectItem key={chain.chain_id} value={String(chain.chain_id)}>
               <div className="flex items-center gap-2">
                 <ChainIcon chainId={chain.chain_id} />
-                <span>{chain.chain_name_alias}</span>
+                <span className="text-sm font-semibold">
+                  {chain.chain_name_alias}
+                </span>
               </div>
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24">
+      <svg className="h-6 w-6 text-brand-500" fill="none" viewBox="0 0 24 24">
         <path
           stroke="currentColor"
           strokeLinecap="round"
@@ -113,11 +117,14 @@ export const EnvelopeFilters = ({
               <span className="text-brand-500">Any chain</span>
             </div>
           </SelectItem>
+          <SelectSeparator />
           {chains.map((chain) => (
             <SelectItem key={chain.chain_id} value={String(chain.chain_id)}>
               <div className="flex items-center gap-2">
                 <ChainIcon chainId={chain.chain_id} />
-                <span>{chain.chain_name_alias}</span>
+                <span className="text-sm font-semibold">
+                  {chain.chain_name_alias}
+                </span>
               </div>
             </SelectItem>
           ))}
