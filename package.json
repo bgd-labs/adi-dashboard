@@ -13,6 +13,8 @@
     "@dicebear/collection": "^7.0.1",
     "@dicebear/core": "^7.0.1",
     "@quicknode/sdk": "^2.1.3",
+    "@radix-ui/react-icons": "^1.3.0",
+    "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@resvg/resvg-js": "^2.6.0",
     "@slack/webhook": "^7.0.2",
@@ -31,6 +33,7 @@
     "sharp": "^0.33.1",
     "superjson": "^2.2.1",
     "tailwind-merge": "^2.1.0",
+    "tailwindcss-animate": "^1.0.7",
     "viem": "^2.7.15",
     "zod": "^3.22.4"
   },

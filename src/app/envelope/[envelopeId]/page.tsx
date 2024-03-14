@@ -13,6 +13,7 @@ import { TransactionForwardingAttemptedEvent } from "@/components/TransactionFor
 import { TransactionReceivedEvent } from "@/components/TransactionReceivedEvent";
 import { EnvelopeDeliveryAttemptedEvent } from "@/components/EnvelopeDeliveryAttemptedEvent";
 import { EnvelopeMessage } from "@/components/EnvelopeMessage";
+import { truncateToTwoSignificantDigits } from "@/utils/truncateToTwoSignificantDigits";
 import { formatEther, formatGwei, type Hex } from "viem";
 import { cn } from "@/utils/cn";
 
@@ -293,12 +294,16 @@ const EnvelopeDetailPage = async ({
                       <div className="text-sm">
                         Transaction fee:
                         <Tooltip
-                          value={`Price on TXN date: ${cost.transaction_fee_usd?.toFixed(
+                          value={`${formatEther(
+                            BigInt(cost.transaction_fee!),
+                          )} ${cost.token_symbol?.toUpperCase()} ${cost.transaction_fee_usd?.toFixed(
                             2,
                           )}$`}
                         >
                           <div className="ml-2 inline-block rounded bg-brand-300 px-1 py-0.5 font-mono text-xs uppercase text-brand-900">
-                            {formatEther(BigInt(cost.transaction_fee!))}
+                            {truncateToTwoSignificantDigits(
+                              formatEther(BigInt(cost.transaction_fee!)),
+                            )}
                             <span className="ml-1 font-semibold opacity-40">
                               {cost.token_symbol}
                             </span>
@@ -307,12 +312,18 @@ const EnvelopeDetailPage = async ({
                       </div>
                       <div className="text-sm">
                         Gas price:
-                        <div className="ml-2 inline-block rounded bg-brand-300 px-1 py-0.5 font-mono text-xs uppercase text-brand-900">
-                          {formatGwei(BigInt(cost.gas_price!))}
-                          <span className="ml-1 font-semibold opacity-40">
-                            Gwei
-                          </span>
-                        </div>
+                        <Tooltip
+                          value={`${formatGwei(BigInt(cost.gas_price!))} GWEI`}
+                        >
+                          <div className="ml-2 inline-block rounded bg-brand-300 px-1 py-0.5 font-mono text-xs uppercase text-brand-900">
+                            {truncateToTwoSignificantDigits(
+                              formatGwei(BigInt(cost.gas_price!)),
+                            )}
+                            <span className="ml-1 font-semibold opacity-40">
+                              Gwei
+                            </span>
+                          </div>
+                        </Tooltip>
                       </div>
                       <div className="text-sm">
                         <span className="uppercase">{cost.token_symbol}</span>{" "}
@@ -374,12 +385,16 @@ const EnvelopeDetailPage = async ({
                           tiny
                         />
                         <Tooltip
-                          value={`Price on TXN date: ${cost.value_usd?.toFixed(
+                          value={`${formatEther(
+                            BigInt(cost.value!),
+                          )} ${cost.token_symbol?.toUpperCase()} - ${cost.value_usd?.toFixed(
                             2,
                           )} $`}
                         >
                           <div className="rounded bg-brand-300 px-1 py-0.5 font-mono text-xs uppercase text-brand-900">
-                            {formatEther(BigInt(cost.value!))}
+                            {truncateToTwoSignificantDigits(
+                              formatEther(BigInt(cost.value!)),
+                            )}
                             <span className="ml-1 font-semibold opacity-40">
                               {cost.token_symbol}
                             </span>

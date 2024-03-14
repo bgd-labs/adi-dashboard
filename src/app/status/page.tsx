@@ -1,4 +1,4 @@
-import { supabaseAdmin } from "@/server/api/supabase/server";
+import { api } from "@/trpc/server";
 import { ScanChart } from "../../components/ScanChart";
 import { getClients } from "@/server/eventCollection/getClients";
 import { getCrossChainControllers } from "@/server/eventCollection/getCrossChainControllers";
@@ -42,10 +42,9 @@ const StatusPage = async () => {
       const lastScannedBlock = crossChainController.last_scanned_block!;
       const firstBlockInRange = crossChainController.created_block;
 
-      const { data: retries } = await supabaseAdmin
-        .from("Retries")
-        .select("*")
-        .eq("chain_id", crossChainController.chain_id);
+      const retries = await api.controllers.getRetries.query({
+        chainId: crossChainController.chain_id,
+      });
 
       const ranges = retries
         ? prepareBlockIntervals(
