@@ -66,10 +66,14 @@ export const Button = ({
 
     const from = searchParams.get("from");
     const to = searchParams.get("to");
+    const proposalId = searchParams.get("proposalId");
+    const payloadId = searchParams.get("payloadId");
 
     const query: Record<string, string | undefined> = {};
     if (from) query.from = from;
     if (to) query.to = to;
+    if (proposalId) query.proposalId = proposalId;
+    if (payloadId) query.payloadId = payloadId;
 
     return (
       <Link
