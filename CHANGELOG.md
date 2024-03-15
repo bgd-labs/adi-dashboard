@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/bgd-labs/adi-dashboard/compare/v1.1.0...v1.2.0) (2024-03-15)
+
+
+### Features
+
+* add basic filtering from/to ([794fd2a](https://github.com/bgd-labs/adi-dashboard/commit/794fd2ad6bc7a45d9466b1236062c7cee37f8717))
+* add consensus and timestamp info to details ([8404062](https://github.com/bgd-labs/adi-dashboard/commit/8404062e3c8c4dac38c39c4e3be7debe8b591e63))
+* add delivery status in details ([6e438a8](https://github.com/bgd-labs/adi-dashboard/commit/6e438a846425a97df82ea38cbeaf756188c0e3e9))
+* add Envelope filters ([d7ba6e5](https://github.com/bgd-labs/adi-dashboard/commit/d7ba6e547b7b1851581bc0cf6ec31fec5fce512c))
+* add fetch revalidation ([0a8557a](https://github.com/bgd-labs/adi-dashboard/commit/0a8557ab35c6716eb5d096358f461425fe2e36a8))
+* add filtering by payloadId and proposalId ([e051b67](https://github.com/bgd-labs/adi-dashboard/commit/e051b67ded084b3b69866d94c8e784b964cfdba3))
+* add new filter layout ([cf81448](https://github.com/bgd-labs/adi-dashboard/commit/cf81448ea3abb1d869b044835d66d217e91083b3))
+* add placeholder to Consensus ([a4d98d7](https://github.com/bgd-labs/adi-dashboard/commit/a4d98d78deaeaaa2b935013da426cddff781826d))
+* debounce values ([8f501f8](https://github.com/bgd-labs/adi-dashboard/commit/8f501f8ed98aa270b69d98aeb82872a921bb1b2b))
+* handle input change ([ca4b624](https://github.com/bgd-labs/adi-dashboard/commit/ca4b6245f57a1fbef1e86411641e8322f1d1129d))
+* store proposal/payload info in DB ([0110ad4](https://github.com/bgd-labs/adi-dashboard/commit/0110ad4f3d7522109a5e97353cd99d18c13f87be))
+* truncate to two significant digits ([69cc45c](https://github.com/bgd-labs/adi-dashboard/commit/69cc45c4bc5d2d2b0cf003d943fa4bd10423234d))
+* update skeleton ([52f2ae1](https://github.com/bgd-labs/adi-dashboard/commit/52f2ae123484eada3d498cfc8708024d851fc7ae))
+
+
+### Bug Fixes
+
+* don't add a placeholder on event detail ([d52171b](https://github.com/bgd-labs/adi-dashboard/commit/d52171bad32365915da6a61605954afcac1b448b))
+* ensure IDs are numbers ([419df41](https://github.com/bgd-labs/adi-dashboard/commit/419df414e3fe1bcc9be21a5f705f885ff2fa837f))
+* fix linting errors ([806efb4](https://github.com/bgd-labs/adi-dashboard/commit/806efb4d683e12f5a3d958054d1685e5337871cf))
+* print error ([3a47694](https://github.com/bgd-labs/adi-dashboard/commit/3a4769446cef600052bd38c4b2c9c5489165d544))
+* use supabaseAdmin ([f46db8f](https://github.com/bgd-labs/adi-dashboard/commit/f46db8f93146965ea33c1c6e8a57048cc2272665))
+* wrap costs calc in try/catch ([23a8b0e](https://github.com/bgd-labs/adi-dashboard/commit/23a8b0e022c7f47e3c97a3425b3a5f9565912652))
+
 ## 1.1.0 (2024-03-11)
 
 
