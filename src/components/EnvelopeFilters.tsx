@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useDebounce } from "@/hooks/useDebounce";
 import { Box } from "./Box";
 import { ChainIcon } from "./ChainIcon";
 import { type RouterOutput } from "@/server/api/types";
@@ -34,8 +35,15 @@ export const EnvelopeFilters = ({
 
   const [from, setFrom] = useState<string>(fromInitial ?? "any");
   const [to, setTo] = useState<string | undefined>(toInitial ?? "any");
-  const [proposalId, setProposalId] = useState<string | undefined>(proposalIdInitial);
-  const [payloadId, setPayloadId] = useState<string | undefined>(payloadIdInitial);
+  const [proposalId, setProposalId] = useState<string | undefined>(
+    proposalIdInitial,
+  );
+  const [payloadId, setPayloadId] = useState<string | undefined>(
+    payloadIdInitial,
+  );
+
+  const debouncedProposalId = useDebounce(proposalId, 300);
+  const debouncedPayloadId = useDebounce(payloadId, 300);
 
   const createQueryString = useCallback(
     (name: string, value: string | undefined) => {
@@ -76,26 +84,34 @@ export const EnvelopeFilters = ({
   const handleProposalIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setProposalId(value);
-
-    if (value === "") {
-      router.push(pathname + "?" + createQueryString("proposalId", undefined));
-      return;
-    }
-
-    router.push(pathname + "?" + createQueryString("proposalId", value));
   };
 
   const handlePayloadIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setPayloadId(value);
+  };
 
-    if (value === "") {
+  useEffect(() => {
+    if (debouncedProposalId === "") {
+      router.push(pathname + "?" + createQueryString("proposalId", undefined));
+      return;
+    }
+
+    router.push(
+      pathname + "?" + createQueryString("proposalId", debouncedProposalId),
+    );
+  }, [debouncedProposalId, router, pathname, createQueryString]);
+
+  useEffect(() => {
+    if (debouncedPayloadId === "") {
       router.push(pathname + "?" + createQueryString("payloadId", undefined));
       return;
     }
 
-    router.push(pathname + "?" + createQueryString("payloadId", value));
-  };
+    router.push(
+      pathname + "?" + createQueryString("payloadId", debouncedPayloadId),
+    );
+  }, [debouncedPayloadId, router, pathname, createQueryString]);
 
   return (
     <Box className="flex flex-col items-center justify-between gap-3 bg-brand-300 px-3 py-3 sm:justify-center md:flex-row md:gap-6 md:px-6">
