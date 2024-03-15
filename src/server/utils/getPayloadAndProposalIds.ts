@@ -22,7 +22,7 @@ export const getPayloadAndProposalIds = async (
         decodedMessage?.data.payloadId,
       );
     }
-  
+
     if (decodedMessage?.data?.proposalId) {
       proposal_id = decodedMessage?.data.proposalId;
     }
@@ -30,5 +30,8 @@ export const getPayloadAndProposalIds = async (
     console.error("Error getting payload and proposal ids", e);
   }
 
-  return [proposal_id, payload_id];
+  return [
+    proposal_id ? Number(proposal_id) : null,
+    payload_id ? Number(payload_id) : null,
+  ];
 };
