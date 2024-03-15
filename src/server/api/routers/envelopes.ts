@@ -50,8 +50,8 @@ export const envelopesRouter = createTRPCRouter({
 
       const envelopeWithDecodedMessage = {
         ...envelope,
-        isDelivered,
-        isPending,
+        is_delivered: isDelivered,
+        is_pending: isPending,
         message: messageData,
         decodedMessage,
         ...envelopeConsensus,
@@ -80,15 +80,6 @@ export const envelopesRouter = createTRPCRouter({
         )
         .range(startIndex, startIndex + pageSize - 1)
         .order("registered_at", { ascending: false });
-
-      // const { data, error, count } = await ctx.supabaseAdmin
-      //   .from("Envelopes")
-      //   .select(
-      //     `*, TransactionReceived(chain_id, transaction_id), EnvelopeDeliveryAttempted(chain_id, is_delivered), TransactionForwardingAttempted(chain_id, adapter_successful, timestamp)`,
-      //     { count: "exact" },
-      //   )
-      //   .range(startIndex, startIndex + pageSize - 1)
-      //   .order("registered_at", { ascending: false });
 
       if (input.from) {
         query = query.filter('origin_chain_id', 'eq', input.from);
