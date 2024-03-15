@@ -112,7 +112,9 @@ CREATE TABLE IF NOT EXISTS "public"."Envelopes" (
     "origin_chain_id" bigint,
     "destination_chain_id" bigint,
     "nonce" bigint,
-    "registered_at" timestamp with time zone
+    "registered_at" timestamp with time zone,
+    "proposal_id" bigint,
+    "payload_id" bigint
 );
 
 ALTER TABLE "public"."Envelopes" OWNER TO "postgres";
@@ -272,7 +274,7 @@ CREATE POLICY "Enable read access for all users" ON "public"."AddressBook" FOR S
 
 CREATE POLICY "Enable read access for all users" ON "public"."BridgeExplorers" FOR SELECT USING (true);
 
-CREATE POLICY "Enable read access for all users" ON "public"."CrossChainControllers" FOR SELECT USING (true);
+CREATE POLICY "Enable read access for all users" ON "public"."CrossChainControllers" FOR SELECT TO "service_role" USING (true);
 
 CREATE POLICY "Enable read access for all users" ON "public"."EnvelopeDeliveryAttempted" FOR SELECT USING (true);
 
