@@ -197,6 +197,8 @@ export type Database = {
           nonce: number | null
           origin: string | null
           origin_chain_id: number | null
+          payload_id: number | null
+          proposal_id: number | null
           registered_at: string | null
         }
         Insert: {
@@ -208,6 +210,8 @@ export type Database = {
           nonce?: number | null
           origin?: string | null
           origin_chain_id?: number | null
+          payload_id?: number | null
+          proposal_id?: number | null
           registered_at?: string | null
         }
         Update: {
@@ -219,6 +223,8 @@ export type Database = {
           nonce?: number | null
           origin?: string | null
           origin_chain_id?: number | null
+          payload_id?: number | null
+          proposal_id?: number | null
           registered_at?: string | null
         }
         Relationships: []

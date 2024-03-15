@@ -50,8 +50,8 @@ export const envelopesRouter = createTRPCRouter({
 
       const envelopeWithDecodedMessage = {
         ...envelope,
-        isDelivered,
-        isPending,
+        is_delivered: isDelivered,
+        is_pending: isPending,
         message: messageData,
         decodedMessage,
         ...envelopeConsensus,
@@ -66,6 +66,8 @@ export const envelopesRouter = createTRPCRouter({
         pageSize: z.number().int().positive(),
         from: z.string().optional(),
         to: z.string().optional(),
+        proposalId: z.string().optional(),
+        payloadId: z.string().optional(),
       }),
     )
     .query(async ({ input, ctx }) => {
@@ -81,21 +83,20 @@ export const envelopesRouter = createTRPCRouter({
         .range(startIndex, startIndex + pageSize - 1)
         .order("registered_at", { ascending: false });
 
-      // const { data, error, count } = await ctx.supabaseAdmin
-      //   .from("Envelopes")
-      //   .select(
-      //     `*, TransactionReceived(chain_id, transaction_id), EnvelopeDeliveryAttempted(chain_id, is_delivered), TransactionForwardingAttempted(chain_id, adapter_successful, timestamp)`,
-      //     { count: "exact" },
-      //   )
-      //   .range(startIndex, startIndex + pageSize - 1)
-      //   .order("registered_at", { ascending: false });
-
       if (input.from) {
         query = query.filter('origin_chain_id', 'eq', input.from);
       }
     
       if (input.to) {
         query = query.filter('destination_chain_id', 'eq', input.to);
+      }
+
+      if (input.proposalId) {
+        query = query.filter('proposal_id', 'eq', input.proposalId);
+      }
+
+      if (input.payloadId) {
+        query = query.filter('payload_id', 'eq', input.payloadId);
       }
 
       const { data, error, count } = await query;

@@ -18,6 +18,8 @@ export const EnvelopeList = async ({
     page: currentPage,
     from: searchParams?.from,
     to: searchParams?.to,
+    proposalId: searchParams?.proposalId,
+    payloadId: searchParams?.payloadId,
   });
 
   const chains = await api.controllers.getChains.query();
@@ -28,6 +30,8 @@ export const EnvelopeList = async ({
         <EnvelopeFilters
           from={searchParams?.from}
           to={searchParams?.to}
+          proposalId={searchParams?.proposalId}
+          payloadId={searchParams?.payloadId}
           chains={chains}
         />
         <Box>
@@ -47,6 +51,8 @@ export const EnvelopeList = async ({
       <EnvelopeFilters
         from={searchParams?.from}
         to={searchParams?.to}
+        proposalId={searchParams?.proposalId}
+        payloadId={searchParams?.payloadId}
         chains={chains}
       />
       {envelopes.map((envelope) => (

@@ -98,6 +98,52 @@ const EnvelopeDetailPage = async ({
                     config={envelope.consensus}
                     hideIfSkipped
                   />
+                  <div>
+                    {envelope.is_delivered && (
+                      <svg
+                        className="h-5 w-5 text-green-500"
+                        viewBox="0 0 50 50"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M12 25.6939L20.2344 35L43 11"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                      </svg>
+                    )}
+                    {!envelope.is_delivered && !envelope.is_pending && (
+                      <svg
+                        className="h-5 w-5 text-red-500"
+                        viewBox="0 0 50 50"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M27.6142 24.8615L38.7832 13.0869L35.5289 10L24.523 21.6026L13.5171 10L10.2628 13.0869L21.4318 24.8615L10 36.9131L13.2543 40L24.523 28.1203L35.7917 40L39.046 36.9131L27.6142 24.8615Z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    )}
+                    {!envelope.is_delivered && envelope.is_pending && (
+                      <svg
+                        className="h-5 w-5 text-brand-500"
+                        viewBox="0 0 50 50"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M25 3C12.8716 3 3 12.8716 3 25C3 37.1284 12.8716 47 25 47C37.1284 47 47 37.1284 47 25C47 12.8716 37.1284 3 25 3ZM25 6.68715C35.1357 6.68715 43.3129 14.8643 43.3129 25C43.3129 35.1357 35.1357 43.3129 25 43.3129C14.8643 43.3129 6.68715 35.1357 6.68715 25C6.68715 14.8643 14.8643 6.68715 25 6.68715Z"
+                          fill="currentColor"
+                        />
+                        <path
+                          d="M26.8407 13L22.4554 13.0501L22.5884 25.3934L17 29.2365L19.4325 33L27 27.7964L26.8407 13Z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    )}
+                  </div>
                   <div className="hidden sm:block">
                     <FromTo
                       from={envelope.origin_chain_id}
