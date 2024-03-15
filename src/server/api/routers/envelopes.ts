@@ -66,6 +66,8 @@ export const envelopesRouter = createTRPCRouter({
         pageSize: z.number().int().positive(),
         from: z.string().optional(),
         to: z.string().optional(),
+        proposalId: z.string().optional(),
+        payloadId: z.string().optional(),
       }),
     )
     .query(async ({ input, ctx }) => {
@@ -87,6 +89,14 @@ export const envelopesRouter = createTRPCRouter({
     
       if (input.to) {
         query = query.filter('destination_chain_id', 'eq', input.to);
+      }
+
+      if (input.proposalId) {
+        query = query.filter('proposal_id', 'eq', input.proposalId);
+      }
+
+      if (input.payloadId) {
+        query = query.filter('payload_id', 'eq', input.payloadId);
       }
 
       const { data, error, count } = await query;

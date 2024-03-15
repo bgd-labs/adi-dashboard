@@ -18,6 +18,8 @@ export const EnvelopeList = async ({
     page: currentPage,
     from: searchParams?.from,
     to: searchParams?.to,
+    proposalId: searchParams?.proposalId,
+    payloadId: searchParams?.payloadId,
   });
 
   const chains = await api.controllers.getChains.query();

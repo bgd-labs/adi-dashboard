@@ -90,7 +90,7 @@ export const EnvelopeFilters = ({
     setPayloadId(value);
 
     if (value === "") {
-      router.push(pathname + "?" + createQueryString("proposalId", undefined));
+      router.push(pathname + "?" + createQueryString("payloadId", undefined));
       return;
     }
 
