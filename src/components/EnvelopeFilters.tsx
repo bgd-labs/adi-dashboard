@@ -19,10 +19,14 @@ export const EnvelopeFilters = ({
   chains,
   from: fromInitial,
   to: toInitial,
+  proposalId: proposalIdInitial,
+  payloadId: payloadIdInitial,
 }: {
   chains: RouterOutput["controllers"]["getChains"];
   from?: string;
   to?: string;
+  proposalId?: string;
+  payloadId?: string;
 }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -30,6 +34,8 @@ export const EnvelopeFilters = ({
 
   const [from, setFrom] = useState<string>(fromInitial ?? "any");
   const [to, setTo] = useState<string | undefined>(toInitial ?? "any");
+  const [proposalId, setProposalId] = useState<string | undefined>(proposalIdInitial);
+  const [payloadId, setPayloadId] = useState<string | undefined>(payloadIdInitial);
 
   const createQueryString = useCallback(
     (name: string, value: string | undefined) => {
@@ -67,13 +73,47 @@ export const EnvelopeFilters = ({
     router.push(pathname + "?" + createQueryString("to", value));
   };
 
+  const handleProposalIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setProposalId(value);
+
+    if (value === "") {
+      router.push(pathname + "?" + createQueryString("proposalId", undefined));
+      return;
+    }
+
+    router.push(pathname + "?" + createQueryString("proposalId", value));
+  };
+
+  const handlePayloadIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPayloadId(value);
+
+    if (value === "") {
+      router.push(pathname + "?" + createQueryString("proposalId", undefined));
+      return;
+    }
+
+    router.push(pathname + "?" + createQueryString("payloadId", value));
+  };
+
   return (
-    <Box className="flex flex-col items-center justify-between sm:justify-center gap-3 bg-brand-300 px-3 py-3 md:flex-row md:gap-6 md:px-6">
+    <Box className="flex flex-col items-center justify-between gap-3 bg-brand-300 px-3 py-3 sm:justify-center md:flex-row md:gap-6 md:px-6">
       <div className="flex w-full gap-2">
-        <Input placeholder="Proposal ID" className="lg:w-36 w-full grow" />
-        <Input placeholder="Payload ID" className="lg:w-36 w-full grow" />
+        <Input
+          placeholder="Proposal ID"
+          className="w-full grow lg:w-36"
+          onChange={handleProposalIdChange}
+          value={proposalId}
+        />
+        <Input
+          placeholder="Payload ID"
+          className="w-full grow lg:w-36"
+          onChange={handlePayloadIdChange}
+          value={payloadId}
+        />
       </div>
-      <div className="flex grow items-center gap-2 w-full md:w-auto">
+      <div className="flex w-full grow items-center gap-2 md:w-auto">
         <Select onValueChange={handleFromValueChange} value={from}>
           <SelectTrigger className="bg-white md:w-[180px]">
             <SelectValue placeholder="From" />

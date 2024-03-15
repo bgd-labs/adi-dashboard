@@ -28,6 +28,8 @@ export const EnvelopeList = async ({
         <EnvelopeFilters
           from={searchParams?.from}
           to={searchParams?.to}
+          proposalId={searchParams?.proposalId}
+          payloadId={searchParams?.payloadId}
           chains={chains}
         />
         <Box>
@@ -47,6 +49,8 @@ export const EnvelopeList = async ({
       <EnvelopeFilters
         from={searchParams?.from}
         to={searchParams?.to}
+        proposalId={searchParams?.proposalId}
+        payloadId={searchParams?.payloadId}
         chains={chains}
       />
       {envelopes.map((envelope) => (
