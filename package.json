@@ -10,6 +10,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@bgd-labs/frontend-web3-utils": "^1.1.1",
     "@dicebear/collection": "^7.0.1",
     "@dicebear/core": "^7.0.1",
     "@quicknode/sdk": "^2.1.3",
@@ -35,7 +36,8 @@
     "tailwind-merge": "^2.1.0",
     "tailwindcss-animate": "^1.0.7",
     "viem": "^2.7.15",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^14.0.3",
