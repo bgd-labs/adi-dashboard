@@ -3,7 +3,6 @@ import { cccEventsAbi } from "../constants/cccEventsAbi";
 import { supabaseAdmin } from "@/server/api/supabase/server";
 import { revalidatePath } from "next/cache";
 import { calculateTxCosts } from "@/server/eventCollection/calculateTxCosts";
-import { getPayloadAndProposalIds } from "@/server/utils/getPayloadAndProposalIds";
 
 export const getEvents = async ({
   address,
@@ -41,12 +40,6 @@ export const getEvents = async ({
 
         switch (event.eventName) {
           case "EnvelopeRegistered":
-            const [registrationProposalId, registrationPayloadId] =
-              await getPayloadAndProposalIds(
-                event.args.envelope!.origin!,
-                event.args.envelope!.message!,
-              );
-
             await supabaseAdmin.from("Envelopes").upsert([
               {
                 id: event.args.envelopeId!,
@@ -59,8 +52,6 @@ export const getEvents = async ({
                 origin: event.args.envelope?.origin,
                 destination: event.args.envelope?.destination,
                 registered_at: dateString,
-                proposal_id: registrationProposalId,
-                payload_id: registrationPayloadId,
               },
             ]);
 
@@ -86,12 +77,6 @@ export const getEvents = async ({
             break;
 
           case "EnvelopeDeliveryAttempted":
-            const [deliveryProposalId, deliveryPayloadId] =
-              await getPayloadAndProposalIds(
-                event.args.envelope!.origin!,
-                event.args.envelope!.message!,
-              );
-
             await supabaseAdmin.from("Envelopes").upsert([
               {
                 id: event.args.envelopeId!,
@@ -103,8 +88,6 @@ export const getEvents = async ({
                 nonce: Number(event.args.envelope?.nonce),
                 origin: event.args.envelope?.origin,
                 destination: event.args.envelope?.destination,
-                proposal_id: deliveryProposalId,
-                payload_id: deliveryPayloadId,
               },
             ]);
 
