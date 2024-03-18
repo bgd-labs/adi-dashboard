@@ -140,6 +140,8 @@ export const envelopesRouter = createTRPCRouter({
           is_delivered: isDelivered,
           is_pending: isPending,
           ...envelopeConsensus,
+          payload_id: envelope.payload_id,
+          proposal_id: envelope.proposal_id,
         };
       });
 

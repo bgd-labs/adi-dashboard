@@ -10,7 +10,7 @@ export const GET = async (req: Request) => {
 
   const { data: envelopes } = await supabaseAdmin
     .from("Envelopes")
-    .select(`id, origin, message`, { count: "exact" })
+    .select(`id, origin, message, destination_chain_id`, { count: "exact" })
     .is("proposal_id", null)
     .is("payload_id", null);
 
@@ -23,9 +23,11 @@ export const GET = async (req: Request) => {
     if (!envelope.message) {
       continue;
     }
+
     const [proposalId, payloadId] = await getPayloadAndProposalIds(
       envelope.origin!,
       envelope.message,
+      envelope.destination_chain_id!,
     );
 
     if (proposalId ?? payloadId) {

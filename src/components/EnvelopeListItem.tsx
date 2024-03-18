@@ -4,10 +4,7 @@ import Link from "next/link";
 import { Box } from "@/components/Box";
 import { Consensus } from "@/components/Consensus";
 import { Timestamp } from "@/components/Timestamp";
-import { timeComponentsToString } from "@/server/utils/timeComponentsToString";
-import { msToTimeComponents } from "@/server/utils/msToTimeComponents";
 import { FromTo } from "@/components/FromTo";
-import { cn } from "@/utils/cn";
 
 export const EnvelopeListItem = ({
   envelope,
@@ -15,27 +12,6 @@ export const EnvelopeListItem = ({
   envelope: RouterOutput["envelopes"]["getAll"]["data"][0];
 }) => {
   const firstEight = envelope.id.slice(0, 8);
-
-  const getDisplayValue = (type: string, value: string) => {
-    switch (type) {
-      case "timestamp":
-        return new Date(+value * 1000).toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        });
-      case "votingDuration":
-        const timeComponents = msToTimeComponents(+value * 1000);
-        return timeComponentsToString(timeComponents);
-      case "forVotes":
-        return (Number(value) / 1e18).toFixed(2);
-      case "againstVotes":
-        return (Number(value) / 1e18).toFixed(2);
-
-      default:
-        return value;
-    }
-  };
 
   return (
     <Box isHoverable>
@@ -46,46 +22,37 @@ export const EnvelopeListItem = ({
             <div className="font-mono text-xs leading-none text-brand-500">
               {firstEight}...
             </div>
-            <div className="hidden text-sm font-semibold text-brand-900 md:block">
+            <div className="hidden lg:w-44 xl:w-52 text-sm font-semibold text-brand-900 md:block">
               {envelope.decodedMessage?.type ?? (
                 <span className="text-brand-500">Unknown type</span>
               )}
             </div>
+            <div className="flex hidden gap-2 lg:flex">
+              {envelope.proposal_id !== null &&
+                envelope.proposal_id !== undefined && (
+                  <div className="flex truncate font-mono text-xs font-normal text-brand-900 opacity-60">
+                    <div className="w-22 border border-brand-300 bg-brand-300 p-1">
+                      proposalId
+                    </div>
+                    <div className="w-10 truncate border border-brand-300 p-1 text-center">
+                      {envelope.proposal_id}
+                    </div>
+                  </div>
+                )}
+              {envelope.payload_id !== null &&
+                envelope.payload_id !== undefined && (
+                  <div className="flex truncate font-mono text-xs font-normal text-brand-900 opacity-60">
+                    <div className="w-22 border border-brand-300 bg-brand-300 p-1">
+                      payloadId
+                    </div>
+                    <div className="w-10 truncate border border-brand-300 p-1 text-center">
+                      {envelope.payload_id}
+                    </div>
+                  </div>
+                )}
+            </div>
 
             <div className="ml-auto flex items-center gap-4">
-              {envelope.decodedMessage && (
-                <div className="hidden gap-2 text-sm font-semibold text-brand-900 xl:flex">
-                  {Object.keys(envelope.decodedMessage.data).map((key) => (
-                    <div
-                      key={key}
-                      className="flex truncate font-mono text-xs font-normal text-brand-900 opacity-60"
-                    >
-                      <div className="border border-brand-300 bg-brand-300 p-1">
-                        {key}
-                      </div>
-                      <div
-                        className={cn(
-                          "w-10 truncate border border-brand-300 p-1 text-center",
-                          {
-                            ["w-24"]: key === "timestamp",
-                            ["w-16"]: key === "votingDuration",
-                            ["w-14"]: key === "blockHash",
-                            ["w-max"]:
-                              key === "forVotes" || key === "againstVotes",
-                          },
-                        )}
-                      >
-                        {getDisplayValue(
-                          key,
-                          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                          // @ts-ignore
-                          String(envelope.decodedMessage.data[key]),
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
               <Consensus
                 value={envelope.confirmations}
                 config={envelope.consensus}
@@ -148,6 +115,28 @@ export const EnvelopeListItem = ({
           <div className="mt-6 text-left md:hidden">
             <div className="text-sm font-semibold leading-none">
               {envelope.decodedMessage?.type ?? "unknown type"}
+            </div>
+            <div className="mt-4 flex gap-2">
+              {envelope.payload_id && (
+                <div className="flex truncate font-mono text-xs font-normal text-brand-900 opacity-60">
+                  <div className="border border-brand-300 bg-brand-300 p-1">
+                    payloadId
+                  </div>
+                  <div className="w-10 truncate border border-brand-300 p-1 text-center">
+                    {envelope.payload_id}
+                  </div>
+                </div>
+              )}
+              {envelope.proposal_id && (
+                <div className="flex truncate font-mono text-xs font-normal text-brand-900 opacity-60">
+                  <div className="border border-brand-300 bg-brand-300 p-1">
+                    proposalId
+                  </div>
+                  <div className="w-10 truncate border border-brand-300 p-1 text-center">
+                    {envelope.proposal_id}
+                  </div>
+                </div>
+              )}
             </div>
             <div className="mt-2">
               <Timestamp value={envelope.registered_at} />

@@ -16,6 +16,7 @@ import { EnvelopeMessage } from "@/components/EnvelopeMessage";
 import { truncateToTwoSignificantDigits } from "@/utils/truncateToTwoSignificantDigits";
 import { formatEther, formatGwei, type Hex } from "viem";
 import { cn } from "@/utils/cn";
+import { EnvelopeGovernanceLinks } from "@/components/EnvelopeGovernanceLinks";
 
 const SKIPPED_STATUS_TIMEOUT_HOURS = 10;
 
@@ -198,12 +199,22 @@ const EnvelopeDetailPage = async ({
                 />
               </div>
             </div>
-            <EnvelopeMessage
-              chainId={envelope.destination_chain_id!}
-              decodedMessage={envelope.decodedMessage}
-              payloadsControllerAddress={envelope.destination! as Hex}
-              message={envelope.message}
-            />
+            <div className="grid gap-4 md:grid-cols-2">
+              <EnvelopeMessage
+                chainId={envelope.destination_chain_id!}
+                decodedMessage={envelope.decodedMessage}
+                payloadsControllerAddress={envelope.destination! as Hex}
+                message={envelope.message}
+              />
+              {(envelope.proposal_id ?? envelope.payload_id) && (
+                <EnvelopeGovernanceLinks
+                  proposalId={envelope.proposal_id}
+                  payloadId={envelope.payload_id}
+                  chainId={envelope.destination_chain_id!}
+                  payloadsControllerAddress={envelope.destination! as Hex}
+                />
+              )}
+            </div>
           </div>
         </Box>
         <Box>
@@ -246,9 +257,7 @@ const EnvelopeDetailPage = async ({
                     Destination adapters
                   </h2>
                   {uniqueForwardingAttemptEvents.map((event) => {
-                    const isDelivered = deliveryAttemptEvents.some(
-                      (attempt) => attempt.is_delivered,
-                    );
+                    const isDelivered = deliveryAttemptEvents.length > 0;
                     const isSameChain =
                       envelope.origin_chain_id ===
                       envelope.destination_chain_id;
