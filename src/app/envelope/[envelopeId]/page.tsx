@@ -246,9 +246,7 @@ const EnvelopeDetailPage = async ({
                     Destination adapters
                   </h2>
                   {uniqueForwardingAttemptEvents.map((event) => {
-                    const isDelivered = deliveryAttemptEvents.some(
-                      (attempt) => attempt.is_delivered,
-                    );
+                    const isDelivered = deliveryAttemptEvents.length > 0;
                     const isSameChain =
                       envelope.origin_chain_id ===
                       envelope.destination_chain_id;
