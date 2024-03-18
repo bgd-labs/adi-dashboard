@@ -5,6 +5,7 @@ import { decodeEnvelopeMessage } from "@/server/utils/decodeEnvelopeMessage";
 export const getPayloadAndProposalIds = async (
   origin: string,
   message: string,
+  chainId: number,
 ) => {
   const messageData = Buffer.from(message!.slice(2), "hex").toString(
     "utf8",
@@ -16,14 +17,15 @@ export const getPayloadAndProposalIds = async (
   let payload_id = null;
 
   try {
-    if (decodedMessage?.data?.payloadId) {
+    if (decodedMessage?.data?.payloadId !== null && decodedMessage?.data?.payloadId !== undefined) {
       payload_id = decodedMessage?.data.payloadId;
       proposal_id = await getPayloadProposalRelation(
         decodedMessage?.data.payloadId,
+        chainId
       );
     }
-
-    if (decodedMessage?.data?.proposalId) {
+    
+    if (decodedMessage?.data?.proposalId !== null && decodedMessage?.data?.proposalId !== undefined) {
       proposal_id = decodedMessage?.data.proposalId;
     }
   } catch (e) {
@@ -31,7 +33,7 @@ export const getPayloadAndProposalIds = async (
   }
 
   return [
-    proposal_id ? Number(proposal_id) : null,
-    payload_id ? Number(payload_id) : null,
+    proposal_id !== null && proposal_id !== undefined ? Number(proposal_id) : null,
+    payload_id !== null && payload_id !== undefined ? Number(payload_id) : null,
   ];
 };
