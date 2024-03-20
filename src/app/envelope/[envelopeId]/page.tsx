@@ -282,7 +282,8 @@ const EnvelopeDetailPage = async ({
                     if (
                       registeredAt > timeBeforeTimeout &&
                       !isDelivered &&
-                      !isDestinationAdapterMatch
+                      !isDestinationAdapterMatch &&
+                      !(isSameChain && isAdapterSuccessful)
                     ) {
                       status = "Pending";
                     } else if (isSameChain && isAdapterSuccessful) {
