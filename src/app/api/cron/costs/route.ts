@@ -9,7 +9,7 @@ export const GET = async (req: Request) => {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const unscannedTxs = await api.transactions.getUnscannedTransactions.query();
+  const unscannedTxs = await api.transactions.getUnscannedTransactions();
 
   if (unscannedTxs?.length === 0 || !unscannedTxs) {
     return NextResponse.json({ ok: true });

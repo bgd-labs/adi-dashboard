@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Box } from "@/components/Box";
+import { Button } from "@/components/Button";
 import Link from "next/link";
 import logo from "@/assets/logo.svg";
 import { env } from "@/env";
@@ -18,16 +19,14 @@ export const Header = () => {
             />
 
             <div className="relative">
-              <div className="mb-0.5 gap-2 text-2xl font-bold">
-                a.DI
-              </div>
+              <div className="mb-0.5 gap-2 text-2xl font-bold">a.DI</div>
               <div className="text-[9px] font-semibold uppercase tracking-wider opacity-60 group-hover:opacity-100">
                 aave delivery
                 <br />
                 infrastructure
               </div>
               {env.ENVIRONMENT_STAGE === "PREPROD" && (
-                <div className="inline-block font-semibold bg-white px-1 py-0.5 text-[9px] uppercase leading-none tracking-wider text-brand-900">
+                <div className="inline-block bg-white px-1 py-0.5 text-[9px] font-semibold uppercase leading-none tracking-wider text-brand-900">
                   Preprod
                 </div>
               )}
@@ -45,6 +44,8 @@ export const Header = () => {
             </span>
           </div>
         </Link>
+        <div className="flex items-end">
+        </div>
       </div>
     </Box>
   );

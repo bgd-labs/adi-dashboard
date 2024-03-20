@@ -29,6 +29,9 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="en">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+      </head>
       <body className={`font-sans ${inter.variable} bg-brand-100`}>
         <TRPCReactProvider>
           <div className="container mx-auto flex min-h-screen flex-col pb-4 pl-4 pr-3 pt-4 sm:pt-10">

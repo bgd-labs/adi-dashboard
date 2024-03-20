@@ -42,7 +42,7 @@ const StatusPage = async () => {
       const lastScannedBlock = crossChainController.last_scanned_block!;
       const firstBlockInRange = crossChainController.created_block;
 
-      const retries = await api.controllers.getRetries.query({
+      const retries = await api.controllers.getRetries({
         chainId: crossChainController.chain_id,
       });
 

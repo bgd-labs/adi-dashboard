@@ -8,7 +8,7 @@ type ExplorerLinkProps = {
 
 export const BridgeExplorerLink = async ({ chainId, address, txHash }: ExplorerLinkProps) => {
 
-  const bridgeExplorerLink = await api.address.getBridgeExplorerLink.query({
+  const bridgeExplorerLink = await api.address.getBridgeExplorerLink({
     address,
     chainId,
   });

@@ -8,6 +8,10 @@ export const GET = async (req: Request) => {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  if (env.ENVIRONMENT_STAGE === 'PREPROD') {
+    return NextResponse.json({ ok: true });
+  }
+
   const { data: envelopes } = await supabaseAdmin
     .from("Envelopes")
     .select(`id, origin, message, destination_chain_id`, { count: "exact" })

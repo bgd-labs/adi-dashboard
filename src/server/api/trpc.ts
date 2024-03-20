@@ -1,7 +1,8 @@
+import { supabase, supabaseAdmin } from "./supabase";
+
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { supabase, supabaseAdmin } from "./supabase";
 
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   return {
@@ -25,6 +26,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
   },
 });
 
-export const createTRPCRouter = t.router;
+export const createCallerFactory = t.createCallerFactory;
 
+export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;

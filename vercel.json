@@ -20,5 +20,10 @@
       "path": "/api/cron/proposals",
       "schedule": "*/3 * * * *"
     }
-  ]
+  ],
+  "functions": {
+    "app/api/**/*": {
+      "maxDuration": 200
+    }
+  }
 }
