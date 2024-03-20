@@ -45,6 +45,9 @@ export const Header = () => {
           </div>
         </Link>
         <div className="flex items-end">
+          <Button className="text-sm">
+            Connect wallet
+          </Button>
         </div>
       </div>
     </Box>
