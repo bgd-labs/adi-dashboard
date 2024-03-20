@@ -26,23 +26,23 @@ const EnvelopeDetailPage = async ({
   params: { envelopeId: string };
 }) => {
   try {
-    const envelope = await api.envelopes.get.query({
+    const envelope = await api.envelopes.get({
       envelopeId: params.envelopeId,
     });
 
-    const registeredEvents = await api.events.getRegisteredEvents.query({
+    const registeredEvents = await api.events.getRegisteredEvents({
       envelopeId: params.envelopeId,
     });
     const forwardingAttemptEvents =
-      await api.events.getForwardingAttemptEvents.query({
+      await api.events.getForwardingAttemptEvents({
         envelopeId: params.envelopeId,
       });
     const transactionReceivedEvents =
-      await api.events.getTransactionReceivedEvents.query({
+      await api.events.getTransactionReceivedEvents({
         envelopeId: params.envelopeId,
       });
     const deliveryAttemptEvents =
-      await api.events.getDeliveryAttemptEvents.query({
+      await api.events.getDeliveryAttemptEvents({
         envelopeId: params.envelopeId,
       });
 
@@ -63,14 +63,14 @@ const EnvelopeDetailPage = async ({
       (value, index, self) => self.indexOf(value) === index,
     );
 
-    const bridgingCosts = await api.transactions.getTransactionCosts.query({
+    const bridgingCosts = await api.transactions.getTransactionCosts({
       txHashes: uniqueTxHashes,
     });
     const totalBridgingCostsUSD = bridgingCosts
       .reduce((acc, cost) => acc + cost.value_usd!, 0)
       .toFixed(2);
 
-    const gasCosts = await api.transactions.getGasCosts.query({
+    const gasCosts = await api.transactions.getGasCosts({
       txHashes: uniqueTxHashes,
     });
     const totalGasCostsUSD = gasCosts

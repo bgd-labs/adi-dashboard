@@ -23,7 +23,7 @@ export const ExplorerLink = async ({
   let label;
 
   if (type === "address" && !hideLabel) {
-    label = await api.address.get.query({ address: value, chainId });
+    label = await api.address.get({ address: value, chainId });
   }
 
   const chain = Object.values(chains).find((chain) => chain.id === chainId);

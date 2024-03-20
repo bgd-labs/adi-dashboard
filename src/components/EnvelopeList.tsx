@@ -13,7 +13,7 @@ export const EnvelopeList = async ({
   perPage: number;
   searchParams: Record<string, string | undefined>;
 }) => {
-  const { data: envelopes, count } = await api.envelopes.getAll.query({
+  const { data: envelopes, count } = await api.envelopes.getAll({
     pageSize: perPage,
     page: currentPage,
     from: searchParams?.from,
@@ -22,7 +22,7 @@ export const EnvelopeList = async ({
     payloadId: searchParams?.payloadId,
   });
 
-  const chains = await api.controllers.getChains.query();
+  const chains = await api.controllers.getChains();
 
   if (!envelopes.length) {
     return (
