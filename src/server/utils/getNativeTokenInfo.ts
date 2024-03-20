@@ -10,7 +10,6 @@ export const getNativeTokenInfo = async (
     `https://api.coingecko.com/api/v3/coins/${nativeTokenName}/history?date=${formattedBlockDate}&localization=false&x_cg_demo_api_key=${env.COINGECKO_API_KEY}`,
   );
   if (!tokenMarketDataOnDateData.ok) {
-    console.log(tokenMarketDataOnDateData);
     throw new Error(
       `Failed to fetch token price data for token ${nativeTokenName} on date ${formattedBlockDate}`,
     );
