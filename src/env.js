@@ -14,6 +14,7 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_SUPABASE_URL: z.string(),
     NEXT_PUBLIC_SUPABASE_KEY: z.string(),
+    NEXT_PUBLIC_WC_PROJECT_ID: z.string(),
   },
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
@@ -25,6 +26,7 @@ export const env = createEnv({
     ICON_GENERATOR_KEY: process.env.ICON_GENERATOR_KEY,
     ENVIRONMENT_STAGE: process.env.ENVIRONMENT_STAGE,
     COINGECKO_API_KEY: process.env.COINGECKO_API_KEY,
+    NEXT_PUBLIC_WC_PROJECT_ID: process.env.NEXT_PUBLIC_WC_PROJECT_ID,
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
   emptyStringAsUndefined: true,
