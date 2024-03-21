@@ -31,6 +31,7 @@ export const RetryButtons = ({ failedAdapters }: Props) => {
           <DialogContent>
             <DialogHeader>
               <DialogTitle className="mb-6">Failed Adapters</DialogTitle>
+              {/* TODO: implement form to select adapters that we want to retry to pass to retryTransaction */}
               {failedAdapters?.map((adapter) => (
                 <Checkbox key={adapter.address}>
                   {adapter.chainId} - {adapter.address}
