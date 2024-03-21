@@ -4,7 +4,7 @@ import { Inter } from "next/font/google";
 import { TRPCReactProvider } from "@/trpc/react";
 import { Header, Footer } from "@/components";
 import { env } from "@/env";
-import { WagmiTest } from "@/components/WagmiTest";
+import { WagmiProvider } from "@/web3/components/WagmiProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -34,9 +34,9 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
       </head>
       <body className={`font-sans ${inter.variable} bg-brand-100`}>
+        <WagmiProvider />
         <TRPCReactProvider>
           <div className="container mx-auto flex min-h-screen flex-col pb-4 pl-4 pr-3 pt-4 sm:pt-10">
-            <WagmiTest />
             <Header />
             <main className="flex-grow">{children}</main>
             <Footer />
