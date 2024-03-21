@@ -57,7 +57,7 @@ export const Button = forwardRef(
             {
               ["translate-x-0 translate-y-0 border-brand-500 text-brand-500"]:
                 disabled,
-              ["bg-red-500 text-white"]: type === "danger",
+              ["bg-red-500 text-white hover:bg-red-600"]: type === "danger",
             },
           )}
         >
