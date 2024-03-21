@@ -84,19 +84,19 @@ export const envelopesRouter = createTRPCRouter({
         .order("registered_at", { ascending: false });
 
       if (input.from) {
-        query = query.filter('origin_chain_id', 'eq', input.from);
+        query = query.filter("origin_chain_id", "eq", input.from);
       }
-    
+
       if (input.to) {
-        query = query.filter('destination_chain_id', 'eq', input.to);
+        query = query.filter("destination_chain_id", "eq", input.to);
       }
 
       if (input.proposalId) {
-        query = query.filter('proposal_id', 'eq', input.proposalId);
+        query = query.filter("proposal_id", "eq", input.proposalId);
       }
 
       if (input.payloadId) {
-        query = query.filter('payload_id', 'eq', input.payloadId);
+        query = query.filter("payload_id", "eq", input.payloadId);
       }
 
       const { data, error, count } = await query;
@@ -150,5 +150,115 @@ export const envelopesRouter = createTRPCRouter({
       }
 
       return { data: envelopeWithDeliveryInfo, count: count ?? 0 };
+    }),
+  getBridgingState: publicProcedure
+    .input(z.object({ envelopeId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const SKIPPED_STATUS_TIMEOUT_HOURS = 10;
+
+      const { envelopeId } = input;
+
+      const { data: envelope } = await ctx.supabaseAdmin
+        .from("Envelopes")
+        .select(`origin_chain_id, destination_chain_id, registered_at`)
+        .eq("id", envelopeId)
+        .maybeSingle();
+
+      if (!envelope) {
+        throw new Error("Envelope not found");
+      }
+
+      const { data: forwardingAttemptEvents } = await ctx.supabaseAdmin
+        .from("TransactionForwardingAttempted")
+        .select("*")
+        .eq("envelope_id", envelopeId);
+
+      const { data: deliveryAttemptEvents } = await ctx.supabaseAdmin
+        .from("EnvelopeDeliveryAttempted")
+        .select("*")
+        .eq("envelope_id", envelopeId);
+
+      const isEnvelopeDelivered = deliveryAttemptEvents?.length;
+
+      const { data: transactionReceivedEvents } = await ctx.supabaseAdmin
+        .from("TransactionReceived")
+        .select("*")
+        .eq("envelope_id", envelopeId);
+
+      if (!forwardingAttemptEvents) {
+        return {
+          origin: [],
+          destination: [],
+        };
+      }
+
+      const sortedEvents = [...forwardingAttemptEvents].sort(
+        (a, b) => Number(b.timestamp) - Number(a.timestamp),
+      );
+
+      const uniqueForwardingAttemptEvents = sortedEvents.filter(
+        (event, index, self) =>
+          index ===
+          self.findIndex((e) => e.bridge_adapter === event.bridge_adapter),
+      );
+
+      const originAdapters = uniqueForwardingAttemptEvents.map((event) => {
+        return {
+          chainId: event.chain_id,
+          address: event.bridge_adapter,
+          status: event.adapter_successful ? "success" : "failed",
+        };
+      });
+
+      const destinationAdapters = uniqueForwardingAttemptEvents.map((event) => {
+        const isSameChain =
+          envelope.origin_chain_id === envelope.destination_chain_id;
+        const isAdapterSuccessful = forwardingAttemptEvents.some(
+          (e) => e.adapter_successful,
+        );
+        const isDestinationAdapterMatch =
+          transactionReceivedEvents &&
+          transactionReceivedEvents.some(
+            (e) => e.bridge_adapter === event.destination_bridge_adapter,
+          );
+
+        let status = "failed";
+        const registeredAt = new Date(envelope.registered_at!);
+        const timeBeforeTimeout = new Date();
+        timeBeforeTimeout.setHours(
+          timeBeforeTimeout.getHours() - SKIPPED_STATUS_TIMEOUT_HOURS,
+        );
+
+        if (
+          registeredAt > timeBeforeTimeout &&
+          !isEnvelopeDelivered &&
+          !isDestinationAdapterMatch &&
+          !(isSameChain && isAdapterSuccessful)
+        ) {
+          status = "pending";
+        } else if (isSameChain && isAdapterSuccessful) {
+          status = "success";
+        } else if (!isSameChain && isDestinationAdapterMatch) {
+          status = "success";
+        } else if (event.adapter_successful && isEnvelopeDelivered) {
+          status = "skipped";
+        }
+
+        return {
+          chainId: event.destination_chain_id,
+          address: event.destination_bridge_adapter,
+          status,
+        };
+      });
+
+      const failedAdapters = destinationAdapters.filter(
+        (adapter) => adapter.status === "failed",
+      );
+
+      return {
+        origin: originAdapters,
+        destination: destinationAdapters,
+        failedAdapters,
+      };
     }),
 });

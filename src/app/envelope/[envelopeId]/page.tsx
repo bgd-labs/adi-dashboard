@@ -6,6 +6,7 @@ import { Consensus } from "@/components/Consensus";
 import { Timestamp } from "@/components/Timestamp";
 import { ExplorerLink } from "@/components/ExplorerLink";
 import { Tooltip } from "@/components/Tooltip";
+import { RetryButtons } from "@/components/RetryButtons";
 import { api } from "@/trpc/server";
 import { Box } from "@/components/Box";
 import { EnvelopeRegisteredEvent } from "@/components/EnvelopeRegisteredEvent";
@@ -17,8 +18,6 @@ import { truncateToTwoSignificantDigits } from "@/utils/truncateToTwoSignificant
 import { formatEther, formatGwei, type Hex } from "viem";
 import { cn } from "@/utils/cn";
 import { EnvelopeGovernanceLinks } from "@/components/EnvelopeGovernanceLinks";
-
-const SKIPPED_STATUS_TIMEOUT_HOURS = 10;
 
 const EnvelopeDetailPage = async ({
   params,
@@ -33,28 +32,18 @@ const EnvelopeDetailPage = async ({
     const registeredEvents = await api.events.getRegisteredEvents({
       envelopeId: params.envelopeId,
     });
-    const forwardingAttemptEvents =
-      await api.events.getForwardingAttemptEvents({
+    const forwardingAttemptEvents = await api.events.getForwardingAttemptEvents(
+      {
         envelopeId: params.envelopeId,
-      });
+      },
+    );
     const transactionReceivedEvents =
       await api.events.getTransactionReceivedEvents({
         envelopeId: params.envelopeId,
       });
-    const deliveryAttemptEvents =
-      await api.events.getDeliveryAttemptEvents({
-        envelopeId: params.envelopeId,
-      });
-
-    const sortedEvents = [...forwardingAttemptEvents].sort(
-      (a, b) => Number(b.timestamp) - Number(a.timestamp),
-    );
-
-    const uniqueForwardingAttemptEvents = sortedEvents.filter(
-      (event, index, self) =>
-        index ===
-        self.findIndex((e) => e.bridge_adapter === event.bridge_adapter),
-    );
+    const deliveryAttemptEvents = await api.events.getDeliveryAttemptEvents({
+      envelopeId: params.envelopeId,
+    });
 
     const txHashes = forwardingAttemptEvents.map(
       (event) => event.transaction_hash,
@@ -62,6 +51,10 @@ const EnvelopeDetailPage = async ({
     const uniqueTxHashes = txHashes.filter(
       (value, index, self) => self.indexOf(value) === index,
     );
+
+    const bridgingStatus = await api.envelopes.getBridgingState({
+      envelopeId: params.envelopeId,
+    });
 
     const bridgingCosts = await api.transactions.getTransactionCosts({
       txHashes: uniqueTxHashes,
@@ -79,6 +72,10 @@ const EnvelopeDetailPage = async ({
 
     return (
       <>
+        {/* TODO: check if wallet is connected */}
+        {!envelope.is_delivered && !envelope.is_pending && (
+          <RetryButtons failedAdapters={bridgingStatus.failedAdapters} />
+        )}
         <Box>
           <div className="px-4 py-2 py-6 sm:px-6">
             <div className="flex items-center gap-1 sm:gap-3">
@@ -225,15 +222,12 @@ const EnvelopeDetailPage = async ({
                   <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider">
                     Origin adapters
                   </h2>
-                  {uniqueForwardingAttemptEvents.map((event) => (
-                    <div
-                      key={event.transaction_hash + event.log_index}
-                      className="flex items-center gap-1"
-                    >
+                  {bridgingStatus.origin.map((item) => (
+                    <div key={item.address} className="flex items-center gap-1">
                       <ExplorerLink
                         type="address"
-                        chainId={envelope.origin_chain_id!}
-                        value={event.bridge_adapter!}
+                        chainId={item.chainId!}
+                        value={item.address!}
                         skipAdapter
                       />
                       <div
@@ -241,13 +235,13 @@ const EnvelopeDetailPage = async ({
                           "ml-auto rounded-full bg-brand-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-500 sm:ml-0",
                           {
                             ["bg-green-100 text-green-700"]:
-                              event.adapter_successful,
+                              item.status === "success",
                             ["bg-red-100 text-red-700"]:
-                              !event.adapter_successful,
+                              item.status === "failed",
                           },
                         )}
                       >
-                        {event.adapter_successful ? "Success" : "Failed"}
+                        {item.status}
                       </div>
                     </div>
                   ))}
@@ -256,53 +250,13 @@ const EnvelopeDetailPage = async ({
                   <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider">
                     Destination adapters
                   </h2>
-                  {uniqueForwardingAttemptEvents.map((event) => {
-                    const isDelivered = deliveryAttemptEvents.length > 0;
-                    const isSameChain =
-                      envelope.origin_chain_id ===
-                      envelope.destination_chain_id;
-                    const isAdapterSuccessful = forwardingAttemptEvents.some(
-                      (e) => e.adapter_successful,
-                    );
-                    const isDestinationAdapterMatch =
-                      transactionReceivedEvents.some(
-                        (e) =>
-                          e.bridge_adapter === event.destination_bridge_adapter,
-                      );
-
-                    let status = "Failed";
-
-                    const registeredAt = new Date(envelope.registered_at!);
-                    const timeBeforeTimeout = new Date();
-                    timeBeforeTimeout.setHours(
-                      timeBeforeTimeout.getHours() -
-                        SKIPPED_STATUS_TIMEOUT_HOURS,
-                    );
-
-                    if (
-                      registeredAt > timeBeforeTimeout &&
-                      !isDelivered &&
-                      !isDestinationAdapterMatch &&
-                      !(isSameChain && isAdapterSuccessful)
-                    ) {
-                      status = "Pending";
-                    } else if (isSameChain && isAdapterSuccessful) {
-                      status = "Success";
-                    } else if (!isSameChain && isDestinationAdapterMatch) {
-                      status = "Success";
-                    } else if (event.adapter_successful && isDelivered) {
-                      status = "Skipped";
-                    }
-
+                  {bridgingStatus.destination.map((item) => {
                     return (
-                      <div
-                        key={event.transaction_hash + event.log_index}
-                        className="flex items-center"
-                      >
+                      <div key={item.address} className="flex items-center">
                         <ExplorerLink
                           type="address"
-                          chainId={envelope.destination_chain_id!}
-                          value={event.destination_bridge_adapter!}
+                          chainId={item.chainId!}
+                          value={item.address!}
                           skipAdapter
                         />
                         <div
@@ -310,12 +264,13 @@ const EnvelopeDetailPage = async ({
                             "ml-auto rounded-full bg-brand-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-500 sm:ml-0",
                             {
                               ["bg-green-100 text-green-700"]:
-                                status === "Success",
-                              ["bg-red-100 text-red-700"]: status === "Failed",
+                                item.status === "success",
+                              ["bg-red-100 text-red-700"]:
+                                item.status === "failed",
                             },
                           )}
                         >
-                          {status}
+                          {item.status}
                         </div>
                       </div>
                     );
