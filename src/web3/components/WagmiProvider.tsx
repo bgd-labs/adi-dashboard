@@ -10,9 +10,10 @@ import { WagmiProvider as WagmiBaseProvider } from "wagmi";
 import { mainnet } from "wagmi/chains";
 import { env } from "@/env";
 
+import { DESIRED_CHAIN_ID } from '@/web3/store/web3Slice';
+
 import { useStore } from "@/store";
 
-const DESIRED_CHAIN_ID = 1;
 const queryClient = new QueryClient();
 
 export const WagmiProvider = () => {

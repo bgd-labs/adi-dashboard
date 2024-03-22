@@ -4,11 +4,10 @@ import { type WalletType } from "@bgd-labs/frontend-web3-utils";
 import { Button } from "@/components/Button";
 
 import { useStore } from "@/store";
-const DESIRED_CHAIN_ID = 1;
+import { DESIRED_CHAIN_ID } from "@/web3/store/web3Slice";
 
 export const WalletButton = ({ walletType }: { walletType: WalletType }) => {
   const connectWallet = useStore((store) => store.connectWallet);
-
 
   const handleWalletClick = async () => {
     await connectWallet(walletType, DESIRED_CHAIN_ID);

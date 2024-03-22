@@ -12,10 +12,12 @@ import {
 import { useStore } from "@/store";
 
 export const Wallet = () => {
-  const activeWallet = useStore((store) => store.activeWallet);
-  const disconnectActiveWallet = useStore(
-    (store) => store.disconnectActiveWallet,
-  );
+  // const activeWallet = useStore((store) => store.activeWallet);
+  // const disconnectActiveWallet = useStore(
+  //   (store) => store.disconnectActiveWallet,
+  // );
+  // For me, getting data from a zustand like this looks more elegant and less cumbersome
+  const { activeWallet, disconnectActiveWallet } = useStore();
 
   const handleDisconnect = async () => {
     await disconnectActiveWallet();
