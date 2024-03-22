@@ -78,4 +78,4 @@ export const cccAbi = [
     outputs: [],
     stateMutability: "nonpayable",
   },
-];
+] as const;

@@ -1,10 +1,11 @@
-// import { writeContract } from "@wagmi/core";
+import { writeContract } from "@wagmi/core";
 import { type Client, getContract, type Hex } from "viem";
 import { type Config } from "wagmi";
 
 import { cccAbi } from "./crossChainControllerAbi";
+import {DESIRED_CHAIN_ID} from '@/web3/store/web3Slice';
 
-export class CounterDataService {
+export class ControllerRetryService {
   private controllerFactory;
   private client: Client;
   private wagmiConfig: Config | undefined = undefined;
@@ -22,5 +23,31 @@ export class CounterDataService {
     this.wagmiConfig = wagmiConfig;
   }
 
-  // TODO: add retry methods
+  // TODO: need add parameters and args to tx's
+
+  async retryEnvelope() {
+    if (this.wagmiConfig) {
+      return writeContract(this.wagmiConfig, {
+        abi: this.controllerFactory.abi,
+        address: this.controllerFactory.address,
+        functionName: 'retryEnvelope',
+        args: [],
+        chainId: DESIRED_CHAIN_ID,
+      });
+    }
+    return undefined;
+  }
+
+  async retryTransaction() {
+    if (this.wagmiConfig) {
+      return writeContract(this.wagmiConfig, {
+        abi: this.controllerFactory.abi,
+        address: this.controllerFactory.address,
+        functionName: 'retryTransaction',
+        args: [],
+        chainId: DESIRED_CHAIN_ID,
+      });
+    }
+    return undefined;
+  }
 }
