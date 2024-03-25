@@ -4,6 +4,8 @@ import { api } from "@/trpc/server";
 import { env } from "@/env";
 import { type Hash } from "viem";
 
+export const maxDuration = 100;
+
 export const GET = async (req: Request) => {
   if (req.headers.get("Authorization") !== `Bearer ${env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
