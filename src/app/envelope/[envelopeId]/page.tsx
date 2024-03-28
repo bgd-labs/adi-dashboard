@@ -33,18 +33,18 @@ const EnvelopeDetailPage = async ({
     const registeredEvents = await api.events.getRegisteredEvents({
       envelopeId: params.envelopeId,
     });
-    const forwardingAttemptEvents =
-      await api.events.getForwardingAttemptEvents({
+    const forwardingAttemptEvents = await api.events.getForwardingAttemptEvents(
+      {
         envelopeId: params.envelopeId,
-      });
+      },
+    );
     const transactionReceivedEvents =
       await api.events.getTransactionReceivedEvents({
         envelopeId: params.envelopeId,
       });
-    const deliveryAttemptEvents =
-      await api.events.getDeliveryAttemptEvents({
-        envelopeId: params.envelopeId,
-      });
+    const deliveryAttemptEvents = await api.events.getDeliveryAttemptEvents({
+      envelopeId: params.envelopeId,
+    });
 
     const sortedEvents = [...forwardingAttemptEvents].sort(
       (a, b) => Number(b.timestamp) - Number(a.timestamp),
@@ -76,6 +76,14 @@ const EnvelopeDetailPage = async ({
     const totalGasCostsUSD = gasCosts
       .reduce((acc, cost) => acc + cost.transaction_fee_usd!, 0)
       .toFixed(2);
+
+    let isMultipleEnvelopes;
+    const txHash =
+      forwardingAttemptEvents[0]?.transaction_hash ??
+      registeredEvents?.[0]?.transaction_hash;
+    if (txHash) {
+      isMultipleEnvelopes = await api.transactions.checkMultiEnvelope(txHash);
+    }
 
     return (
       <>
@@ -337,6 +345,11 @@ const EnvelopeDetailPage = async ({
               <div>
                 <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider">
                   Transaction costs
+                  {isMultipleEnvelopes && (
+                    <span className="ml-2 rounded-full bg-brand-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-500">
+                      Multiple envelopes in TX
+                    </span>
+                  )}
                 </h2>
                 <div className="mb-3 text-2xl font-semibold text-brand-900">
                   {totalGasCostsUSD} $
@@ -395,8 +408,13 @@ const EnvelopeDetailPage = async ({
                   ))}
               </div>
               <div>
-                <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider">
+                <h2 className="mb-3 flex items-center text-xs font-semibold uppercase tracking-wider">
                   Bridging costs
+                  {isMultipleEnvelopes && (
+                    <span className="ml-2 rounded-full bg-brand-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-500">
+                      Multiple envelopes in TX
+                    </span>
+                  )}
                 </h2>
                 <div className="mb-3 text-2xl font-semibold text-brand-900">
                   {totalBridgingCostsUSD} $

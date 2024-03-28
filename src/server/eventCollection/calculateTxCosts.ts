@@ -78,10 +78,12 @@ export const calculateTxCosts = async (txHash: Hash, chainId: number) => {
         from: eventData.args.from,
         to: eventData.args.to,
         value: eventData.args.value,
+        logIndex: event.logIndex,
         ...tokeninfo,
       };
     }),
   );
+
 
   const tracedTransactions = (await core.client.request<viem.RpcSchemaOverride>(
     {
@@ -106,7 +108,6 @@ export const calculateTxCosts = async (txHash: Hash, chainId: number) => {
   const nativeTokenTransfers = nonNullValueTransactions
     .map((tx) => {
       const value = BigInt(tx.action.value);
-
       return {
         from: tx.action.from,
         to: tx.action.to,
@@ -114,7 +115,14 @@ export const calculateTxCosts = async (txHash: Hash, chainId: number) => {
         ...nativeTokenInfo,
       };
     })
-    .filter((tx) => tx.from === chainConfig.address.toLowerCase());
+    .filter((tx) => tx.from === chainConfig.address.toLowerCase())
+    .map((tx, i) => {
+      return {
+        ...tx,
+        // Simulate logIndex to use as unique identifier
+        logIndex: i,
+      };
+    });
 
   try {
     await supabaseAdmin.from("TransactionGasCosts").upsert([
@@ -129,7 +137,7 @@ export const calculateTxCosts = async (txHash: Hash, chainId: number) => {
         token_symbol: nativeTokenInfo.symbol,
       },
     ]);
-    await supabaseAdmin.from("TransactionCosts").upsert([
+    const transactionCostsWrite = await supabaseAdmin.from("TransactionCosts").upsert([
       ...erc20transfers.map((transfer) => {
         const usdValue = (Number(transfer.value) / 1e18) * transfer.price;
 
@@ -139,6 +147,7 @@ export const calculateTxCosts = async (txHash: Hash, chainId: number) => {
           token_address: transfer.tokenAddress,
           from: transfer.from,
           to: transfer.to,
+          log_index: transfer.logIndex,
           value: Number(transfer.value),
           value_usd: usdValue,
           token_usd_price: transfer.price,
@@ -148,12 +157,12 @@ export const calculateTxCosts = async (txHash: Hash, chainId: number) => {
       }),
       ...nativeTokenTransfers.map((transfer) => {
         const usdValue = (Number(transfer.value) / 1e18) * transfer.price;
-
         return {
           transaction_hash: txHash,
           chain_id: chainId,
           from: transfer.from,
           to: transfer.to,
+          log_index: transfer.logIndex,
           value: Number(transfer.value),
           value_usd: usdValue,
           token_usd_price: transfer.price,

@@ -39,4 +39,43 @@ export const transactionsRouter = createTRPCRouter({
 
     return data;
   }),
+  getAll: publicProcedure.query(async ({ ctx }) => {
+    const { data } = await ctx.supabaseAdmin
+      .from("TransactionForwardingAttempted")
+      .select("*");
+
+    if (!data) {
+      return [];
+    }
+    const uniqueTransactionHash = new Set();
+
+    const uniqueData = data.filter((item) => {
+      if (uniqueTransactionHash.has(item.transaction_hash)) {
+        return false;
+      } else {
+        uniqueTransactionHash.add(item.transaction_hash);
+        return true;
+      }
+    });
+
+    return uniqueData;
+  }),
+  get: publicProcedure.input(z.string()).query(async ({ input, ctx }) => {
+    const { data } = await ctx.supabaseAdmin
+      .from("TransactionForwardingAttempted")
+      .select("*")
+      .eq("transaction_hash", input);
+
+    return data;
+  }),
+  checkMultiEnvelope: publicProcedure
+    .input(z.string())
+    .query(async ({ input, ctx }) => {
+      const { data } = await ctx.supabaseAdmin
+        .from("EnvelopeRegistered")
+        .select("*")
+        .eq("transaction_hash", input);
+
+      return (data?.length ?? 0) > 1;
+    }),
 });
