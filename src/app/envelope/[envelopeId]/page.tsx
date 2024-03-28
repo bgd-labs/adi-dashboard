@@ -344,7 +344,7 @@ const EnvelopeDetailPage = async ({
             <div className="grid gap-4 px-4 py-6 sm:px-6 md:grid-cols-2">
               <div>
                 <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider">
-                  Transaction costs{" "}
+                  Transaction costs
                   {isMultipleEnvelopes && (
                     <span className="ml-2 rounded-full bg-brand-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-500">
                       Multiple envelopes in TX
@@ -409,7 +409,7 @@ const EnvelopeDetailPage = async ({
               </div>
               <div>
                 <h2 className="mb-3 flex items-center text-xs font-semibold uppercase tracking-wider">
-                  Bridging costs{" "}
+                  Bridging costs
                   {isMultipleEnvelopes && (
                     <span className="ml-2 rounded-full bg-brand-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-500">
                       Multiple envelopes in TX
