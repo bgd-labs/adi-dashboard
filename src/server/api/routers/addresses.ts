@@ -58,7 +58,7 @@ export const addressRouter = createTRPCRouter({
             },
           ]);
 
-          return result;
+          return result as string;
         } catch (err) {
           console.log("Error fetching contract name", address, chainId);
 
@@ -74,7 +74,7 @@ export const addressRouter = createTRPCRouter({
         }
       }
 
-      return data?.name;
+      return data?.name ?? "";
     }),
   getBridgeExplorerLink: publicProcedure
     .input(z.object({ address: z.string(), chainId: z.number() }))
