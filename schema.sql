@@ -145,7 +145,8 @@ CREATE TABLE IF NOT EXISTS "public"."TransactionCosts" (
     "to" character varying NOT NULL,
     "chain_id" bigint,
     "token_symbol" "text",
-    "value_usd" numeric
+    "value_usd" numeric,
+    "log_index" bigint NOT NULL
 );
 
 ALTER TABLE "public"."TransactionCosts" OWNER TO "postgres";
@@ -202,7 +203,7 @@ ALTER TABLE ONLY "public"."Retries"
     ADD CONSTRAINT "Retries_pkey" PRIMARY KEY ("from_block", "to_block", "chain_id");
 
 ALTER TABLE ONLY "public"."TransactionCosts"
-    ADD CONSTRAINT "TransactionCosts_pkey" PRIMARY KEY ("transaction_hash", "from", "to");
+    ADD CONSTRAINT "TransactionCosts_pkey" PRIMARY KEY ("transaction_hash", "from", "to", "log_index");
 
 ALTER TABLE ONLY "public"."TransactionGasCosts"
     ADD CONSTRAINT "TransactionGasCosts_pkey" PRIMARY KEY ("transaction_hash");
