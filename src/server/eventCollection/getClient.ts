@@ -1,5 +1,5 @@
 import * as chains from "viem/chains";
-import { createPublicClient, fallback, http } from "viem";
+import { createPublicClient, http } from "viem";
 import { getCrossChainControllers } from "./getCrossChainControllers";
 
 export const getClient = async ({

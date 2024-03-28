@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { Box } from "@/components/Box";
-import { Button } from "@/components/Button";
 import Link from "next/link";
 import logo from "@/assets/logo.svg";
 import { env } from "@/env";
