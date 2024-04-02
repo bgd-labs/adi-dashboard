@@ -522,3 +522,11 @@ const EnvelopeDetailPage = async ({
 export default EnvelopeDetailPage;
 
 export const revalidate = 30;
+
+export const generateStaticParams = async () => {
+  const slugs = await api.envelopes.getAllSlugs();
+
+  return slugs.map((slug) => ({
+    envelopeId: slug,
+  }));
+};

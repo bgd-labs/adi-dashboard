@@ -137,7 +137,7 @@ export const calculateTxCosts = async (txHash: Hash, chainId: number) => {
         token_symbol: nativeTokenInfo.symbol,
       },
     ]);
-    const transactionCostsWrite = await supabaseAdmin.from("TransactionCosts").upsert([
+    await supabaseAdmin.from("TransactionCosts").upsert([
       ...erc20transfers.map((transfer) => {
         const usdValue = (Number(transfer.value) / 1e18) * transfer.price;
 
