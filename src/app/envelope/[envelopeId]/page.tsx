@@ -34,11 +34,7 @@ const EnvelopeDetailPage = async ({
     });
     const forwardingAttemptEvents = await api.events.getForwardingAttemptEvents(
       {
-    const forwardingAttemptEvents = await api.events.getForwardingAttemptEvents(
-      {
         envelopeId: params.envelopeId,
-      },
-    );
       },
     );
     const transactionReceivedEvents =
@@ -48,9 +44,16 @@ const EnvelopeDetailPage = async ({
     const deliveryAttemptEvents = await api.events.getDeliveryAttemptEvents({
       envelopeId: params.envelopeId,
     });
-    const deliveryAttemptEvents = await api.events.getDeliveryAttemptEvents({
-      envelopeId: params.envelopeId,
-    });
+
+    const sortedEvents = [...forwardingAttemptEvents].sort(
+      (a, b) => Number(b.timestamp) - Number(a.timestamp),
+    );
+
+    const uniqueForwardingAttemptEvents = sortedEvents.filter(
+      (event, index, self) =>
+        index ===
+        self.findIndex((e) => e.bridge_adapter === event.bridge_adapter),
+    );
 
     const txHashes = forwardingAttemptEvents.map(
       (event) => event.transaction_hash,
@@ -58,10 +61,6 @@ const EnvelopeDetailPage = async ({
     const uniqueTxHashes = txHashes.filter(
       (value, index, self) => self.indexOf(value) === index,
     );
-
-    const bridgingStatus = await api.envelopes.getBridgingState({
-      envelopeId: params.envelopeId,
-    });
 
     const bridgingCosts = await api.transactions.getTransactionCosts({
       txHashes: uniqueTxHashes,
@@ -84,6 +83,10 @@ const EnvelopeDetailPage = async ({
     if (txHash) {
       isMultipleEnvelopes = await api.transactions.checkMultiEnvelope(txHash);
     }
+
+    const bridgingStatus = await api.envelopes.getBridgingState({
+      envelopeId: params.envelopeId,
+    });
 
     return (
       <>
