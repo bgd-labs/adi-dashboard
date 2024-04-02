@@ -85,5 +85,3 @@ export const EnvelopeList = async ({
     </>
   );
 };
-
-export const revalidate = 30;

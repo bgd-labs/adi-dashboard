@@ -16,6 +16,4 @@ const EnvelopeListPage = async ({
   return <EnvelopeList currentPage={page} perPage={15} searchParams={searchParams} />;
 };
 
-export const revalidate = 30;
-
 export default EnvelopeListPage;

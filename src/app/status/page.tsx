@@ -145,6 +145,5 @@ const StatusPage = async () => {
   );
 };
 
-export const revalidate = 1;
-
 export default StatusPage;
+export const revalidate = 1;
