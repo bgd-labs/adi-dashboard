@@ -10,6 +10,4 @@ const Home = async ({
   );
 };
 
-export const revalidate = 30;
-
 export default Home;

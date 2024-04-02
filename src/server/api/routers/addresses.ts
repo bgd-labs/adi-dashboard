@@ -1,5 +1,23 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+// import { getClient } from "@/server/eventCollection/getClient";
+// import { getContract, type Hex } from "viem";
+
+// const ADAPTER_ABI = [
+//   {
+//     inputs: [],
+//     name: "adapterName",
+//     outputs: [
+//       {
+//         internalType: "string",
+//         name: "",
+//         type: "string",
+//       },
+//     ],
+//     stateMutability: "view",
+//     type: "function",
+//   },
+// ];
 
 export const addressRouter = createTRPCRouter({
   get: publicProcedure
@@ -14,6 +32,47 @@ export const addressRouter = createTRPCRouter({
         .eq("chain_id", chainId)
         .limit(1)
         .single();
+
+      // if (!data) {
+      //   try {
+      //     console.log("Address not found", address, chainId);
+      //     const client = await getClient({ chainId });
+
+      //     const contract = getContract({
+      //       client,
+      //       address: address as Hex,
+      //       abi: ADAPTER_ABI,
+      //     });
+      //     if (!contract.read.adapterName) {
+      //       console.log("Contract does not have adapterName method", address);
+      //       return "";
+      //     }
+
+      //     const result = await contract.read.adapterName();
+
+      //     await ctx.supabaseAdmin.from("AddressBook").upsert([
+      //       {
+      //         address: address,
+      //         chain_id: chainId,
+      //         name: result as string,
+      //       },
+      //     ]);
+
+      //     return result as string;
+      //   } catch (err) {
+      //     console.log("Error fetching contract name", address, chainId);
+
+      //     await ctx.supabaseAdmin.from("AddressBook").upsert([
+      //       {
+      //         address: address,
+      //         chain_id: chainId,
+      //         name: "Unknown",
+      //       },
+      //     ]);
+
+      //     return "";
+      //   }
+      // }
 
       return data?.name ?? "";
     }),

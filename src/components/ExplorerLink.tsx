@@ -43,13 +43,13 @@ export const ExplorerLink = async ({
   if (tiny) {
     return (
       // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-      <Tooltip value={label || "Unknown"}>
+      <Tooltip value={label ? `${firstEight}...${lastEight}` : "Unknown"}>
         <a
           href={url}
           className="shrink translate-y-[1px] cursor-pointer truncate border-b border-dotted border-transparent font-mono text-xs leading-none opacity-60 hover:border-brand-900 hover:text-brand-900 hover:opacity-100"
           target="_blank"
         >
-          {firstEight}...{lastEight}
+          {label ?? <span>{`${firstEight}...${lastEight}`}</span>}
         </a>
       </Tooltip>
     );

@@ -85,17 +85,22 @@ export const envelopesRouter = createTRPCRouter({
 
       if (input.from) {
         query = query.filter("origin_chain_id", "eq", input.from);
+        query = query.filter("origin_chain_id", "eq", input.from);
       }
 
+
       if (input.to) {
+        query = query.filter("destination_chain_id", "eq", input.to);
         query = query.filter("destination_chain_id", "eq", input.to);
       }
 
       if (input.proposalId) {
         query = query.filter("proposal_id", "eq", input.proposalId);
+        query = query.filter("proposal_id", "eq", input.proposalId);
       }
 
       if (input.payloadId) {
+        query = query.filter("payload_id", "eq", input.payloadId);
         query = query.filter("payload_id", "eq", input.payloadId);
       }
 
@@ -151,6 +156,13 @@ export const envelopesRouter = createTRPCRouter({
 
       return { data: envelopeWithDeliveryInfo, count: count ?? 0 };
     }),
+  getAllSlugs: publicProcedure.query(async ({ ctx }) => {
+    const envelopes = await ctx.supabaseAdmin.from("Envelopes").select("id");
+    if (!envelopes.data) {
+      return [];
+    }
+    return envelopes.data.map((envelope) => envelope.id);
+  }),
   getBridgingState: publicProcedure
     .input(z.object({ envelopeId: z.string() }))
     .query(async ({ input, ctx }) => {
