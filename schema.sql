@@ -137,7 +137,8 @@ ALTER TABLE "public"."Retries" OWNER TO "postgres";
 
 CREATE TABLE IF NOT EXISTS "public"."SentNotifications" (
     "notification_hash" "text" NOT NULL,
-    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "data" "jsonb"
 );
 
 ALTER TABLE "public"."SentNotifications" OWNER TO "postgres";
