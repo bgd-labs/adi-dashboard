@@ -9,11 +9,11 @@
       "schedule": "*/10 * * * *"
     },
     {
-      "path": "/api/cron/notif/delivery",
+      "path": "/api/cron/notify/delivery",
       "schedule": "*/10 * * * *"
     },
     {
-      "path": "/api/cron/notif/delivery",
+      "path": "/api/cron/notify/delivery",
       "schedule": "*/30 * * * *"
     },
     {
