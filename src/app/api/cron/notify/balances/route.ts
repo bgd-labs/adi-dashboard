@@ -30,7 +30,7 @@ const NOTIFICATION_THRESHOLDS: Record<number, Thresholds> = {
     link: BigInt(15e18),
   },
   43114: {
-    native: BigInt(350e18),
+    native: BigInt(120e18),
     link: BigInt(15e18),
   },
 };
