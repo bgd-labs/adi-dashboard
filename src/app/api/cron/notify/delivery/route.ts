@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import crypto from "crypto";
 import { env } from "@/env";
 import { supabaseAdmin } from "@/server/api/supabase";
 import * as chains from "viem/chains";
@@ -54,14 +55,17 @@ export const GET = async (req: Request) => {
         const now = new Date();
         const diff = now.getTime() - registeredAt.getTime();
 
+        const notificationHash = crypto.createHash("sha256").update(`${envelope.id}-${txId ?? "unknown"}`).digest("hex");
+        console.log("Notification hash:")
+        console.log(notificationHash);
+
         if (diff > DELIVERY_NOTIFICATION_TIMEOUT) {
           const timeframe = timeComponentsToString(msToTimeComponents(diff));
 
           const { data: wasAlreadyNotified } = await supabaseAdmin
-            .from("Notifications")
+            .from("SentNotifications")
             .select("*")
-            .eq("envelope_id", envelope.id)
-            .eq("transaction_id", txId ?? "unknown")
+            .eq("notification_hash", notificationHash)
             .single();
 
           if (!wasAlreadyNotified) {
@@ -75,10 +79,14 @@ export const GET = async (req: Request) => {
               chainTo: destinationChain?.name ?? "Unknown",
               decodedMessage,
             });
-            await supabaseAdmin.from("Notifications").insert([
+            await supabaseAdmin.from("SentNotifications").insert([
               {
-                envelope_id: envelope.id,
-                transaction_id: txId ?? "unknown",
+                notification_hash: notificationHash,
+                data: {
+                  type: "delivery",
+                  envelope_id: envelope.id,
+                  transaction_id: txId ?? "unknown",
+                },
               },
             ]);
           }
@@ -95,14 +103,15 @@ export const GET = async (req: Request) => {
         const now = new Date();
         const diff = now.getTime() - registeredAt.getTime();
 
+        const notificationHash = crypto.createHash("sha256").update(`${envelope.id}-${txId ?? "unknown"}`).digest("hex");
+
         if (diff > DELIVERY_NOTIFICATION_TIMEOUT) {
           const timeframe = timeComponentsToString(msToTimeComponents(diff));
 
           const { data: wasAlreadyNotified } = await supabaseAdmin
-            .from("Notifications")
+            .from("SentNotifications")
             .select("*")
-            .eq("envelope_id", envelope.id)
-            .eq("transaction_id", txId ?? "unknown")
+            .eq("notification_hash", notificationHash)
             .single();
 
           if (!wasAlreadyNotified) {
@@ -116,10 +125,14 @@ export const GET = async (req: Request) => {
               chainTo: destinationChain?.name ?? "Unknown",
               decodedMessage,
             });
-            await supabaseAdmin.from("Notifications").insert([
+            await supabaseAdmin.from("SentNotifications").insert([
               {
-                envelope_id: envelope.id,
-                transaction_id: txId ?? "unknown",
+                notification_hash: notificationHash,
+                data: {
+                  type: "delivery",
+                  envelope_id: envelope.id,
+                  transaction_id: txId ?? "unknown",
+                },
               },
             ]);
           }

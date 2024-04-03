@@ -135,6 +135,14 @@ CREATE TABLE IF NOT EXISTS "public"."Retries" (
 
 ALTER TABLE "public"."Retries" OWNER TO "postgres";
 
+CREATE TABLE IF NOT EXISTS "public"."SentNotifications" (
+    "notification_hash" "text" NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "data" "jsonb"
+);
+
+ALTER TABLE "public"."SentNotifications" OWNER TO "postgres";
+
 CREATE TABLE IF NOT EXISTS "public"."TransactionCosts" (
     "transaction_hash" character varying NOT NULL,
     "value" numeric,
@@ -201,6 +209,9 @@ ALTER TABLE ONLY "public"."Notifications"
 
 ALTER TABLE ONLY "public"."Retries"
     ADD CONSTRAINT "Retries_pkey" PRIMARY KEY ("from_block", "to_block", "chain_id");
+
+ALTER TABLE ONLY "public"."SentNotifications"
+    ADD CONSTRAINT "SentNotifications_pkey" PRIMARY KEY ("notification_hash");
 
 ALTER TABLE ONLY "public"."TransactionCosts"
     ADD CONSTRAINT "TransactionCosts_pkey" PRIMARY KEY ("transaction_hash", "from", "to", "log_index");
@@ -299,6 +310,8 @@ ALTER TABLE "public"."Notifications" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."Retries" ENABLE ROW LEVEL SECURITY;
 
+ALTER TABLE "public"."SentNotifications" ENABLE ROW LEVEL SECURITY;
+
 ALTER TABLE "public"."TransactionCosts" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."TransactionForwardingAttempted" ENABLE ROW LEVEL SECURITY;
@@ -351,6 +364,10 @@ GRANT ALL ON TABLE "public"."Notifications" TO "service_role";
 GRANT ALL ON TABLE "public"."Retries" TO "anon";
 GRANT ALL ON TABLE "public"."Retries" TO "authenticated";
 GRANT ALL ON TABLE "public"."Retries" TO "service_role";
+
+GRANT ALL ON TABLE "public"."SentNotifications" TO "anon";
+GRANT ALL ON TABLE "public"."SentNotifications" TO "authenticated";
+GRANT ALL ON TABLE "public"."SentNotifications" TO "service_role";
 
 GRANT ALL ON TABLE "public"."TransactionCosts" TO "anon";
 GRANT ALL ON TABLE "public"."TransactionCosts" TO "authenticated";

@@ -281,6 +281,24 @@ export type Database = {
           },
         ]
       }
+      SentNotifications: {
+        Row: {
+          created_at: string
+          data: Json | null
+          notification_hash: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json | null
+          notification_hash: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json | null
+          notification_hash?: string
+        }
+        Relationships: []
+      }
       TransactionCosts: {
         Row: {
           chain_id: number | null
