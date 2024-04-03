@@ -1,12 +1,7 @@
 import { getClients } from "@/server/eventCollection/getClients";
 import { getCrossChainControllers } from "@/server/eventCollection/getCrossChainControllers";
-import { type Hash, formatEther, getContract } from "viem";
+import { type Hash, getContract } from "viem";
 
-const CHAIN_ID_TO_CURRENCY: Record<number, string> = {
-  1: "ETH",
-  137: "MATIC",
-  43114: "AVAX",
-};
 
 const CHAIN_ID_TO_LINK_CONTRACT: Record<number, string> = {
   1: "0x514910771AF9Ca656af840dff83E8264EcF986CA",
