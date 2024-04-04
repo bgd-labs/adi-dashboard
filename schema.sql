@@ -119,14 +119,6 @@ CREATE TABLE IF NOT EXISTS "public"."Envelopes" (
 
 ALTER TABLE "public"."Envelopes" OWNER TO "postgres";
 
-CREATE TABLE IF NOT EXISTS "public"."Notifications" (
-    "envelope_id" "text" NOT NULL,
-    "transaction_id" "text" NOT NULL,
-    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
-);
-
-ALTER TABLE "public"."Notifications" OWNER TO "postgres";
-
 CREATE TABLE IF NOT EXISTS "public"."Retries" (
     "from_block" bigint NOT NULL,
     "to_block" bigint NOT NULL,
@@ -204,9 +196,6 @@ ALTER TABLE ONLY "public"."EnvelopeDeliveryAttempted"
 ALTER TABLE ONLY "public"."EnvelopeRegistered"
     ADD CONSTRAINT "EnvelopeRegistered_pkey" PRIMARY KEY ("transaction_hash", "log_index");
 
-ALTER TABLE ONLY "public"."Notifications"
-    ADD CONSTRAINT "Notifications_pkey" PRIMARY KEY ("envelope_id", "transaction_id");
-
 ALTER TABLE ONLY "public"."Retries"
     ADD CONSTRAINT "Retries_pkey" PRIMARY KEY ("from_block", "to_block", "chain_id");
 
@@ -242,9 +231,6 @@ ALTER TABLE ONLY "public"."EnvelopeRegistered"
 
 ALTER TABLE ONLY "public"."EnvelopeRegistered"
     ADD CONSTRAINT "EnvelopeRegistered_envelope_id_fkey" FOREIGN KEY ("envelope_id") REFERENCES "public"."Envelopes"("id");
-
-ALTER TABLE ONLY "public"."Notifications"
-    ADD CONSTRAINT "Notifications_envelope_id_fkey" FOREIGN KEY ("envelope_id") REFERENCES "public"."Envelopes"("id");
 
 ALTER TABLE ONLY "public"."Retries"
     ADD CONSTRAINT "Retries_chain_id_fkey" FOREIGN KEY ("chain_id") REFERENCES "public"."CrossChainControllers"("chain_id");
@@ -306,8 +292,6 @@ ALTER TABLE "public"."EnvelopeRegistered" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."Envelopes" ENABLE ROW LEVEL SECURITY;
 
-ALTER TABLE "public"."Notifications" ENABLE ROW LEVEL SECURITY;
-
 ALTER TABLE "public"."Retries" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."SentNotifications" ENABLE ROW LEVEL SECURITY;
@@ -356,10 +340,6 @@ GRANT ALL ON TABLE "public"."EnvelopeRegistered" TO "service_role";
 GRANT ALL ON TABLE "public"."Envelopes" TO "anon";
 GRANT ALL ON TABLE "public"."Envelopes" TO "authenticated";
 GRANT ALL ON TABLE "public"."Envelopes" TO "service_role";
-
-GRANT ALL ON TABLE "public"."Notifications" TO "anon";
-GRANT ALL ON TABLE "public"."Notifications" TO "authenticated";
-GRANT ALL ON TABLE "public"."Notifications" TO "service_role";
 
 GRANT ALL ON TABLE "public"."Retries" TO "anon";
 GRANT ALL ON TABLE "public"."Retries" TO "authenticated";

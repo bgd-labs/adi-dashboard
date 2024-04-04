@@ -229,32 +229,6 @@ export type Database = {
         }
         Relationships: []
       }
-      Notifications: {
-        Row: {
-          created_at: string
-          envelope_id: string
-          transaction_id: string
-        }
-        Insert: {
-          created_at?: string
-          envelope_id: string
-          transaction_id: string
-        }
-        Update: {
-          created_at?: string
-          envelope_id?: string
-          transaction_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "Notifications_envelope_id_fkey"
-            columns: ["envelope_id"]
-            isOneToOne: false
-            referencedRelation: "Envelopes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       Retries: {
         Row: {
           chain_id: number
