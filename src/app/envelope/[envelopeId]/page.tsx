@@ -17,6 +17,7 @@ import { truncateToTwoSignificantDigits } from "@/utils/truncateToTwoSignificant
 import { formatEther, formatGwei, type Hex } from "viem";
 import { cn } from "@/utils/cn";
 import { EnvelopeGovernanceLinks } from "@/components/EnvelopeGovernanceLinks";
+import prettyMilliseconds from "pretty-ms";
 
 const SKIPPED_STATUS_TIMEOUT_HOURS = 10;
 
@@ -84,6 +85,28 @@ const EnvelopeDetailPage = async ({
     if (txHash) {
       isMultipleEnvelopes = await api.transactions.checkMultiEnvelope(txHash);
     }
+
+    const deliveryTimes = transactionReceivedEvents.map((receivedEvent) => {
+      const forwardingEvent = forwardingAttemptEvents.find(
+        (e) => e.destination_bridge_adapter === receivedEvent.bridge_adapter,
+      );
+      if (!forwardingEvent) {
+        return null;
+      }
+
+      const forwardingTimestamp = new Date(forwardingEvent.timestamp!);
+      const receivedTimestamp = new Date(receivedEvent.timestamp!);
+
+      if (forwardingTimestamp && receivedTimestamp) {
+        const timeDifference =
+          receivedTimestamp.getTime() - forwardingTimestamp.getTime();
+
+        return {
+          id: receivedEvent.bridge_adapter,
+          deliveryTime: prettyMilliseconds(timeDifference, { compact: true }),
+        };
+      }
+    });
 
     return (
       <>
@@ -305,7 +328,7 @@ const EnvelopeDetailPage = async ({
                     return (
                       <div
                         key={event.transaction_hash + event.log_index}
-                        className="flex items-center"
+                        className="flex items-center gap-1"
                       >
                         <ExplorerLink
                           type="address"
@@ -324,6 +347,9 @@ const EnvelopeDetailPage = async ({
                           )}
                         >
                           {status}
+                        </div>
+                        <div className="hidden ml-auto text-xs opacity-40 font-mono sm:block">
+                          {deliveryTimes.find(time => time?.id === event.destination_bridge_adapter)?.deliveryTime}
                         </div>
                       </div>
                     );
