@@ -94,6 +94,26 @@ const StatusPage = async () => {
 
   crossChainControllers.sort((a, b) => a.chain_id - b.chain_id);
 
+  const burnRates = (
+    await Promise.all(
+      crossChainControllers.map(async (crossChainController) => {
+        if (
+          !CHAIN_IDS_FOR_BALANCE_RETRIEVAL.includes(
+            crossChainController.chain_id,
+          )
+        )
+          return null;
+
+        const burnRates = await api.controllers.getBurnRates({
+          chainId: crossChainController.chain_id,
+          address: crossChainController.address,
+        });
+
+        return burnRates;
+      }),
+    )
+  ).filter((burnRate) => burnRate !== null);
+
   return (
     <>
       {crossChainControllers.map((crossChainController) => (
@@ -105,6 +125,11 @@ const StatusPage = async () => {
           lastScannedBlock={crossChainController.last_scanned_block!}
           address={crossChainController.address}
           balance={balances[crossChainController.chain_id]}
+          burnRate={burnRates.find(
+            (rate) =>
+              rate?.chainId === crossChainController.chain_id &&
+              rate?.address === crossChainController.address,
+          )}
         />
       ))}
     </>
