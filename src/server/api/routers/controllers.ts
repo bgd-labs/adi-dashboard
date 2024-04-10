@@ -52,7 +52,7 @@ export const controllersRouter = createTRPCRouter({
         const nativeSymbol = CHAIN_ID_TO_CURRENCY[input.chainId];
 
         for (const cost of costs) {
-          const costTimestamp = new Date(cost.timestamp as string).getTime();
+          const costTimestamp = new Date(cost.timestamp!).getTime();
 
           if (costTimestamp >= twoWeeksAgo) {
             if (cost.token_address) {
