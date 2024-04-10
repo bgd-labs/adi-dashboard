@@ -37,6 +37,8 @@ export const calculateTxCosts = async (txHash: Hash, chainId: number) => {
     blockNumber: transactionReceipt.blockNumber,
   });
   const blockDate = new Date(Number(block.timestamp) * 1000);
+  const dateString = blockDate.toISOString();
+
   const formattedBlockDate = [
     blockDate.getDate().toString().padStart(2, "0"),
     (blockDate.getMonth() + 1).toString().padStart(2, "0"),
@@ -83,7 +85,6 @@ export const calculateTxCosts = async (txHash: Hash, chainId: number) => {
       };
     }),
   );
-
 
   const tracedTransactions = (await core.client.request<viem.RpcSchemaOverride>(
     {
@@ -135,6 +136,7 @@ export const calculateTxCosts = async (txHash: Hash, chainId: number) => {
         token_usd_price: nativeTokenInfo.price,
         token_name: nativeTokenInfo.name,
         token_symbol: nativeTokenInfo.symbol,
+        timestamp: dateString,
       },
     ]);
     await supabaseAdmin.from("TransactionCosts").upsert([
@@ -153,6 +155,7 @@ export const calculateTxCosts = async (txHash: Hash, chainId: number) => {
           token_usd_price: transfer.price,
           token_name: transfer.name,
           token_symbol: transfer.symbol,
+          timestamp: dateString,
         };
       }),
       ...nativeTokenTransfers.map((transfer) => {
@@ -168,6 +171,7 @@ export const calculateTxCosts = async (txHash: Hash, chainId: number) => {
           token_usd_price: transfer.price,
           token_name: transfer.name,
           token_symbol: transfer.symbol,
+          timestamp: dateString,
         };
       }),
     ]);

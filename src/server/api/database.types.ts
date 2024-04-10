@@ -278,6 +278,7 @@ export type Database = {
           chain_id: number | null
           from: string
           log_index: number
+          timestamp: string | null
           to: string
           token_address: string | null
           token_name: string | null
@@ -291,6 +292,7 @@ export type Database = {
           chain_id?: number | null
           from: string
           log_index: number
+          timestamp?: string | null
           to: string
           token_address?: string | null
           token_name?: string | null
@@ -304,6 +306,7 @@ export type Database = {
           chain_id?: number | null
           from?: string
           log_index?: number
+          timestamp?: string | null
           to?: string
           token_address?: string | null
           token_name?: string | null
@@ -397,6 +400,7 @@ export type Database = {
         Row: {
           chain_id: number | null
           gas_price: number | null
+          timestamp: string | null
           token_name: string | null
           token_symbol: string | null
           token_usd_price: number | null
@@ -407,6 +411,7 @@ export type Database = {
         Insert: {
           chain_id?: number | null
           gas_price?: number | null
+          timestamp?: string | null
           token_name?: string | null
           token_symbol?: string | null
           token_usd_price?: number | null
@@ -417,6 +422,7 @@ export type Database = {
         Update: {
           chain_id?: number | null
           gas_price?: number | null
+          timestamp?: string | null
           token_name?: string | null
           token_symbol?: string | null
           token_usd_price?: number | null

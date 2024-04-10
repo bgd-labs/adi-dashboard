@@ -146,7 +146,8 @@ CREATE TABLE IF NOT EXISTS "public"."TransactionCosts" (
     "chain_id" bigint,
     "token_symbol" "text",
     "value_usd" numeric,
-    "log_index" bigint NOT NULL
+    "log_index" bigint NOT NULL,
+    "timestamp" timestamp with time zone
 );
 
 ALTER TABLE "public"."TransactionCosts" OWNER TO "postgres";
@@ -159,7 +160,8 @@ CREATE TABLE IF NOT EXISTS "public"."TransactionGasCosts" (
     "transaction_fee_usd" numeric,
     "token_usd_price" numeric,
     "token_name" "text",
-    "token_symbol" "text"
+    "token_symbol" "text",
+    "timestamp" timestamp with time zone
 );
 
 ALTER TABLE "public"."TransactionGasCosts" OWNER TO "postgres";
