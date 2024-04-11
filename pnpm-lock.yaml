@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@bgd-labs/frontend-web3-utils':
-    specifier: ^1.2.0
-    version: 1.2.0(immer@10.0.4)(react@18.2.0)(viem@2.9.16)(wagmi@2.5.19)(zustand@4.5.2)
+    specifier: 1.2.1-5491b1106809a2ed5323eaf1521101952fa8112b.0
+    version: 1.2.1-5491b1106809a2ed5323eaf1521101952fa8112b.0(immer@10.0.4)(react@18.2.0)(viem@2.9.16)(wagmi@2.5.19)(zustand@4.5.2)
   '@dicebear/collection':
     specifier: ^8.0.0
     version: 8.0.0(@dicebear/core@8.0.0)
@@ -1631,8 +1631,8 @@ packages:
       to-fast-properties: 2.0.0
     dev: false
 
-  /@bgd-labs/frontend-web3-utils@1.2.0(immer@10.0.4)(react@18.2.0)(viem@2.9.16)(wagmi@2.5.19)(zustand@4.5.2):
-    resolution: {integrity: sha512-mhj8UnuzlK5Q0pT7Qhk8cux6zF/XZiyMze3DOYZYuls0/0EuLOXlsQVHlMyBslm/4mP0JOhy9RCCZUaPJFKjVQ==}
+  /@bgd-labs/frontend-web3-utils@1.2.1-5491b1106809a2ed5323eaf1521101952fa8112b.0(immer@10.0.4)(react@18.2.0)(viem@2.9.16)(wagmi@2.5.19)(zustand@4.5.2):
+    resolution: {integrity: sha512-VXHy+qFob3VUkdbClKqhWWVunp3Cfci8qgbJcN60rh6P7q14lnEWCZgyluTZC28mauCicd4ah8uJ7yhcro4yBg==}
     engines: {node: '>=18'}
     peerDependencies:
       immer: ^10.0.4

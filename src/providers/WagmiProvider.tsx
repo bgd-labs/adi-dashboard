@@ -7,7 +7,6 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { useEffect, useMemo } from "react";
 import { mainnet } from "viem/chains";
-import { WagmiProvider as BaseWagmiProvider, type Config } from "wagmi";
 
 import { DESIRED_CHAIN_ID, useStore } from '@/providers/ZustandStoreProvider';
 import { env } from '@/env';
@@ -27,7 +26,6 @@ export const WagmiProvider = () => {
   );
   useEffect(() => {
     setWagmiProviderInitialize(true);
-    // eslint-disable-next-line
   }, []);
 
   const config = useMemo(() => {
@@ -48,25 +46,21 @@ export const WagmiProvider = () => {
       },
       ssr: true,
     });
-    // eslint-disable-next-line
-  }, []) as Config;
+  }, []);
+
 
   return (
-    <BaseWagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <WagmiZustandSync
-          withAutoConnect={false} // I think it can be true only for prod
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
-          wagmiConfig={config}
-          defaultChainId={mainnet.id}
-          store={{
-            setWagmiConfig,
-            setDefaultChainId,
-            changeActiveWalletAccount,
-          }}
-        />
-      </QueryClientProvider>
-    </BaseWagmiProvider>
+    <QueryClientProvider client={queryClient}>
+      <WagmiZustandSync
+        withAutoConnect={false} // I think it can be true only for prod
+        wagmiConfig={config}
+        defaultChainId={mainnet.id}
+        store={{
+          setWagmiConfig,
+          setDefaultChainId,
+          changeActiveWalletAccount,
+        }}
+      />
+    </QueryClientProvider>
   );
 };

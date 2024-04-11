@@ -10,7 +10,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@bgd-labs/frontend-web3-utils": "^1.2.0",
+    "@bgd-labs/frontend-web3-utils": "1.2.1-5491b1106809a2ed5323eaf1521101952fa8112b.0",
     "@dicebear/collection": "^8.0.0",
     "@dicebear/core": "^8.0.0",
     "@quicknode/sdk": "^2.1.3",
