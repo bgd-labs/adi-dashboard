@@ -1,6 +1,7 @@
 import { WalletType } from "@bgd-labs/frontend-web3-utils";
 
 import { useStore } from "@/providers/ZustandStoreProvider";
+import Image from 'next/image';
 
 export type Wallet = {
   walletType: WalletType;
@@ -42,9 +43,11 @@ export const WalletItem = ({
             dangerouslySetInnerHTML={{ __html: icon }}
           />
         ) : (
-          <div
-            className={`h-[26px] w-[26px] bg-contain bg-center bg-no-repeat`}
-            style={{ backgroundImage: `${icon}` }}
+          <Image
+            src={icon}
+            className={`h-[26px] w-[26px]`}
+            alt={walletType}
+            unoptimized
           />
         )}
       </div>

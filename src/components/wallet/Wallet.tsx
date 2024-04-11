@@ -22,6 +22,10 @@ import { getLocalStorageLastConnectedWallet } from "@/utils/localStorage";
 
 const browserWalletLabelAndIcon = getBrowserWalletLabelAndIcon();
 
+import coinbase from "@/assets/wallets/coinbase.svg";
+import walletConnect from "@/assets/wallets/walletConnect.svg";
+import gnosisSafe from "@/assets/wallets/gnosisSafe.svg";
+
 export const wallets: Wallet[] = [
   {
     walletType: WalletType.Injected,
@@ -31,19 +35,19 @@ export const wallets: Wallet[] = [
   },
   {
     walletType: WalletType.Coinbase,
-    icon: `url("/wallets/coinbase.svg")`,
+    icon: coinbase,
     title: "Coinbase",
     isVisible: true,
   },
   {
     walletType: WalletType.WalletConnect,
-    icon: `url("/wallets/walletConnect.svg")`,
+    icon: walletConnect,
     title: "WalletConnect",
     isVisible: true,
   },
   {
     walletType: WalletType.Safe,
-    icon: `url("/wallets/gnosisSafe.svg")`,
+    icon: gnosisSafe,
     title: "Safe wallet",
     isVisible: typeof window !== "undefined" && window !== window.parent,
   }
@@ -67,7 +71,6 @@ export const WalletWidget = () => {
     if (!!lastConnectedWallet || !activeWallet?.isActive) {
       setLoading(false);
     }
-    // eslint-disable-next-line
   }, [lastConnectedWallet]);
 
   if (loading) {

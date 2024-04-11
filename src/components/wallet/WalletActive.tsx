@@ -89,7 +89,6 @@ export const WalletActive = () => {
         });
       });
     }
-    // eslint-disable-next-line
   }, [ensData, activeAddress]);
 
   useEffect(() => {
@@ -102,14 +101,12 @@ export const WalletActive = () => {
         setTimeout(() => setLastTransactionError(false), 1000);
       }
     }
-    // eslint-disable-next-line
   }, [lastTransaction]);
 
   // get all pending tx's from connected wallet
   const allPendingTransactions = activeAddress ? pendingTxsFromStore : [];
   // filtered pending tx's, if now > tx.timestamp + 30 min, than remove tx from pending array to not show loading spinner in connect wallet button
   const filteredPendingTx = allPendingTransactions.filter(
-    // eslint-disable-next-line
     (tx) => dayjs().unix() <= dayjs.unix(tx.localTimestamp).unix() + 1800,
   );
 
@@ -124,7 +121,6 @@ export const WalletActive = () => {
     : undefined;
 
   const avatar = !isAvatarExists
-    // eslint-disable-next-line
     ? makeBlockie(activeAddress !== "" ? activeAddress : "default")
     : shownAvatar;
 
