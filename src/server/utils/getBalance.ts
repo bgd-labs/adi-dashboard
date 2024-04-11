@@ -2,7 +2,6 @@ import { getClients } from "@/server/eventCollection/getClients";
 import { getCrossChainControllers } from "@/server/eventCollection/getCrossChainControllers";
 import { type Hash, getContract } from "viem";
 
-
 const CHAIN_ID_TO_LINK_CONTRACT: Record<number, string> = {
   1: "0x514910771AF9Ca656af840dff83E8264EcF986CA",
   137: "0xb0897686c545045aFc77CF20eC7A532E3120E0F1",
@@ -42,9 +41,7 @@ export const getBalance = async ({
   let linkBalance: bigint | null = null;
 
   if (linkContract?.read?.balanceOf) {
-    linkBalance = (await linkContract.read.balanceOf([
-      address,
-    ])) as bigint;
+    linkBalance = (await linkContract.read.balanceOf([address])) as bigint;
   }
 
   const balance = await client.getBalance({
