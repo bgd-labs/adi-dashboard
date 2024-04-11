@@ -1,22 +1,25 @@
-"use client";
+import { type ClientsRecord } from '@bgd-labs/frontend-web3-utils';
+import  {type StoreApi } from 'zustand';
+import { createWeb3Slice, type IWeb3Slice } from '@/store/web3Slice';
+import { createTransactionsSlice, type TransactionsSlice } from '@/store/transactionsSlice';
+import { createEnsSlice, type IEnsSlice } from '@/store/ensSlice';
 
-import { create, type StoreApi } from "zustand";
-import { devtools } from "zustand/middleware";
 
-import {
-  createTransactionsSlice,
-  type TransactionsSlice,
-} from "@/transactions/store/transactionsSlice";
-import { createWeb3Slice, type IWeb3Slice } from "@/web3/store/web3Slice";
+export type StoreSliceWithClients<T extends object, E extends object = T> = (
+  set: StoreApi<E extends T ? E : E & T>["setState"],
+  get: StoreApi<E extends T ? E : E & T>["getState"],
+  clients: ClientsRecord,
+) => T;
 
-type RootState = IWeb3Slice & TransactionsSlice;
+export type RootState = IWeb3Slice & IEnsSlice & TransactionsSlice;
 
-const createRootSlice = (
+// combine zustand slices to one root slice
+export const createRootSlice = (
   set: StoreApi<RootState>["setState"],
   get: StoreApi<RootState>["getState"],
+  clients: ClientsRecord,
 ) => ({
-  ...createWeb3Slice(set, get),
-  ...createTransactionsSlice(set, get),
+  ...createWeb3Slice(set, get, clients),
+  ...createTransactionsSlice(set, get, clients),
+  ...createEnsSlice(set, get, clients),
 });
-
-export const useStore = create(devtools(createRootSlice, { serialize: true }));

@@ -1,9 +1,9 @@
 import Image from "next/image";
 import { Box } from "@/components/Box";
-import { Wallet } from "@/web3/components/Wallet";
 import Link from "next/link";
 import logo from "@/assets/logo.svg";
 import { env } from "@/env";
+import { WalletWidget } from '@/components/wallet/Wallet';
 
 export const Header = () => {
   return (
@@ -45,7 +45,7 @@ export const Header = () => {
           </div>
         </Link>
         <div className="flex items-end">
-          <Wallet />
+          <WalletWidget />
         </div>
       </div>
     </Box>

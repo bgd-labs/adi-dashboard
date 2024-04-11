@@ -4,10 +4,10 @@ import {
   type BaseTx as BT,
   createTransactionsSlice as createBaseTransactionsSlice,
   type ITransactionsSlice,
-  type IWalletSlice,
-  type StoreSlice, type TransactionStatus, type WalletType,
+  type IWalletSlice, type TransactionStatus, type WalletType,
 } from '@bgd-labs/frontend-web3-utils';
 import {type Address, type Hex} from 'viem';
+import {type StoreSliceWithClients} from '@/store';
 
 export enum TxType {
   retryEnvelope = 'retryEnvelope',
@@ -48,12 +48,12 @@ export type TxWithStatus = TransactionUnion & {
 
 export type AllTransactions = TxWithStatus[];
 
-export const createTransactionsSlice: StoreSlice<
+export const createTransactionsSlice: StoreSliceWithClients<
   TransactionsSlice,
   IWalletSlice
-> = (set, get) => ({
+> = (set, get, clients) => ({
   ...createBaseTransactionsSlice<TransactionUnion>({
-    txStatusChangedCallback: (data) => {
+    txStatusChangedCallback: async (data) => {
       switch (data.type) {
         case TxType.retryEnvelope:
           console.log(data.payload)
@@ -63,7 +63,6 @@ export const createTransactionsSlice: StoreSlice<
           break;
       }
     },
-    // not required, but can cause problem when tx pending and reload
-    defaultClients: {},
+    defaultClients: clients,
   })(set, get),
 });

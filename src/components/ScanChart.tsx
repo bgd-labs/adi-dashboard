@@ -15,6 +15,10 @@ type ChartProps = {
     link: string;
   };
   address: string;
+  burnRate?: {
+    native: string;
+    link: string;
+  } | null;
 };
 
 export const ScanChart = ({
@@ -24,6 +28,7 @@ export const ScanChart = ({
   lastScannedBlock,
   balance,
   address,
+  burnRate,
 }: ChartProps) => {
   const totalRange = ranges.reduce(
     (total, { range }) => total + (range[1] - range[0]),
@@ -35,12 +40,13 @@ export const ScanChart = ({
     .reduce((total, { range }) => total + (range[1] - range[0]), 0);
 
   const percentage = parseFloat(((scannedRange / totalRange) * 100).toFixed(2));
+  const showBalances = balance?.native ?? balance?.link;
 
   return (
     <Box>
-      <div className="px-6 pb-9 pt-5">
-        <div className="mb-4 flex flex-col gap-2 md:flex-row flex-wrap md:items-center sm:gap-2">
-          <div className="md:mr-auto flex gap-2">
+      <div className="bg-brand-100 px-6 pb-9 pt-5">
+        <div className="mb-4 flex flex-col flex-wrap gap-2 sm:gap-2 md:flex-row md:items-center">
+          <div className="flex gap-2 md:mr-auto">
             <ChainIcon chainId={chainId} />
             <div className="color-brand-900 text-sm font-semibold">
               {title}
@@ -49,16 +55,6 @@ export const ScanChart = ({
               </span>
             </div>
           </div>
-          {balance?.native && (
-            <div className="w-fit bg-brand-300 px-1.5 py-1 font-mono text-xs opacity-60">
-              {balance?.native}
-            </div>
-          )}
-          {balance?.link && (
-            <div className="w-fit bg-brand-300 px-1.5 py-1 font-mono text-xs opacity-60">
-              {balance?.link}
-            </div>
-          )}
           <ExplorerLink
             chainId={chainId}
             value={address}
@@ -66,6 +62,40 @@ export const ScanChart = ({
             hideLabel
           />
         </div>
+        {showBalances && (
+          <div className="mb-3 grid w-fit gap-5 border border-brand-300 bg-white p-4 sm:grid-cols-2">
+            <div className="grid gap-2">
+              <h2 className="text-[11px] font-semibold uppercase tracking-wider">
+                Balances
+              </h2>
+              {balance?.native && (
+                <div className="w-fit rounded border border-brand-300 bg-brand-300 px-1.5 py-0.5 font-mono text-xs">
+                  {balance?.native}
+                </div>
+              )}
+              {balance?.link && (
+                <div className="w-fit rounded bg-brand-300 px-1.5 py-0.5 font-mono text-xs">
+                  {balance?.link}
+                </div>
+              )}
+            </div>
+            <div className="grid gap-2">
+              <h2 className="text-[11px] font-semibold uppercase tracking-wider">
+                Two week burn rate
+              </h2>
+              {burnRate?.native && (
+                <div className="w-fit rounded bg-brand-300 px-1.5 py-0.5 font-mono text-xs uppercase">
+                  {burnRate?.native}
+                </div>
+              )}
+              {burnRate?.link && (
+                <div className="w-fit rounded bg-brand-300 px-1.5 py-0.5 font-mono text-xs uppercase">
+                  {burnRate?.link}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
         <div className="w-full grow">
           <div className="flex h-2">
             {ranges.map(({ range, status }) => {
@@ -86,17 +116,17 @@ export const ScanChart = ({
           </div>
           <div className="flex h-2 justify-between pt-2">
             <Tooltip value="Deployment block">
-              <div className="font-mono text-xs text-brand-500">
+              <div className="font-mono text-xs text-brand-900 opacity-60">
                 {ranges[0]?.range[0]}
               </div>
             </Tooltip>
             <Tooltip value="Last scanned block">
-              <div className="ml-auto mr-3 font-mono text-xs text-green-400">
+              <div className="ml-auto mr-3 font-mono text-xs text-green-500">
                 {lastScannedBlock}
               </div>
             </Tooltip>
             <Tooltip value="Latest block">
-              <div className="font-mono text-xs text-brand-500">
+              <div className="font-mono text-xs text-brand-900 opacity-60">
                 {ranges[ranges.length - 1]?.range[1]}
               </div>
             </Tooltip>

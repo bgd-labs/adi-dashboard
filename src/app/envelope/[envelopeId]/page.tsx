@@ -6,7 +6,6 @@ import { Consensus } from "@/components/Consensus";
 import { Timestamp } from "@/components/Timestamp";
 import { ExplorerLink } from "@/components/ExplorerLink";
 import { Tooltip } from "@/components/Tooltip";
-import { RetryButtons } from "@/components/RetryButtons";
 import { api } from "@/trpc/server";
 import { Box } from "@/components/Box";
 import { EnvelopeRegisteredEvent } from "@/components/EnvelopeRegisteredEvent";
@@ -18,10 +17,13 @@ import { truncateToTwoSignificantDigits } from "@/utils/truncateToTwoSignificant
 import { formatEther, formatGwei, type Hex } from "viem";
 import { cn } from "@/utils/cn";
 import { EnvelopeGovernanceLinks } from "@/components/EnvelopeGovernanceLinks";
+import prettyMilliseconds from "pretty-ms";
+
+const SKIPPED_STATUS_TIMEOUT_HOURS = 10;
 
 const EnvelopeDetailPage = async ({
-  params,
-}: {
+                                    params,
+                                  }: {
   params: { envelopeId: string };
 }) => {
   try {
@@ -84,16 +86,30 @@ const EnvelopeDetailPage = async ({
       isMultipleEnvelopes = await api.transactions.checkMultiEnvelope(txHash);
     }
 
-    const bridgingStatus = await api.envelopes.getBridgingState({
-      envelopeId: params.envelopeId,
+    const deliveryTimes = transactionReceivedEvents.map((receivedEvent) => {
+      const forwardingEvent = forwardingAttemptEvents.find(
+        (e) => e.destination_bridge_adapter === receivedEvent.bridge_adapter,
+      );
+      if (!forwardingEvent) {
+        return null;
+      }
+
+      const forwardingTimestamp = new Date(forwardingEvent.timestamp!);
+      const receivedTimestamp = new Date(receivedEvent.timestamp!);
+
+      if (forwardingTimestamp && receivedTimestamp) {
+        const timeDifference =
+          receivedTimestamp.getTime() - forwardingTimestamp.getTime();
+
+        return {
+          id: receivedEvent.bridge_adapter,
+          deliveryTime: prettyMilliseconds(timeDifference, { compact: true }),
+        };
+      }
     });
 
     return (
       <>
-        {/* TODO: check if wallet is connected */}
-        {!envelope.is_delivered && !envelope.is_pending && (
-          <RetryButtons failedAdapters={bridgingStatus.failedAdapters} />
-        )}
         <Box>
           <div className="px-4 py-2 py-6 sm:px-6">
             <div className="flex items-center gap-1 sm:gap-3">
@@ -240,12 +256,15 @@ const EnvelopeDetailPage = async ({
                   <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider">
                     Origin adapters
                   </h2>
-                  {bridgingStatus.origin.map((item) => (
-                    <div key={item.address} className="flex items-center gap-1">
+                  {uniqueForwardingAttemptEvents.map((event) => (
+                    <div
+                      key={event.transaction_hash + event.log_index}
+                      className="flex items-center gap-1"
+                    >
                       <ExplorerLink
                         type="address"
-                        chainId={item.chainId!}
-                        value={item.address!}
+                        chainId={envelope.origin_chain_id!}
+                        value={event.bridge_adapter!}
                         skipAdapter
                       />
                       <div
@@ -253,13 +272,13 @@ const EnvelopeDetailPage = async ({
                           "ml-auto rounded-full bg-brand-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-500 sm:ml-0",
                           {
                             ["bg-green-100 text-green-700"]:
-                              item.status === "success",
+                            event.adapter_successful,
                             ["bg-red-100 text-red-700"]:
-                              item.status === "failed",
+                              !event.adapter_successful,
                           },
                         )}
                       >
-                        {item.status}
+                        {event.adapter_successful ? "Success" : "Failed"}
                       </div>
                     </div>
                   ))}
@@ -268,13 +287,53 @@ const EnvelopeDetailPage = async ({
                   <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider">
                     Destination adapters
                   </h2>
-                  {bridgingStatus.destination.map((item) => {
+                  {uniqueForwardingAttemptEvents.map((event) => {
+                    const isDelivered = deliveryAttemptEvents.length > 0;
+                    const isSameChain =
+                      envelope.origin_chain_id ===
+                      envelope.destination_chain_id;
+                    const isAdapterSuccessful = forwardingAttemptEvents.some(
+                      (e) => e.adapter_successful,
+                    );
+                    const isDestinationAdapterMatch =
+                      transactionReceivedEvents.some(
+                        (e) =>
+                          e.bridge_adapter === event.destination_bridge_adapter,
+                      );
+
+                    let status = "Failed";
+
+                    const registeredAt = new Date(envelope.registered_at!);
+                    const timeBeforeTimeout = new Date();
+                    timeBeforeTimeout.setHours(
+                      timeBeforeTimeout.getHours() -
+                      SKIPPED_STATUS_TIMEOUT_HOURS,
+                    );
+
+                    if (
+                      registeredAt > timeBeforeTimeout &&
+                      !isDelivered &&
+                      !isDestinationAdapterMatch &&
+                      !(isSameChain && isAdapterSuccessful)
+                    ) {
+                      status = "Pending";
+                    } else if (isSameChain && isAdapterSuccessful) {
+                      status = "Success";
+                    } else if (!isSameChain && isDestinationAdapterMatch) {
+                      status = "Success";
+                    } else if (event.adapter_successful && isDelivered) {
+                      status = "Skipped";
+                    }
+
                     return (
-                      <div key={item.address} className="flex items-center">
+                      <div
+                        key={event.transaction_hash + event.log_index}
+                        className="flex items-center gap-1"
+                      >
                         <ExplorerLink
                           type="address"
-                          chainId={item.chainId!}
-                          value={item.address!}
+                          chainId={envelope.destination_chain_id!}
+                          value={event.destination_bridge_adapter!}
                           skipAdapter
                         />
                         <div
@@ -282,13 +341,15 @@ const EnvelopeDetailPage = async ({
                             "ml-auto rounded-full bg-brand-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-500 sm:ml-0",
                             {
                               ["bg-green-100 text-green-700"]:
-                                item.status === "success",
-                              ["bg-red-100 text-red-700"]:
-                                item.status === "failed",
+                              status === "Success",
+                              ["bg-red-100 text-red-700"]: status === "Failed",
                             },
                           )}
                         >
-                          {item.status}
+                          {status}
+                        </div>
+                        <div className="hidden ml-auto text-xs opacity-40 font-mono sm:block">
+                          {deliveryTimes.find(time => time?.id === event.destination_bridge_adapter)?.deliveryTime}
                         </div>
                       </div>
                     );

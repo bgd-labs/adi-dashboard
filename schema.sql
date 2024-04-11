@@ -119,14 +119,6 @@ CREATE TABLE IF NOT EXISTS "public"."Envelopes" (
 
 ALTER TABLE "public"."Envelopes" OWNER TO "postgres";
 
-CREATE TABLE IF NOT EXISTS "public"."Notifications" (
-    "envelope_id" "text" NOT NULL,
-    "transaction_id" "text" NOT NULL,
-    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
-);
-
-ALTER TABLE "public"."Notifications" OWNER TO "postgres";
-
 CREATE TABLE IF NOT EXISTS "public"."Retries" (
     "from_block" bigint NOT NULL,
     "to_block" bigint NOT NULL,
@@ -134,6 +126,14 @@ CREATE TABLE IF NOT EXISTS "public"."Retries" (
 );
 
 ALTER TABLE "public"."Retries" OWNER TO "postgres";
+
+CREATE TABLE IF NOT EXISTS "public"."SentNotifications" (
+    "notification_hash" "text" NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "data" "jsonb"
+);
+
+ALTER TABLE "public"."SentNotifications" OWNER TO "postgres";
 
 CREATE TABLE IF NOT EXISTS "public"."TransactionCosts" (
     "transaction_hash" character varying NOT NULL,
@@ -146,7 +146,8 @@ CREATE TABLE IF NOT EXISTS "public"."TransactionCosts" (
     "chain_id" bigint,
     "token_symbol" "text",
     "value_usd" numeric,
-    "log_index" bigint NOT NULL
+    "log_index" bigint NOT NULL,
+    "timestamp" timestamp with time zone
 );
 
 ALTER TABLE "public"."TransactionCosts" OWNER TO "postgres";
@@ -159,7 +160,8 @@ CREATE TABLE IF NOT EXISTS "public"."TransactionGasCosts" (
     "transaction_fee_usd" numeric,
     "token_usd_price" numeric,
     "token_name" "text",
-    "token_symbol" "text"
+    "token_symbol" "text",
+    "timestamp" timestamp with time zone
 );
 
 ALTER TABLE "public"."TransactionGasCosts" OWNER TO "postgres";
@@ -196,11 +198,11 @@ ALTER TABLE ONLY "public"."EnvelopeDeliveryAttempted"
 ALTER TABLE ONLY "public"."EnvelopeRegistered"
     ADD CONSTRAINT "EnvelopeRegistered_pkey" PRIMARY KEY ("transaction_hash", "log_index");
 
-ALTER TABLE ONLY "public"."Notifications"
-    ADD CONSTRAINT "Notifications_pkey" PRIMARY KEY ("envelope_id", "transaction_id");
-
 ALTER TABLE ONLY "public"."Retries"
     ADD CONSTRAINT "Retries_pkey" PRIMARY KEY ("from_block", "to_block", "chain_id");
+
+ALTER TABLE ONLY "public"."SentNotifications"
+    ADD CONSTRAINT "SentNotifications_pkey" PRIMARY KEY ("notification_hash");
 
 ALTER TABLE ONLY "public"."TransactionCosts"
     ADD CONSTRAINT "TransactionCosts_pkey" PRIMARY KEY ("transaction_hash", "from", "to", "log_index");
@@ -231,9 +233,6 @@ ALTER TABLE ONLY "public"."EnvelopeRegistered"
 
 ALTER TABLE ONLY "public"."EnvelopeRegistered"
     ADD CONSTRAINT "EnvelopeRegistered_envelope_id_fkey" FOREIGN KEY ("envelope_id") REFERENCES "public"."Envelopes"("id");
-
-ALTER TABLE ONLY "public"."Notifications"
-    ADD CONSTRAINT "Notifications_envelope_id_fkey" FOREIGN KEY ("envelope_id") REFERENCES "public"."Envelopes"("id");
 
 ALTER TABLE ONLY "public"."Retries"
     ADD CONSTRAINT "Retries_chain_id_fkey" FOREIGN KEY ("chain_id") REFERENCES "public"."CrossChainControllers"("chain_id");
@@ -295,9 +294,9 @@ ALTER TABLE "public"."EnvelopeRegistered" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."Envelopes" ENABLE ROW LEVEL SECURITY;
 
-ALTER TABLE "public"."Notifications" ENABLE ROW LEVEL SECURITY;
-
 ALTER TABLE "public"."Retries" ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE "public"."SentNotifications" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."TransactionCosts" ENABLE ROW LEVEL SECURITY;
 
@@ -344,13 +343,13 @@ GRANT ALL ON TABLE "public"."Envelopes" TO "anon";
 GRANT ALL ON TABLE "public"."Envelopes" TO "authenticated";
 GRANT ALL ON TABLE "public"."Envelopes" TO "service_role";
 
-GRANT ALL ON TABLE "public"."Notifications" TO "anon";
-GRANT ALL ON TABLE "public"."Notifications" TO "authenticated";
-GRANT ALL ON TABLE "public"."Notifications" TO "service_role";
-
 GRANT ALL ON TABLE "public"."Retries" TO "anon";
 GRANT ALL ON TABLE "public"."Retries" TO "authenticated";
 GRANT ALL ON TABLE "public"."Retries" TO "service_role";
+
+GRANT ALL ON TABLE "public"."SentNotifications" TO "anon";
+GRANT ALL ON TABLE "public"."SentNotifications" TO "authenticated";
+GRANT ALL ON TABLE "public"."SentNotifications" TO "service_role";
 
 GRANT ALL ON TABLE "public"."TransactionCosts" TO "anon";
 GRANT ALL ON TABLE "public"."TransactionCosts" TO "authenticated";

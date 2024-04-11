@@ -4,7 +4,8 @@ import { getClients } from "@/server/eventCollection/getClients";
 import { getCrossChainControllers } from "@/server/eventCollection/getCrossChainControllers";
 import { prepareBlockIntervals } from "@/server/eventCollection/prepareBlockIntervals";
 import { type RangeStatus } from "@/server/eventCollection/types";
-import { type Hash, formatEther, getContract } from "viem";
+import { type Hash, formatEther } from "viem";
+import { getBalance } from "@/server/utils/getBalance";
 
 const CHAIN_IDS_FOR_BALANCE_RETRIEVAL = [1, 137, 43114];
 const CHAIN_ID_TO_CURRENCY: Record<number, string> = {
@@ -12,22 +13,6 @@ const CHAIN_ID_TO_CURRENCY: Record<number, string> = {
   137: "MATIC",
   43114: "AVAX",
 };
-const CHAIN_ID_TO_LINK_CONTRACT: Record<number, string> = {
-  1: "0x514910771AF9Ca656af840dff83E8264EcF986CA",
-  137: "0xb0897686c545045aFc77CF20eC7A532E3120E0F1",
-  43114: "0x5947BB275c521040051D82396192181b413227A3",
-};
-const LINK_TOKEN_ABI = [
-  {
-    constant: true,
-    inputs: [{ name: "_owner", type: "address" }],
-    name: "balanceOf",
-    outputs: [{ name: "balance", type: "uint256" }],
-    payable: false,
-    stateMutability: "view",
-    type: "function",
-  },
-];
 
 const StatusPage = async () => {
   const crossChainControllers = await getCrossChainControllers();
@@ -69,29 +54,10 @@ const StatusPage = async () => {
       )
         return null;
 
-      const client = clients[crossChainController.chain_id];
-      if (!client) return null;
-
-      const linkContract = getContract({
-        address: CHAIN_ID_TO_LINK_CONTRACT[
-          crossChainController.chain_id
-        ] as Hash,
-        abi: LINK_TOKEN_ABI,
-        client: client,
-      });
-
-      let linkBalance: bigint | null = null;
-
-      if (linkContract?.read?.balanceOf) {
-        linkBalance = (await linkContract.read.balanceOf([
-          crossChainController.address as Hash,
-        ])) as bigint;
-      }
-
-      const balance = await client.getBalance({
+      return await getBalance({
+        chainId: crossChainController.chain_id,
         address: crossChainController.address as Hash,
       });
-      return { chain_id: crossChainController.chain_id, balance, linkBalance };
     },
   );
 
@@ -128,6 +94,26 @@ const StatusPage = async () => {
 
   crossChainControllers.sort((a, b) => a.chain_id - b.chain_id);
 
+  const burnRates = (
+    await Promise.all(
+      crossChainControllers.map(async (crossChainController) => {
+        if (
+          !CHAIN_IDS_FOR_BALANCE_RETRIEVAL.includes(
+            crossChainController.chain_id,
+          )
+        )
+          return null;
+
+        const burnRates = await api.controllers.getBurnRates({
+          chainId: crossChainController.chain_id,
+          address: crossChainController.address,
+        });
+
+        return burnRates;
+      }),
+    )
+  ).filter((burnRate) => burnRate !== null);
+
   return (
     <>
       {crossChainControllers.map((crossChainController) => (
@@ -139,6 +125,11 @@ const StatusPage = async () => {
           lastScannedBlock={crossChainController.last_scanned_block!}
           address={crossChainController.address}
           balance={balances[crossChainController.chain_id]}
+          burnRate={burnRates.find(
+            (rate) =>
+              rate?.chainId === crossChainController.chain_id &&
+              rate?.address === crossChainController.address,
+          )}
         />
       ))}
     </>

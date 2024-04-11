@@ -229,32 +229,6 @@ export type Database = {
         }
         Relationships: []
       }
-      Notifications: {
-        Row: {
-          created_at: string
-          envelope_id: string
-          transaction_id: string
-        }
-        Insert: {
-          created_at?: string
-          envelope_id: string
-          transaction_id: string
-        }
-        Update: {
-          created_at?: string
-          envelope_id?: string
-          transaction_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "Notifications_envelope_id_fkey"
-            columns: ["envelope_id"]
-            isOneToOne: false
-            referencedRelation: "Envelopes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       Retries: {
         Row: {
           chain_id: number
@@ -281,11 +255,30 @@ export type Database = {
           },
         ]
       }
+      SentNotifications: {
+        Row: {
+          created_at: string
+          data: Json | null
+          notification_hash: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json | null
+          notification_hash: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json | null
+          notification_hash?: string
+        }
+        Relationships: []
+      }
       TransactionCosts: {
         Row: {
           chain_id: number | null
           from: string
           log_index: number
+          timestamp: string | null
           to: string
           token_address: string | null
           token_name: string | null
@@ -299,6 +292,7 @@ export type Database = {
           chain_id?: number | null
           from: string
           log_index: number
+          timestamp?: string | null
           to: string
           token_address?: string | null
           token_name?: string | null
@@ -312,6 +306,7 @@ export type Database = {
           chain_id?: number | null
           from?: string
           log_index?: number
+          timestamp?: string | null
           to?: string
           token_address?: string | null
           token_name?: string | null
@@ -405,6 +400,7 @@ export type Database = {
         Row: {
           chain_id: number | null
           gas_price: number | null
+          timestamp: string | null
           token_name: string | null
           token_symbol: string | null
           token_usd_price: number | null
@@ -415,6 +411,7 @@ export type Database = {
         Insert: {
           chain_id?: number | null
           gas_price?: number | null
+          timestamp?: string | null
           token_name?: string | null
           token_symbol?: string | null
           token_usd_price?: number | null
@@ -425,6 +422,7 @@ export type Database = {
         Update: {
           chain_id?: number | null
           gas_price?: number | null
+          timestamp?: string | null
           token_name?: string | null
           token_symbol?: string | null
           token_usd_price?: number | null
