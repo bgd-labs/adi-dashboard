@@ -28,7 +28,7 @@
     "@trpc/next": "11.0.0-next-beta.318",
     "@trpc/react-query": "11.0.0-next-beta.318",
     "@trpc/server": "11.0.0-next-beta.318",
-    "@wagmi/core": "^2.6.9",
+    "@wagmi/core": "^2.6.16",
     "clsx": "^2.1.0",
     "dayjs": "^1.11.10",
     "encoding": "^0.1.13",
