@@ -4,6 +4,7 @@ import { forwardRef, type ForwardedRef } from "react";
 import { cn } from "@/utils/cn";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { Spinner } from "@/components/Spinner";
 
 type Props = {
   children: React.ReactNode;
@@ -13,6 +14,7 @@ type Props = {
   scroll?: boolean;
   className?: string;
   type?: "danger" | "primary";
+  loading?: boolean;
 };
 
 export const Button = forwardRef(
@@ -25,6 +27,7 @@ export const Button = forwardRef(
       scroll = true,
       className,
       type,
+      loading = false,
     }: Props,
     ref: ForwardedRef<HTMLButtonElement | HTMLAnchorElement>,
   ) => {
@@ -52,7 +55,7 @@ export const Button = forwardRef(
         </span>
         <span
           className={cn(
-            "will-change[transform] ease-cubic-bezier[.3,.7,.4,1] relative block -translate-y-1 translate-x-1 transform select-none border border-brand-900 bg-white px-4 py-1 text-center text-brand-900 transition-all hover:bg-brand-100 group-active/button:-translate-y-0 group-active/button:translate-x-0",
+            "will-change[transform] ease-cubic-bezier[.3,.7,.4,1] relative block grid -translate-y-1 translate-x-1 transform select-none grid-flow-col items-center gap-2 border border-brand-900 bg-white px-3 py-1 text-center text-brand-900 transition-all hover:bg-brand-100 group-active/button:-translate-y-0 group-active/button:translate-x-0",
             className,
             {
               ["translate-x-0 translate-y-0 border-brand-500 text-brand-500"]:
@@ -61,6 +64,9 @@ export const Button = forwardRef(
             },
           )}
         >
+          {loading && (
+            <Spinner className="h-5 w-5"/>
+          )}
           {children}
         </span>
       </>

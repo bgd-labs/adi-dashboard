@@ -14,11 +14,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/Modal";
-import { Spinner } from "@/components/Spinner";
 import { WalletActive } from "@/components/wallet/WalletActive";
 import { type Wallet, WalletItem } from "@/components/wallet/WalletItem";
 import { useStore } from "@/providers/ZustandStoreProvider";
 import { getLocalStorageLastConnectedWallet } from "@/utils/localStorage";
+import { Button } from "@/components/Button";
 
 const browserWalletLabelAndIcon = getBrowserWalletLabelAndIcon();
 
@@ -50,7 +50,7 @@ export const wallets: Wallet[] = [
     icon: gnosisSafe,
     title: "Safe wallet",
     isVisible: typeof window !== "undefined" && window !== window.parent,
-  }
+  },
 ];
 
 export const WalletWidget = () => {
@@ -74,11 +74,7 @@ export const WalletWidget = () => {
   }, [lastConnectedWallet]);
 
   if (loading) {
-    return (
-      <div>
-        <h1>TODO: button loading</h1>
-      </div>
-    );
+    return <Button loading className="text-sm">Loading...</Button>;
   }
 
   if (activeWallet) {
@@ -88,22 +84,15 @@ export const WalletWidget = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button
-          type="button"
-          disabled={walletActivating}
-          className="h-[28px] w-[120px] bg-brand-300 text-brand-900 transition-all hover:bg-brand-600 active:bg-brand-900 active:text-brand-100 disabled:cursor-not-allowed disabled:bg-gray-700 disabled:text-brand-100 sm:h-[32px] sm:w-[140px]"
-        >
-          <p>{walletActivating ? "Connecting" : "Connect wallet"}</p>
-          {walletActivating && <Spinner />}
-        </button>
+        <Button loading={walletActivating} className="text-sm">Connect wallet</Button>
       </DialogTrigger>
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="mb-4 text-center">Connect wallet</DialogTitle>
+          <DialogTitle className="mb-6 text-center">Connect wallet</DialogTitle>
         </DialogHeader>
 
-        <div className="grid min-h-[190px] gap-3 pt-4">
+        <div className="grid gap-3">
           {walletActivating ? (
             <div className="appBackground flex flex-col items-center justify-center">
               {/* Here can be some animated loader */}
@@ -133,10 +122,10 @@ export const WalletWidget = () => {
           </div>
         )}
 
-        <DialogDescription className="mt-6 text-center text-gray-400">
-          By selecting a wallet from an External Provider, you agree to their
-          Terms and Conditions. Your ability to access the wallet may depend on
-          the External Provider being operational.
+        <DialogDescription className="mt-6 text-center text-xs text-brand-900/30">
+          By&nbsp;selecting a&nbsp;wallet from an&nbsp;External Provider, you
+          agree to&nbsp;their Terms and Conditions. Your ability to&nbsp;access
+          the wallet may depend on the External Provider being operational.
         </DialogDescription>
       </DialogContent>
     </Dialog>

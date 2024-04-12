@@ -9,7 +9,6 @@ import React, { useEffect, useState } from "react";
 import { type Address, zeroAddress } from "viem";
 import { mainnet } from "viem/chains";
 
-import { ChainIcon } from "@/components/ChainIcon";
 import { Link } from "@/components/Link";
 import {
   Dialog,
@@ -25,7 +24,7 @@ import { selectENSAvatar } from "@/store/ensSelectors";
 import { cn } from "@/utils/cn";
 import { getScanLink } from "@/utils/getScanLink";
 import { textCenterEllipsis } from "@/utils/textCenterEllipsis";
-import { getChainName } from '@/utils/getChainName';
+import { getChainName } from "@/utils/getChainName";
 
 export const WalletActive = () => {
   const activeWallet = useStore((store) => store.activeWallet);
@@ -127,25 +126,24 @@ export const WalletActive = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div className="flex items-center">
-          <div className="mr-3 flex items-center">
-            <ChainIcon chainId={activeWallet?.chainId} />
-            <p className="ml-1 inline-block">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
+            <div className="ml-1 inline-block text-sm opacity-70">
               {getChainName(activeWallet?.chainId ?? mainnet.id)}
-            </p>
+            </div>
           </div>
 
           <button
             type="button"
             className={cn(
-              "inline-flex h-[28px] min-w-[120px] items-center justify-center bg-brand-300 px-3 text-brand-900 transition-all hover:bg-brand-600 active:bg-brand-900 active:text-brand-100 disabled:cursor-not-allowed disabled:bg-gray-700 disabled:text-brand-100 sm:h-[32px] sm:min-w-[155px]",
+              "grid grid-flow-col items-center gap-2 border border-white/30 pl-2 hover:border-white/60",
               {
                 ["bg-red-400"]: lastTransactionError,
                 ["bg-green-400"]: lastTransactionSuccess,
               },
             )}
           >
-            <p>
+            <div className="font-mono text-xs">
               {lastTransactionError
                 ? "Error"
                 : lastTransactionSuccess
@@ -153,19 +151,15 @@ export const WalletActive = () => {
                   : ensNameAbbreviated
                     ? ensNameAbbreviated
                     : textCenterEllipsis(activeAddress, 4, 4)}
-            </p>
-            <div className="relative ml-2 flex h-[26px] w-[26px] items-center justify-center">
+            </div>
+            <div className="relative flex h-[26px] w-[26px] items-center justify-center">
               {!!filteredPendingTx.length && (
-                <div className="absolute left-[50%] top-[50%] h-[26px] w-[26px] translate-x-[-50%] translate-y-[-50%]">
-                  <Spinner className="h-[26px] w-[26px]" />
+                <div className="absolute inset-0 flex items-center justify-center bg-brand-900/70">
+                  <Spinner className="h-5 w-5 fill-white text-white/30" />
                 </div>
               )}
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                className="h-[20px] w-[20px] rounded-full"
-                src={avatar}
-                alt=""
-              />
+              <img src={avatar} alt="" />
             </div>
           </button>
         </div>

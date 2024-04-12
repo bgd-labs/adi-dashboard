@@ -1,7 +1,8 @@
 import { WalletType } from "@bgd-labs/frontend-web3-utils";
 
 import { useStore } from "@/providers/ZustandStoreProvider";
-import Image from 'next/image';
+import { Button } from "@/components/Button";
+import Image from "next/image";
 
 export type Wallet = {
   walletType: WalletType;
@@ -30,27 +31,13 @@ export const WalletItem = ({
   };
 
   return (
-    <button
-      type="button"
-      onClick={!!onClick ? onClick : handleWalletClick}
-      className="mx-auto w-full max-w-[80%]"
-    >
-      <div className="mainBorder flex items-center justify-between px-3 py-2 transition-all hover:border-brand-900">
-        <h3 className="mainText">{title}</h3>
-        {walletType === WalletType.Injected ? (
-          <div
-            className={`h-[26px] w-[26px]`}
-            dangerouslySetInnerHTML={{ __html: icon }}
-          />
-        ) : (
-          <Image
-            src={icon}
-            className={`h-[26px] w-[26px]`}
-            alt={walletType}
-            unoptimized
-          />
-        )}
-      </div>
-    </button>
+    <Button className="text-left py-2" onClick={!!onClick ? onClick : handleWalletClick}>
+      <span>{title}</span>
+      {walletType === WalletType.Injected ? (
+        <div className="w-6 h-6 ml-auto" dangerouslySetInnerHTML={{ __html: icon }} />
+      ) : (
+        <Image className="w-6 h-6 ml-auto" src={icon} alt={walletType} unoptimized />
+      )}
+    </Button>
   );
 };
