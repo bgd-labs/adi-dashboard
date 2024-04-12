@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { formatEther } from "viem";
+import { truncateToTwoSignificantDigits } from "@/utils/truncateToTwoSignificantDigits";
 
 const CHAIN_ID_TO_CURRENCY: Record<number, string> = {
   1: "ETH",
@@ -67,8 +68,8 @@ export const controllersRouter = createTRPCRouter({
         return {
           address: input.address,
           chainId: input.chainId,
-          native: formatEther(BigInt(twoWeeksNative)) + " " + nativeSymbol,
-          link: formatEther(BigInt(twoWeeksLink)) + " link",
+          native: truncateToTwoSignificantDigits(formatEther(BigInt(twoWeeksNative))) + " " + nativeSymbol,
+          link: truncateToTwoSignificantDigits(formatEther(BigInt(twoWeeksLink))) + " link",
         };
       }
     }),

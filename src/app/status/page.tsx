@@ -6,6 +6,7 @@ import { prepareBlockIntervals } from "@/server/eventCollection/prepareBlockInte
 import { type RangeStatus } from "@/server/eventCollection/types";
 import { type Hash, formatEther } from "viem";
 import { getBalance } from "@/server/utils/getBalance";
+import { truncateToTwoSignificantDigits } from "@/utils/truncateToTwoSignificantDigits";
 
 const CHAIN_IDS_FOR_BALANCE_RETRIEVAL = [1, 137, 43114];
 const CHAIN_ID_TO_CURRENCY: Record<number, string> = {
@@ -67,9 +68,11 @@ const StatusPage = async () => {
     balanceArray.reduce(
       (acc: Record<number, { native: string; link: string }>, item) => {
         if (item) {
-          const formattedBalance = formatEther(item.balance);
+          const formattedBalance = truncateToTwoSignificantDigits(
+            formatEther(item.balance),
+          );
           const formattedLinkBalance = item.linkBalance
-            ? formatEther(item.linkBalance)
+            ? truncateToTwoSignificantDigits(formatEther(item.linkBalance))
             : "-";
           const currency = CHAIN_ID_TO_CURRENCY[item.chain_id] ?? "";
           acc[item.chain_id] = {
