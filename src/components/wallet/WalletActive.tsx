@@ -25,6 +25,7 @@ import { cn } from "@/utils/cn";
 import { getScanLink } from "@/utils/getScanLink";
 import { textCenterEllipsis } from "@/utils/textCenterEllipsis";
 import { getChainName } from "@/utils/getChainName";
+import { Button } from "@/components/Button";
 
 export const WalletActive = () => {
   const activeWallet = useStore((store) => store.activeWallet);
@@ -171,13 +172,13 @@ export const WalletActive = () => {
         </DialogHeader>
 
         <div className="mt-4">
-          <div className="flex items-start">
+          <div className="flex gap-3 items-center bg-brand-300 mb-6">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="h-[120px] w-[120px]" src={avatar} alt="" />
-            <div className="ml-4">
+            <img className="w-10 h-10" src={avatar} alt="" />
+            <div className="font-mono truncate">
               <Link
                 inNewWindow
-                className="mainText break-all text-lg font-bold transition-all hover:opacity-70"
+                className="break-all font-semibold tracking-wide"
                 href={getScanLink({
                   chainId: activeWallet?.chainId,
                   address: activeAddress || zeroAddress,
@@ -189,11 +190,11 @@ export const WalletActive = () => {
           </div>
           <div className="mt-3 flex w-full justify-end">
             <DialogClose
-              className="mainText transition-all hover:opacity-65"
+              className="transition-all hover:opacity-65"
               type="button"
               onClick={handleDisconnect}
             >
-              Disconnect
+              <Button>Disconnect</Button>
             </DialogClose>
           </div>
         </div>
