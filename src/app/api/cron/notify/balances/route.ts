@@ -115,6 +115,7 @@ export const GET = async (req: Request) => {
         .single();
 
       if (!wasAlreadyNotified) {
+        console.log(`🔔 Sending slack balance notification: ${notificationHash}`)
         await sendSlackBalanceWarning({
           chainName: chain?.name ?? "Unknown",
           threshold: formatEther(thresholds.native),
@@ -152,6 +153,7 @@ export const GET = async (req: Request) => {
         .single();
 
       if (!wasAlreadyNotified) {
+        console.log(`🔔 Sending slack balance notification: ${notificationHash}`)
         await sendSlackBalanceWarning({
           chainName: chain?.name ?? "Unknown",
           threshold: formatEther(thresholds.link),

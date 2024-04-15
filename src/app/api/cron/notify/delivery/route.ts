@@ -56,8 +56,7 @@ export const GET = async (req: Request) => {
         const diff = now.getTime() - registeredAt.getTime();
 
         const notificationHash = crypto.createHash("sha256").update(`${envelope.id}-${txId ?? "unknown"}`).digest("hex");
-        console.log("Notification hash:")
-        console.log(notificationHash);
+
 
         if (diff > DELIVERY_NOTIFICATION_TIMEOUT) {
           const timeframe = timeComponentsToString(msToTimeComponents(diff));
@@ -69,6 +68,8 @@ export const GET = async (req: Request) => {
             .single();
 
           if (!wasAlreadyNotified) {
+            console.log(`🔔 Sending slack delivery notification: ${notificationHash}`)
+
             await sendSlackDeliveryWarning({
               envelopeId: envelope.id,
               timeframe,
@@ -104,6 +105,9 @@ export const GET = async (req: Request) => {
         const diff = now.getTime() - registeredAt.getTime();
 
         const notificationHash = crypto.createHash("sha256").update(`${envelope.id}-${txId ?? "unknown"}`).digest("hex");
+
+        console.log("Notification hash:")
+        console.log(notificationHash)
 
         if (diff > DELIVERY_NOTIFICATION_TIMEOUT) {
           const timeframe = timeComponentsToString(msToTimeComponents(diff));
