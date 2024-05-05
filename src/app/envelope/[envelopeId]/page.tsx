@@ -7,6 +7,7 @@ import { Timestamp } from "@/components/Timestamp";
 import { ExplorerLink } from "@/components/ExplorerLink";
 import { Tooltip } from "@/components/Tooltip";
 import { api } from "@/trpc/server";
+import { RetryButtons } from "@/components/RetryButtons";
 import { Box } from "@/components/Box";
 import { EnvelopeRegisteredEvent } from "@/components/EnvelopeRegisteredEvent";
 import { TransactionForwardingAttemptedEvent } from "@/components/TransactionForwardingAttemptedEvent";
@@ -19,11 +20,9 @@ import { cn } from "@/utils/cn";
 import { EnvelopeGovernanceLinks } from "@/components/EnvelopeGovernanceLinks";
 import prettyMilliseconds from "pretty-ms";
 
-const SKIPPED_STATUS_TIMEOUT_HOURS = 10;
-
 const EnvelopeDetailPage = async ({
-                                    params,
-                                  }: {
+  params,
+}: {
   params: { envelopeId: string };
 }) => {
   try {
@@ -46,16 +45,6 @@ const EnvelopeDetailPage = async ({
     const deliveryAttemptEvents = await api.events.getDeliveryAttemptEvents({
       envelopeId: params.envelopeId,
     });
-
-    const sortedEvents = [...forwardingAttemptEvents].sort(
-      (a, b) => Number(b.timestamp) - Number(a.timestamp),
-    );
-
-    const uniqueForwardingAttemptEvents = sortedEvents.filter(
-      (event, index, self) =>
-        index ===
-        self.findIndex((e) => e.bridge_adapter === event.bridge_adapter),
-    );
 
     const txHashes = forwardingAttemptEvents.map(
       (event) => event.transaction_hash,
@@ -108,8 +97,13 @@ const EnvelopeDetailPage = async ({
       }
     });
 
+    const bridgingState = await api.envelopes.getBridgingState({
+      envelopeId: params.envelopeId,
+    });
+
     return (
       <>
+        {/* <RetryButtons failedAdapters={} /> */}
         <Box>
           <div className="px-4 py-2 py-6 sm:px-6">
             <div className="flex items-center gap-1 sm:gap-3">
@@ -250,21 +244,21 @@ const EnvelopeDetailPage = async ({
         </Box>
         <Box>
           <div className="px-4 py-2 py-6 sm:px-6">
-            {forwardingAttemptEvents.length > 0 && (
+            {bridgingState.origin.length > 0 && (
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="grid gap-2">
                   <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider">
                     Origin adapters
                   </h2>
-                  {uniqueForwardingAttemptEvents.map((event) => (
+                  {bridgingState.origin.map((adapter) => (
                     <div
-                      key={event.transaction_hash + event.log_index}
+                      key={adapter.address}
                       className="flex items-center gap-1"
                     >
                       <ExplorerLink
                         type="address"
                         chainId={envelope.origin_chain_id!}
-                        value={event.bridge_adapter!}
+                        value={adapter.address!}
                         skipAdapter
                       />
                       <div
@@ -272,13 +266,13 @@ const EnvelopeDetailPage = async ({
                           "ml-auto rounded-full bg-brand-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-500 sm:ml-0",
                           {
                             ["bg-green-100 text-green-700"]:
-                            event.adapter_successful,
+                              adapter.status === "success",
                             ["bg-red-100 text-red-700"]:
-                              !event.adapter_successful,
+                              adapter.status === "failed",
                           },
                         )}
                       >
-                        {event.adapter_successful ? "Success" : "Failed"}
+                        {adapter.status}
                       </div>
                     </div>
                   ))}
@@ -287,53 +281,16 @@ const EnvelopeDetailPage = async ({
                   <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider">
                     Destination adapters
                   </h2>
-                  {uniqueForwardingAttemptEvents.map((event) => {
-                    const isDelivered = deliveryAttemptEvents.length > 0;
-                    const isSameChain =
-                      envelope.origin_chain_id ===
-                      envelope.destination_chain_id;
-                    const isAdapterSuccessful = forwardingAttemptEvents.some(
-                      (e) => e.adapter_successful,
-                    );
-                    const isDestinationAdapterMatch =
-                      transactionReceivedEvents.some(
-                        (e) =>
-                          e.bridge_adapter === event.destination_bridge_adapter,
-                      );
-
-                    let status = "Failed";
-
-                    const registeredAt = new Date(envelope.registered_at!);
-                    const timeBeforeTimeout = new Date();
-                    timeBeforeTimeout.setHours(
-                      timeBeforeTimeout.getHours() -
-                      SKIPPED_STATUS_TIMEOUT_HOURS,
-                    );
-
-                    if (
-                      registeredAt > timeBeforeTimeout &&
-                      !isDelivered &&
-                      !isDestinationAdapterMatch &&
-                      !(isSameChain && isAdapterSuccessful)
-                    ) {
-                      status = "Pending";
-                    } else if (isSameChain && isAdapterSuccessful) {
-                      status = "Success";
-                    } else if (!isSameChain && isDestinationAdapterMatch) {
-                      status = "Success";
-                    } else if (event.adapter_successful && isDelivered) {
-                      status = "Skipped";
-                    }
-
+                  {bridgingState.destination.map((adapter) => {
                     return (
                       <div
-                        key={event.transaction_hash + event.log_index}
+                        key={adapter.address}
                         className="flex items-center gap-1"
                       >
                         <ExplorerLink
                           type="address"
-                          chainId={envelope.destination_chain_id!}
-                          value={event.destination_bridge_adapter!}
+                          chainId={adapter.chainId!}
+                          value={adapter.address!}
                           skipAdapter
                         />
                         <div
@@ -341,15 +298,20 @@ const EnvelopeDetailPage = async ({
                             "ml-auto rounded-full bg-brand-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-500 sm:ml-0",
                             {
                               ["bg-green-100 text-green-700"]:
-                              status === "Success",
-                              ["bg-red-100 text-red-700"]: status === "Failed",
+                                adapter.status === "success",
+                              ["bg-red-100 text-red-700"]:
+                                adapter.status === "failed",
                             },
                           )}
                         >
-                          {status}
+                          {adapter.status}
                         </div>
-                        <div className="hidden ml-auto text-xs opacity-40 font-mono sm:block">
-                          {deliveryTimes.find(time => time?.id === event.destination_bridge_adapter)?.deliveryTime}
+                        <div className="ml-auto hidden font-mono text-xs opacity-40 sm:block">
+                          {
+                            deliveryTimes.find(
+                              (time) => time?.id === adapter.address,
+                            )?.deliveryTime
+                          }
                         </div>
                       </div>
                     );
