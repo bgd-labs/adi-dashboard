@@ -88,7 +88,6 @@ export const envelopesRouter = createTRPCRouter({
         query = query.filter("origin_chain_id", "eq", input.from);
       }
 
-
       if (input.to) {
         query = query.filter("destination_chain_id", "eq", input.to);
         query = query.filter("destination_chain_id", "eq", input.to);
@@ -267,10 +266,29 @@ export const envelopesRouter = createTRPCRouter({
         (adapter) => adapter.status === "failed",
       );
 
+      const failedAdaptersWithNames = await Promise.all(
+        failedAdapters.map(async (adapter) => {
+          const { data } = await ctx.supabaseAdmin
+            .from("AddressBook")
+            .select("name")
+            .ilike("address", adapter.address!)
+            .eq("chain_id", adapter.chainId!)
+            .limit(1)
+            .single();
+
+          const adapterName = data?.name;
+
+          return {
+            ...adapter,
+            name: adapterName ?? "Unknown",
+          };
+        }),
+      );
+
       return {
         origin: originAdapters,
         destination: destinationAdapters,
-        failedAdapters,
+        failedAdapters: failedAdaptersWithNames,
       };
     }),
 });

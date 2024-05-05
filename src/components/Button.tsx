@@ -13,8 +13,10 @@ type Props = {
   disabled?: boolean;
   scroll?: boolean;
   className?: string;
+  submit?: boolean;
   type?: "danger" | "primary";
   loading?: boolean;
+  fullWidth?: boolean;
 };
 
 export const Button = forwardRef(
@@ -27,7 +29,9 @@ export const Button = forwardRef(
       scroll = true,
       className,
       type,
+      submit = false,
       loading = false,
+      fullWidth = false,
     }: Props,
     ref: ForwardedRef<HTMLButtonElement | HTMLAnchorElement>,
   ) => {
@@ -113,10 +117,12 @@ export const Button = forwardRef(
           "outline-offset[4px] group/button relative cursor-pointer border-none p-0 focus:outline-none",
           {
             "cursor-not-allowed": disabled,
+            "w-full": fullWidth,
           },
         )}
         onClick={onClick}
         disabled={disabled}
+        type={submit ? "submit" : "button"}
       >
         {button}
       </button>
