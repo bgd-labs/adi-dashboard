@@ -117,6 +117,21 @@ const StatusPage = async () => {
     )
   ).filter((burnRate) => burnRate !== null);
 
+  const bridgingStats = await Promise.all(
+    crossChainControllers.map(async (crossChainController) => {
+      if (
+        !CHAIN_IDS_FOR_BALANCE_RETRIEVAL.includes(crossChainController.chain_id)
+      )
+        return null;
+
+      const bridgingStats = await api.controllers.getBridgingStats({
+        chainId: crossChainController.chain_id,
+      });
+
+      return bridgingStats;
+    }),
+  );
+
   return (
     <>
       {crossChainControllers.map((crossChainController) => (
@@ -133,6 +148,11 @@ const StatusPage = async () => {
               rate?.chainId === crossChainController.chain_id &&
               rate?.address === crossChainController.address,
           )}
+          bridgingStats={
+            bridgingStats.find(
+              (stats) => stats?.chainId === crossChainController.chain_id,
+            ) ?? undefined
+          }
         />
       ))}
     </>
