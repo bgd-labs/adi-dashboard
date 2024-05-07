@@ -8,16 +8,15 @@ import { TxType } from "@/store/transactionsSlice";
 import { type RetryTransactionTxParams } from '@/web3Services/controllerRetryService';
 import { Button } from '@/components/Button';
 import { api } from '@/trpc/react';
-import { zeroAddress } from 'viem';
+import { type Address, zeroAddress } from 'viem';
 import { ModalForTestTx } from '@/components/TransactionsModals/ModalForTestTx';
 import { textCenterEllipsis } from '@/utils/textCenterEllipsis';
 
 export const RetryTransactionButton = (initialParams: Omit<RetryTransactionTxParams, 'cccAddress' | 'gasLimit'>) => {
   const retryTransaction = useStore((state) => state.retryTransaction);
 
-  // TODO: need add get cross chain controller address by chain id to address router
-  // const { data } = api.address.getCCCAddressByChainId.useQuery({ chainId: initialParams.chainId });
-  const cccAddress = zeroAddress;
+  const { data: initialCCCAddress } = api.address.getCrossChainControllerAddressByChainId.useQuery({ chainId: initialParams.chainId });
+  const cccAddress = initialCCCAddress as Address ?? zeroAddress;
 
   const formattedParams = {
     ...initialParams,

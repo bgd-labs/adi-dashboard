@@ -15,7 +15,7 @@ import { TransactionReceivedEvent } from "@/components/TransactionReceivedEvent"
 import { EnvelopeDeliveryAttemptedEvent } from "@/components/EnvelopeDeliveryAttemptedEvent";
 import { EnvelopeMessage } from "@/components/EnvelopeMessage";
 import { truncateToTwoSignificantDigits } from "@/utils/truncateToTwoSignificantDigits";
-import { formatEther, formatGwei, type Hex } from "viem";
+import { formatEther, formatGwei, type Hex } from 'viem';
 import { cn } from "@/utils/cn";
 import { EnvelopeGovernanceLinks } from "@/components/EnvelopeGovernanceLinks";
 import prettyMilliseconds from "pretty-ms";
@@ -103,10 +103,9 @@ const EnvelopeDetailPage = async ({
 
     return (
       <>
-        <RetryButtons envelope={envelope} failedAdapters={bridgingState.failedAdapters} />
-        {/*{!envelope.is_delivered && (*/}
-        {/*  <RetryButtons envelope={envelope} failedAdapters={bridgingState.failedAdapters} />*/}
-        {/*)}*/}
+        {!envelope.is_delivered && (
+          <RetryButtons envelope={envelope} failedAdapters={bridgingState.failedAdapters} />
+        )}
         <Box>
           <div className="px-4 py-6 sm:px-6">
             <div className="flex items-center gap-1 sm:gap-3">

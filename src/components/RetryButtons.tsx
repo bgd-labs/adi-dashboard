@@ -28,9 +28,11 @@ export const RetryButtons = ({ failedAdapters, envelope }: Props) => {
   const formattedAdapters: Record<number, Record<string, string[]>> = {};
   adapters.forEach(adapter => {
     formattedAdapters[adapter.chainId] = {
-      [adapter.encoded_transaction]: [...(formattedAdapters[adapter.chainId]![adapter.encoded_transaction]!), adapter.address],
+      [adapter.encoded_transaction]: [...(formattedAdapters[adapter.chainId] ? formattedAdapters[adapter.chainId]![adapter.encoded_transaction]! : []), adapter.address],
     }
   })
+
+  // TODO: need restyling
 
   return (
     <Box type="danger">

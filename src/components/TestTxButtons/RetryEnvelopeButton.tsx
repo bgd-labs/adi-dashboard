@@ -5,20 +5,17 @@ import React, { useState } from "react";
 import { useLastTxLocalStatus } from "@/hooks/useLastTxLocalStatus";
 import { useStore } from "@/providers/ZustandStoreProvider";
 import { TxType } from "@/store/transactionsSlice";
-import {
-  type RetryEnvelopeTxParams,
-} from '@/web3Services/controllerRetryService';
+import { type RetryEnvelopeTxParams } from '@/web3Services/controllerRetryService';
 import { Button } from '@/components/Button';
 import { api } from '@/trpc/react';
-import { zeroAddress } from 'viem';
+import { type Address, zeroAddress } from 'viem';
 import { ModalForTestTx } from '@/components/TransactionsModals/ModalForTestTx';
 
 export const RetryEnvelopeButton = (initialParams: Omit<RetryEnvelopeTxParams, 'cccAddress' | 'gasLimit'>) => {
   const retryEnvelope = useStore((state) => state.retryEnvelope);
 
-  // TODO: need add get cross chain controller address by chain id to address router
-  // const { data } = api.address.getCCCAddressByChainId.useQuery({ chainId: initialParams.chainId });
-  const cccAddress = zeroAddress;
+  const { data: initialCCCAddress } = api.address.getCrossChainControllerAddressByChainId.useQuery({ chainId: initialParams.chainId });
+  const cccAddress = initialCCCAddress as Address ?? zeroAddress;
 
   const formattedParams = {
     ...initialParams,
