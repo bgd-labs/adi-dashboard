@@ -255,9 +255,11 @@ export const envelopesRouter = createTRPCRouter({
           status = "skipped";
         }
 
+        // TODO: need think what data we need for tx
         return {
           chainId: event.destination_chain_id,
           address: event.destination_bridge_adapter,
+          encoded_transaction: event.encoded_transaction,
           status,
         };
       });

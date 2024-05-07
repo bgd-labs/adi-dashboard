@@ -1,77 +1,90 @@
 "use client";
+
 import { useState } from "react";
-import { Button } from "@/components/Button";
 import { type RouterOutput } from "@/server/api/types";
 import { Box } from "@/components/Box";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/Modal";
 import { Checkbox } from "@/components/Checkbox";
 import { ChainIcon } from "./ChainIcon";
+import { type Address, type Hex } from 'viem';
+import { RetryTransactionButton } from '@/components/TestTxButtons/RetryTransactionButton';
+import { RetryEnvelopeButton } from '@/components/TestTxButtons/RetryEnvelopeButton';
 
 type Props = {
   failedAdapters: RouterOutput["envelopes"]["getBridgingState"]["failedAdapters"];
+  envelope: RouterOutput["envelopes"]["get"];
 };
 
-export const RetryButtons = ({ failedAdapters }: Props) => {
-  const [adapters, setAdapters] = useState<string[]>([]);
+export const RetryButtons = ({ failedAdapters, envelope }: Props) => {
+  const [adapters, setAdapters] = useState<{ chainId: number, address: string, encoded_transaction: string }[]>([]);
 
-  const handleCheckedChange = (address: string, checked: boolean) => {
+  const handleCheckedChange = ({ chainId, address, encoded_transaction, checked }: { chainId: number, address: string, encoded_transaction: string, checked: boolean }) => {
     if (checked) {
-      setAdapters((prevAdapters) => [...prevAdapters, address]);
+      setAdapters((prevAdapters) => [...prevAdapters, { chainId, address, encoded_transaction }]);
     } else {
-      setAdapters((prevAdapters) => prevAdapters.filter((a) => a !== address));
+      setAdapters((prevAdapters) => prevAdapters.filter((a) => a.chainId !== chainId && a.address !== address && a.encoded_transaction !== encoded_transaction));
     }
   };
 
-  const handleSubmit = () => {
-    console.log("Retry Adapters", adapters);
-  };
+  const formattedAdapters: Record<number, Record<string, string[]>> = {};
+  adapters.forEach(adapter => {
+    formattedAdapters[adapter.chainId] = {
+      [adapter.encoded_transaction]: [...(formattedAdapters[adapter.chainId]![adapter.encoded_transaction]!), adapter.address],
+    }
+  })
 
   return (
     <Box type="danger">
-      <div className="flex flex-wrap items-center justify-start gap-4 px-4 py-2 py-6 sm:px-6">
+      <div className="flex flex-wrap items-center justify-start gap-4 px-4 py-6 sm:px-6">
         {failedAdapters?.length !== 0 && (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button type="danger">Retry Failed Adapters</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle className="mb-6">Failed Adapters</DialogTitle>
-              </DialogHeader>
-              <div className="grid gap-3 pb-4">
-                {failedAdapters?.map((adapter) => (
-                  <Checkbox
-                    key={adapter.address}
-                    id={adapter.address!}
-                    onCheckedChange={(value) =>
-                      handleCheckedChange(adapter.address!, value)
-                    }
-                  >
-                    <div className="flex items-center gap-2 text-sm">
-                      <ChainIcon chainId={adapter.chainId} />
-                      <div className="font-semibold">{adapter.name}</div>
-                      <div className="truncate font-mono text-brand-500">
-                        {adapter.address}
-                      </div>
+          <div>
+            <h3>Failed Adapters</h3>
+            <div className="grid gap-3 pb-4">
+              {failedAdapters?.map((adapter) => (
+                <Checkbox
+                  key={adapter.address}
+                  id={adapter.address!}
+                  onCheckedChange={(value) =>
+                    handleCheckedChange({ chainId: adapter.chainId!, address: adapter.address!, encoded_transaction: adapter.encoded_transaction!, checked: value })
+                  }
+                >
+                  <div className="flex items-center gap-2 text-sm">
+                    <ChainIcon chainId={adapter.chainId} />
+                    <div className="font-semibold">{adapter.name}</div>
+                    <div className="truncate font-mono text-brand-500">
+                      {adapter.address}
                     </div>
-                  </Checkbox>
-                ))}
-              </div>
-              <Button type="primary" fullWidth onClick={handleSubmit}>
-                Retry adapters
-              </Button>
-            </DialogContent>
-          </Dialog>
+                  </div>
+                </Checkbox>
+              ))}
+            </div>
+
+            {Object.entries(formattedAdapters).map((value) => {
+              const chainId = Number(value[0]);
+              const encoded_transactions = Object.entries(value[1]).map((enctx) => {
+                return {
+                  encoded_transaction: enctx[0] as Hex,
+                  adapters: enctx[1].map((address) => address as Address).filter((value, index, self) => self.indexOf(value) === index)
+                }
+              })
+
+              return encoded_transactions.map((item) => (
+                <RetryTransactionButton chainId={chainId} encodedTransaction={item.encoded_transaction} bridgeAdaptersToRetry={item.adapters} />
+              ))
+            })}
+          </div>
         )}
-        <Button type="danger" onClick={() => console.log("Retry Envelope")}>
-          Retry Envelope
-        </Button>
+
+        <RetryEnvelopeButton
+          chainId={envelope.origin_chain_id!}
+          envelope={{
+            nonce: BigInt(envelope.nonce!),
+            origin: envelope.origin! as Hex,
+            destination: envelope.destination! as Hex,
+            originChainId: BigInt(envelope.origin_chain_id!),
+            destinationChainId: BigInt(envelope.destination_chain_id!),
+            message: envelope.message! as Hex,
+          }}
+        />
       </div>
     </Box>
   );

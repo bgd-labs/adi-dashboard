@@ -4,11 +4,12 @@ const config = {
   parserOptions: {
     project: true,
   },
-  plugins: ["@typescript-eslint"],
+  plugins: ["@typescript-eslint", "prettier"],
   extends: [
     "plugin:@next/next/recommended",
     "plugin:@typescript-eslint/recommended-type-checked",
     "plugin:@typescript-eslint/stylistic-type-checked",
+    "prettier",
   ],
   rules: {
     "@typescript-eslint/array-type": "off",

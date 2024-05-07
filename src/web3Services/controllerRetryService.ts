@@ -1,52 +1,74 @@
 import { type Config, writeContract } from "@wagmi/core";
-import { type Client, getContract, type Hex } from "viem";
+import { type Address, type Hex } from 'viem';
 
-
-import { DESIRED_CHAIN_ID } from '@/providers/ZustandStoreProvider';
 import { cccAbi}  from '@/web3Services/abi/crossChainControllerAbi';
+import { type ClientsRecord } from '@bgd-labs/frontend-web3-utils';
+
+export type RetryEnvelopeTxParams = {
+  chainId: number;
+  cccAddress: Address;
+  envelope: {
+    nonce: bigint;
+    origin: Address;
+    destination: Address;
+    originChainId: bigint;
+    destinationChainId: bigint;
+    message: Address;
+  },
+  gasLimit: bigint;
+};
+
+export type RetryTransactionTxParams = {
+  chainId: number;
+  cccAddress: Address;
+  encodedTransaction: Hex;
+  gasLimit: bigint;
+  bridgeAdaptersToRetry: Address[];
+};
 
 export class ControllerRetryService {
-  private controllerFactory;
-  private client: Client;
-  private wagmiConfig: Config | undefined = undefined;
+  wagmiConfig: Config | undefined = undefined;
+  private clients: ClientsRecord;
 
-  constructor(client: Client, address: Hex) {
-    this.client = client;
-    this.controllerFactory = getContract({
-      address,
-      abi: cccAbi,
-      client: client,
-    });
+  constructor(clients: ClientsRecord) {
+    this.clients = clients;
   }
 
   public connectSigner(wagmiConfig: Config) {
     this.wagmiConfig = wagmiConfig;
   }
 
-  // TODO: need add parameters and args to tx's
-  // async retryEnvelope() {
-  //   if (this.wagmiConfig) {
-  //     return writeContract(this.wagmiConfig, {
-  //       abi: this.controllerFactory.abi,
-  //       address: this.controllerFactory.address,
-  //       functionName: 'retryEnvelope',
-  //       args: [],
-  //       chainId: DESIRED_CHAIN_ID,
-  //     });
-  //   }
-  //   return undefined;
-  // }
-  //
-  // async retryTransaction() {
-  //   if (this.wagmiConfig) {
-  //     return writeContract(this.wagmiConfig, {
-  //       abi: this.controllerFactory.abi,
-  //       address: this.controllerFactory.address,
-  //       functionName: 'retryTransaction',
-  //       args: [],
-  //       chainId: DESIRED_CHAIN_ID,
-  //     });
-  //   }
-  //   return undefined;
-  // }
+  async retryEnvelope({ chainId, cccAddress, envelope, gasLimit }: RetryEnvelopeTxParams) {
+    if (this.wagmiConfig) {
+      return writeContract(this.wagmiConfig, {
+        abi: cccAbi,
+        address: cccAddress,
+        functionName: 'retryEnvelope',
+        args: [envelope, gasLimit],
+        chainId: chainId,
+      });
+    } else {
+      throw new Error("Connect wallet before process transaction");
+    }
+  }
+
+  async retryTransaction({
+    chainId,
+    cccAddress,
+    encodedTransaction,
+    gasLimit,
+    bridgeAdaptersToRetry
+  }: RetryTransactionTxParams) {
+    if (this.wagmiConfig) {
+      return writeContract(this.wagmiConfig, {
+        abi: cccAbi,
+        address: cccAddress,
+        functionName: 'retryTransaction',
+        args: [encodedTransaction, gasLimit, bridgeAdaptersToRetry],
+        chainId: chainId,
+      });
+    } else {
+      throw new Error("Connect wallet before process transaction");
+    }
+  }
 }

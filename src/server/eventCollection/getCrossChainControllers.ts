@@ -1,4 +1,4 @@
-import { supabaseAdmin } from "../api/supabase/server";
+import { supabaseAdmin } from '@/server/api/supabase';
 import { type CrossChainController } from "./types";
 
 export const getCrossChainControllers = async (): Promise<

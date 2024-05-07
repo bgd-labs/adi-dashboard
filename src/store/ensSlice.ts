@@ -1,5 +1,3 @@
-// TODO: I think this logic should be on the trpc side and ensData should stored in the database
-
 import dayjs from "dayjs";
 import { produce } from "immer";
 import { type Address } from "viem";

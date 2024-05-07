@@ -5,10 +5,8 @@ import {
 
 import { type TransactionsSlice } from '@/store/transactionsSlice';
 import { ControllerRetryService } from '@/web3Services/controllerRetryService';
-import { zeroAddress } from 'viem';
 import { produce } from 'immer';
 import { type StoreSliceWithClients } from '@/store';
-import { DESIRED_CHAIN_ID } from '@/providers/ZustandStoreProvider';
 
 /**
  * web3Slice is required only to have a better control over providers state i.e
@@ -58,7 +56,5 @@ export const createWeb3Slice: StoreSliceWithClients<IWeb3Slice, TransactionsSlic
     setTimeout(() => set({ walletConnectedTimeLock: false }), 1000);
   },
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
-  controllerRetryService: new ControllerRetryService(clients[DESIRED_CHAIN_ID], zeroAddress), // TODO: need addresss
+  controllerRetryService: new ControllerRetryService(clients),
 });

@@ -103,11 +103,12 @@ const EnvelopeDetailPage = async ({
 
     return (
       <>
-        {!envelope.is_delivered && (
-          <RetryButtons failedAdapters={bridgingState.failedAdapters} />
-        )}
+        <RetryButtons envelope={envelope} failedAdapters={bridgingState.failedAdapters} />
+        {/*{!envelope.is_delivered && (*/}
+        {/*  <RetryButtons envelope={envelope} failedAdapters={bridgingState.failedAdapters} />*/}
+        {/*)}*/}
         <Box>
-          <div className="px-4 py-2 py-6 sm:px-6">
+          <div className="px-4 py-6 sm:px-6">
             <div className="flex items-center gap-1 sm:gap-3">
               <EnvelopeIcon isBig seed={envelope.id} />
               <div className="hidden translate-y-1 sm:block">
@@ -195,7 +196,7 @@ const EnvelopeDetailPage = async ({
               <h2 className="pl-0.5 text-xs font-semibold uppercase tracking-wider">
                 Envelope ID
               </h2>
-              <div className="flex hidden xl:block">
+              <div className="hidden xl:block">
                 <CopyValueCard value={params.envelopeId} isBig />
               </div>
               <div className="xl:hidden">
@@ -245,7 +246,7 @@ const EnvelopeDetailPage = async ({
           </div>
         </Box>
         <Box>
-          <div className="px-4 py-2 py-6 sm:px-6">
+          <div className="px-4 py-6 sm:px-6">
             {bridgingState.origin.length > 0 && (
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="grid gap-2">

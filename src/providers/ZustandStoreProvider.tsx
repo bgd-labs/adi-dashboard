@@ -13,9 +13,8 @@ import { createRootSlice, type RootState } from "@/store";
 import { CHAINS } from '@/constants/chains';
 
 export const DESIRED_CHAIN_ID = mainnet.id;
-const chainInfoHelpers = initChainInformationConfig(CHAINS);
+export const chainInfoHelpers = initChainInformationConfig(CHAINS);
 
-// TODO: need think if it's possible to pass here clients from server
 const clients: ClientsRecord = {};
 Object.entries(chainInfoHelpers.clientInstances).forEach(
   (value) => (clients[Number(value[0])] = value[1].instance),

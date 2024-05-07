@@ -6,8 +6,12 @@ import {
   type ITransactionsSlice,
   type IWalletSlice, type TransactionStatus, type WalletType,
 } from '@bgd-labs/frontend-web3-utils';
-import {type Address, type Hex} from 'viem';
-import {type StoreSliceWithClients} from '@/store';
+import { type Hex } from 'viem';
+import { type StoreSliceWithClients } from '@/store';
+import {
+  type RetryEnvelopeTxParams,
+  type RetryTransactionTxParams,
+} from '@/web3Services/controllerRetryService';
 
 export enum TxType {
   retryEnvelope = 'retryEnvelope',
@@ -22,16 +26,12 @@ type BaseTx = BT & {
 
 type RetryEnvelopeTx = BaseTx & {
   type: TxType.retryEnvelope;
-  payload: {
-    signer: Address; // need change
-  };
+  payload: RetryEnvelopeTxParams;
 };
 
 type RetryTransactionTx = BaseTx & {
   type: TxType.retryTransaction;
-  payload: {
-    signer: Address; // need change
-  };
+  payload: RetryTransactionTxParams;
 };
 
 export type TransactionUnion =
