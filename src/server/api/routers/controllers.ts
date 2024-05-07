@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { formatEther } from "viem";
+import { formatEther, formatGwei } from "viem";
 import { truncateToTwoSignificantDigits } from "@/utils/truncateToTwoSignificantDigits";
 
 const CHAIN_ID_TO_CURRENCY: Record<number, string> = {
@@ -68,9 +68,63 @@ export const controllersRouter = createTRPCRouter({
         return {
           address: input.address,
           chainId: input.chainId,
-          native: truncateToTwoSignificantDigits(formatEther(BigInt(twoWeeksNative))) + " " + nativeSymbol,
-          link: truncateToTwoSignificantDigits(formatEther(BigInt(twoWeeksLink))) + " link",
+          native:
+            truncateToTwoSignificantDigits(
+              formatEther(BigInt(twoWeeksNative)),
+            ) +
+            " " +
+            nativeSymbol,
+          link:
+            truncateToTwoSignificantDigits(formatEther(BigInt(twoWeeksLink))) +
+            " link",
         };
       }
+    }),
+  getBridgingStats: publicProcedure
+    .input(
+      z.object({
+        chainId: z.number(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const twoWeeksAgo = Date.now() - 2 * 7 * 24 * 60 * 60 * 1000;
+
+      const { count: bridgingEventsCount } = await ctx.supabaseAdmin
+        .from("TransactionForwardingAttempted")
+        .select("transaction_hash", { count: "exact" })
+        .eq("chain_id", input.chainId)
+        .gte("timestamp", new Date(twoWeeksAgo).toISOString());
+
+      const { count: envelopesCount } = await ctx.supabaseAdmin
+        .from("EnvelopeRegistered")
+        .select("transaction_hash", { count: "exact" })
+        .eq("chain_id", input.chainId)
+        .gte("timestamp", new Date(twoWeeksAgo).toISOString());
+
+      const { data: costs, count } = await ctx.supabaseAdmin
+        .from("TransactionGasCosts")
+        .select("gas_price", { count: "exact" })
+        .eq("chain_id", input.chainId)
+        .gte("timestamp", new Date(twoWeeksAgo).toISOString());
+
+      let averageGasPrice = "N/A";
+      if (count) {
+        const totalGasPrice = costs.reduce(
+          (total, cost) => total + (cost.gas_price ?? 0),
+          0,
+        );
+        const avgPrice = totalGasPrice / count;
+
+        averageGasPrice = `${truncateToTwoSignificantDigits(
+          formatGwei(BigInt(avgPrice.toFixed(0))),
+        )} gwei`;
+      }
+
+      return {
+        chainId: input.chainId,
+        numberOfBridgingEvents: bridgingEventsCount,
+        numberOfEnvelopes: envelopesCount,
+        averageGasPrice,
+      };
     }),
 });

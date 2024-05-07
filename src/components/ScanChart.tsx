@@ -2,6 +2,7 @@ import { ChainIcon } from "@/components/ChainIcon";
 import { Box } from "@/components/Box";
 import { ExplorerLink } from "@/components/ExplorerLink";
 import { type RangeStatus } from "@/server/eventCollection/types";
+import { type RouterOutput } from "@/server/api/types";
 import { Tooltip } from "@/components/Tooltip";
 import { cn } from "@/utils/cn";
 
@@ -19,6 +20,7 @@ type ChartProps = {
     native: string;
     link: string;
   } | null;
+  bridgingStats?: RouterOutput["controllers"]["getBridgingStats"];
 };
 
 export const ScanChart = ({
@@ -29,6 +31,7 @@ export const ScanChart = ({
   balance,
   address,
   burnRate,
+  bridgingStats,
 }: ChartProps) => {
   const totalRange = ranges.reduce(
     (total, { range }) => total + (range[1] - range[0]),
@@ -63,8 +66,8 @@ export const ScanChart = ({
           />
         </div>
         {showBalances && (
-          <div className="mb-3 grid w-fit gap-5 border border-brand-300 bg-white p-4 sm:grid-cols-2">
-            <div className="grid gap-2">
+          <div className="mb-3 grid w-fit gap-5 border border-brand-300 bg-white p-4 sm:grid-cols-2 md:grid-cols-4">
+            <div className="flex flex-col gap-2">
               <h2 className="text-[11px] font-semibold uppercase tracking-wider">
                 Balances
               </h2>
@@ -79,7 +82,7 @@ export const ScanChart = ({
                 </div>
               )}
             </div>
-            <div className="grid gap-2">
+            <div className="flex flex-col gap-2">
               <h2 className="text-[11px] font-semibold uppercase tracking-wider">
                 Two week burn rate
               </h2>
@@ -93,6 +96,25 @@ export const ScanChart = ({
                   {burnRate?.link}
                 </div>
               )}
+            </div>
+            <div className="flex flex-col gap-2">
+              <h2 className="text-[11px] font-semibold uppercase tracking-wider">
+                Two week stats
+              </h2>
+              <div className="w-fit rounded bg-brand-300 px-1.5 py-0.5 font-mono text-xs uppercase">
+                {bridgingStats?.numberOfBridgingEvents} bridging events
+              </div>
+              <div className="w-fit rounded bg-brand-300 px-1.5 py-0.5 font-mono text-xs uppercase">
+                {bridgingStats?.numberOfEnvelopes} envelopes
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <h2 className="text-[11px] font-semibold uppercase tracking-wider">
+                Two week avg gas price
+              </h2>
+              <div className="w-fit rounded bg-brand-300 px-1.5 py-0.5 font-mono text-xs uppercase">
+                {bridgingStats?.averageGasPrice}
+              </div>
             </div>
           </div>
         )}
