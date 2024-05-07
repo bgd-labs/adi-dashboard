@@ -1,5 +1,5 @@
 import makeBlockie from "ethereum-blockies-base64";
-import { type Address, type Client, type Hex, isAddress } from "viem";
+import { type Address, type Client, type Hex } from "viem";
 import { getEnsAddress, getEnsAvatar, getEnsName, normalize } from "viem/ens";
 
 export const getName = async (client: Client, address: Hex) => {
@@ -36,7 +36,5 @@ export const getAddress = async (client: Client, name: string) => {
     console.error("ENS address lookup error", error);
   }
 };
-
-export const isEnsName = (address: string) => !isAddress(address);
 
 export const ENS_TTL = 60 * 60 * 24; // 1 day

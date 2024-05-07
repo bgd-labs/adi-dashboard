@@ -1,12 +1,11 @@
 import {
   createWalletSlice,
-  type IWalletSlice,
+  type IWalletSlice, type StoreSlice,
 } from '@bgd-labs/frontend-web3-utils';
 
 import { type TransactionsSlice } from '@/store/transactionsSlice';
-import { ControllerRetryService } from '@/web3Services/controllerRetryService';
+import { CrossChainControllerTXsService } from '@/web3Services/crossChainControllerTXsService';
 import { produce } from 'immer';
-import { type StoreSliceWithClients } from '@/store';
 
 /**
  * web3Slice is required only to have a better control over providers state i.e
@@ -22,13 +21,12 @@ export type IWeb3Slice = IWalletSlice & {
   connectSigner: () => void;
 
   // services
-  controllerRetryService: ControllerRetryService;
+  crossChainControllerTXsService: CrossChainControllerTXsService;
 };
 
-export const createWeb3Slice: StoreSliceWithClients<IWeb3Slice, TransactionsSlice> = (
+export const createWeb3Slice: StoreSlice<IWeb3Slice, TransactionsSlice> = (
   set,
   get,
-  clients,
 ) => ({
   ...createWalletSlice({
     walletConnected: () => {
@@ -51,10 +49,10 @@ export const createWeb3Slice: StoreSliceWithClients<IWeb3Slice, TransactionsSlic
     const config = get().wagmiConfig;
     set({ walletConnectedTimeLock: true });
     if (config) {
-      get().controllerRetryService.connectSigner(config);
+      get().crossChainControllerTXsService.connectSigner(config);
     }
     setTimeout(() => set({ walletConnectedTimeLock: false }), 1000);
   },
 
-  controllerRetryService: new ControllerRetryService(clients),
+  crossChainControllerTXsService: new CrossChainControllerTXsService(),
 });

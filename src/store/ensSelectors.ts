@@ -1,12 +1,8 @@
 import dayjs from "dayjs";
-import { type Address, isAddress } from "viem";
+import { type Address } from "viem";
 
-import {
-  type EnsDataItem,
-  ENSProperty,
-  type IEnsSlice,
-} from "@/store/ensSlice";
-import { ENS_TTL, isEnsName } from "@/utils/ensHelpers";
+import { type EnsDataItem, ENSProperty } from "@/store/ensSlice";
+import { ENS_TTL } from "@/utils/ensHelpers";
 
 export const ENSDataExists = (
   ensData: Record<`0x${string}`, EnsDataItem>,
@@ -28,22 +24,6 @@ export const ENSDataHasBeenFetched = (
   if (!fetchTime) return false;
 
   return currentTime - fetchTime <= ENS_TTL;
-};
-
-export const checkIsGetAddressByENSNamePending = (
-  addressesNameInProgress: Record<string, boolean>,
-  name: string,
-) => {
-  return addressesNameInProgress[name] ?? false;
-};
-
-export const getAddressByENSNameIfExists = (
-  ensData: Record<`0x${string}`, EnsDataItem>,
-  name: string,
-) => {
-  return Object.keys(ensData).find(
-    (address) => ensData[address.toLocaleLowerCase() as Address]?.name === name,
-  );
 };
 
 export const selectENSAvatar = async ({
@@ -77,55 +57,3 @@ export const selectENSAvatar = async ({
   }
 };
 
-export const selectInputToAddress = async ({
-  store,
-  activeAddress,
-  addressTo,
-}: {
-  store: IEnsSlice;
-  activeAddress: Address;
-  addressTo: Address;
-}) => {
-  // check is address `to` not ens name
-  if (isAddress(addressTo)) {
-    return addressTo;
-  } else {
-    // get address `to` from ens name
-    const addressFromENSName = await store.fetchAddressByEnsName(addressTo);
-    if (addressFromENSName) {
-      if (addressFromENSName.toLowerCase() === activeAddress.toLowerCase()) {
-        return "";
-      } else {
-        return addressFromENSName;
-      }
-    } else {
-      return "";
-    }
-  }
-};
-
-export const checkIfAddressENS = (
-  ensData: Record<`0x${string}`, EnsDataItem>,
-  activeWalletAddress: Address,
-  address?: Address,
-) => {
-  if (
-    address === undefined ||
-    address.toLowerCase() === activeWalletAddress.toLowerCase()
-  ) {
-    return "";
-  } else if (isEnsName(address)) {
-    const addressFromENS = getAddressByENSNameIfExists(ensData, address);
-    if (addressFromENS) {
-      if (addressFromENS?.toLowerCase() === activeWalletAddress.toLowerCase()) {
-        return "";
-      } else {
-        return addressFromENS;
-      }
-    } else {
-      return address;
-    }
-  } else {
-    return address;
-  }
-};

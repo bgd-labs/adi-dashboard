@@ -11,7 +11,7 @@ import { type StoreSliceWithClients } from '@/store';
 import {
   type RetryEnvelopeTxParams,
   type RetryTransactionTxParams,
-} from '@/web3Services/controllerRetryService';
+} from '@/web3Services/crossChainControllerTXsService';
 
 export enum TxType {
   retryEnvelope = 'retryEnvelope',

@@ -5,7 +5,7 @@ import { type IWeb3Slice } from "@/store/web3Slice";
 import {
   type RetryEnvelopeTxParams,
   type RetryTransactionTxParams,
-} from '@/web3Services/controllerRetryService';
+} from '@/web3Services/crossChainControllerTXsService';
 
 export interface ICrossChainControllerTXsSlice {
   retryEnvelope: ({ ...params }: RetryEnvelopeTxParams) => Promise<void>;
@@ -18,7 +18,7 @@ export const createCrossChainControllerTXsSlice: StoreSlice<
 > = (set, get) => ({
   retryEnvelope: async (params) => {
     await get().executeTx({
-      body: () => get().controllerRetryService.retryEnvelope(params),
+      body: () => get().crossChainControllerTXsService.retryEnvelope(params),
       params: {
         type: TxType.retryEnvelope,
         payload: params,
@@ -28,7 +28,7 @@ export const createCrossChainControllerTXsSlice: StoreSlice<
   },
   retryTransaction: async (params) => {
     await get().executeTx({
-      body: () => get().controllerRetryService.retryTransaction(params),
+      body: () => get().crossChainControllerTXsService.retryTransaction(params),
       params: {
         type: TxType.retryTransaction,
         payload: params,

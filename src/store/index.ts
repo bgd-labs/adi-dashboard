@@ -23,7 +23,7 @@ export const createRootSlice = (
   get: StoreApi<RootState>["getState"],
   clients: ClientsRecord,
 ) => ({
-  ...createWeb3Slice(set, get, clients),
+  ...createWeb3Slice(set, get),
   ...createTransactionsSlice(set, get, clients),
   ...createEnsSlice(set, get, clients),
   ...createCrossChainControllerTXsSlice(set, get),

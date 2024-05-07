@@ -15,7 +15,7 @@ import { TransactionReceivedEvent } from "@/components/TransactionReceivedEvent"
 import { EnvelopeDeliveryAttemptedEvent } from "@/components/EnvelopeDeliveryAttemptedEvent";
 import { EnvelopeMessage } from "@/components/EnvelopeMessage";
 import { truncateToTwoSignificantDigits } from "@/utils/truncateToTwoSignificantDigits";
-import { formatEther, formatGwei, type Hex } from 'viem';
+import { formatEther, formatGwei, type Hex } from "viem";
 import { cn } from "@/utils/cn";
 import { EnvelopeGovernanceLinks } from "@/components/EnvelopeGovernanceLinks";
 import prettyMilliseconds from "pretty-ms";

@@ -1,8 +1,7 @@
 import { type Config, writeContract } from "@wagmi/core";
-import { type Address, type Hex } from 'viem';
+import { type Address, type Hex } from "viem";
 
-import { cccAbi}  from '@/web3Services/abi/crossChainControllerAbi';
-import { type ClientsRecord } from '@bgd-labs/frontend-web3-utils';
+import { cccAbi }  from "@/web3Services/abi/crossChainControllerAbi";
 
 export type RetryEnvelopeTxParams = {
   chainId: number;
@@ -26,13 +25,8 @@ export type RetryTransactionTxParams = {
   bridgeAdaptersToRetry: Address[];
 };
 
-export class ControllerRetryService {
+export class CrossChainControllerTXsService {
   wagmiConfig: Config | undefined = undefined;
-  private clients: ClientsRecord;
-
-  constructor(clients: ClientsRecord) {
-    this.clients = clients;
-  }
 
   public connectSigner(wagmiConfig: Config) {
     this.wagmiConfig = wagmiConfig;

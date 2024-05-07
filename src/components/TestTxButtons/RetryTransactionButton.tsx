@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { useLastTxLocalStatus } from "@/hooks/useLastTxLocalStatus";
 import { useStore } from "@/providers/ZustandStoreProvider";
 import { TxType } from "@/store/transactionsSlice";
-import { type RetryTransactionTxParams } from '@/web3Services/controllerRetryService';
+import { type RetryTransactionTxParams } from '@/web3Services/crossChainControllerTXsService';
 import { Button } from '@/components/Button';
 import { api } from '@/trpc/react';
 import { type Address, zeroAddress } from 'viem';
