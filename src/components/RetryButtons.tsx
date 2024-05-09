@@ -46,7 +46,7 @@ export const RetryButtons = ({ failedAdapters, envelope }: Props) => {
                   key={adapter.address}
                   id={adapter.address!}
                   onCheckedChange={(value) =>
-                    handleCheckedChange({ chainId: adapter.chainId!, address: adapter.address!, encoded_transaction: adapter.encoded_transaction!, checked: value })
+                    handleCheckedChange({ chainId: adapter.txChainId!, address: adapter.address!, encoded_transaction: adapter.encoded_transaction!, checked: value })
                   }
                 >
                   <div className="flex items-center gap-2 text-sm">
