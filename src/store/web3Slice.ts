@@ -1,11 +1,12 @@
 import {
   createWalletSlice,
-  type IWalletSlice, type StoreSlice,
-} from '@bgd-labs/frontend-web3-utils';
+  type IWalletSlice,
+  type StoreSlice,
+} from "@bgd-labs/frontend-web3-utils";
+import { produce } from "immer";
 
-import { type TransactionsSlice } from '@/store/transactionsSlice';
-import { CrossChainControllerTXsService } from '@/web3Services/crossChainControllerTXsService';
-import { produce } from 'immer';
+import { type TransactionsSlice } from "@/store/transactionsSlice";
+import { CrossChainControllerTXsService } from "@/web3Services/crossChainControllerTXsService";
 
 /**
  * web3Slice is required only to have a better control over providers state i.e

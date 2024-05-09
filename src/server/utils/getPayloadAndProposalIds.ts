@@ -1,13 +1,14 @@
 import { type Hash } from "viem";
-import { getPayloadProposalRelation } from "@/server/utils/getPayloadProposalRelation";
+
 import { decodeEnvelopeMessage } from "@/server/utils/decodeEnvelopeMessage";
+import { getPayloadProposalRelation } from "@/server/utils/getPayloadProposalRelation";
 
 export const getPayloadAndProposalIds = async (
   origin: string,
   message: string,
   chainId: number,
 ) => {
-  const messageData = Buffer.from(message!.slice(2), "hex").toString(
+  const messageData = Buffer.from(message.slice(2), "hex").toString(
     "utf8",
   ) as Hash;
 
@@ -17,15 +18,21 @@ export const getPayloadAndProposalIds = async (
   let payload_id = null;
 
   try {
-    if (decodedMessage?.data?.payloadId !== null && decodedMessage?.data?.payloadId !== undefined) {
+    if (
+      decodedMessage?.data?.payloadId !== null &&
+      decodedMessage?.data?.payloadId !== undefined
+    ) {
       payload_id = decodedMessage?.data.payloadId;
       proposal_id = await getPayloadProposalRelation(
         decodedMessage?.data.payloadId,
-        chainId
+        chainId,
       );
     }
-    
-    if (decodedMessage?.data?.proposalId !== null && decodedMessage?.data?.proposalId !== undefined) {
+
+    if (
+      decodedMessage?.data?.proposalId !== null &&
+      decodedMessage?.data?.proposalId !== undefined
+    ) {
       proposal_id = decodedMessage?.data.proposalId;
     }
   } catch (e) {
@@ -33,7 +40,9 @@ export const getPayloadAndProposalIds = async (
   }
 
   return [
-    proposal_id !== null && proposal_id !== undefined ? Number(proposal_id) : null,
+    proposal_id !== null && proposal_id !== undefined
+      ? Number(proposal_id)
+      : null,
     payload_id !== null && payload_id !== undefined ? Number(payload_id) : null,
   ];
 };

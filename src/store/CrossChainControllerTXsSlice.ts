@@ -5,7 +5,7 @@ import { type IWeb3Slice } from "@/store/web3Slice";
 import {
   type RetryEnvelopeTxParams,
   type RetryTransactionTxParams,
-} from '@/web3Services/crossChainControllerTXsService';
+} from "@/web3Services/crossChainControllerTXsService";
 
 export interface ICrossChainControllerTXsSlice {
   retryEnvelope: ({ ...params }: RetryEnvelopeTxParams) => Promise<void>;

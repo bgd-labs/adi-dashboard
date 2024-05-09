@@ -7,8 +7,8 @@ import { useStore } from "@/providers/ZustandStoreProvider";
 import { type TransactionUnion } from "@/store/transactionsSlice";
 
 export const useLastTxLocalStatus = ({
- type,
- payload,
+  type,
+  payload,
 }: Pick<TransactionUnion, "type" | "payload">) => {
   const transactionsPool = useStore((store) => store.transactionsPool);
   const activeWallet = useStore((store) => store.activeWallet);

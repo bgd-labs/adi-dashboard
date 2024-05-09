@@ -1,27 +1,33 @@
 "use client";
 
 import React, { useState } from "react";
+import { type Address, zeroAddress } from "viem";
 
+import { Button } from "@/components/Button";
+import { ModalForTestTx } from "@/components/TransactionsModals/ModalForTestTx";
 import { useLastTxLocalStatus } from "@/hooks/useLastTxLocalStatus";
 import { useStore } from "@/providers/ZustandStoreProvider";
 import { TxType } from "@/store/transactionsSlice";
-import { type RetryEnvelopeTxParams } from '@/web3Services/crossChainControllerTXsService';
-import { Button } from '@/components/Button';
-import { api } from '@/trpc/react';
-import { type Address, zeroAddress } from 'viem';
-import { ModalForTestTx } from '@/components/TransactionsModals/ModalForTestTx';
+import { api } from "@/trpc/react";
+import { type RetryEnvelopeTxParams } from "@/web3Services/crossChainControllerTXsService";
 
-export const RetryEnvelopeButton = (initialParams: Omit<RetryEnvelopeTxParams, 'cccAddress' | 'gasLimit'>) => {
+export const RetryEnvelopeButton = (
+  initialParams: Omit<RetryEnvelopeTxParams, "cccAddress" | "gasLimit">,
+) => {
   const retryEnvelope = useStore((state) => state.retryEnvelope);
 
-  const { data: initialCCCAddress } = api.address.getCrossChainControllerAddressByChainId.useQuery({ chainId: initialParams.chainId });
-  const cccAddress = initialCCCAddress as Address ?? zeroAddress;
+  const { data: initialCCCAddress } =
+    api.address.getCrossChainControllerAddressByChainId.useQuery({
+      chainId: initialParams.chainId,
+    });
+
+  const cccAddress = (initialCCCAddress as Address) ?? zeroAddress;
 
   const formattedParams = {
     ...initialParams,
     gasLimit: BigInt(0), // TODO: need calculate
     cccAddress,
-  }
+  };
 
   const [isRetryEnvelopeModalOpen, setIsRetryEnvelopeModal] = useState(false);
 

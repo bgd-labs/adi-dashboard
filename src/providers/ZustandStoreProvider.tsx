@@ -5,12 +5,12 @@ import {
   initChainInformationConfig,
 } from "@bgd-labs/frontend-web3-utils";
 import { createContext, type ReactNode, useContext, useRef } from "react";
-import { mainnet } from 'viem/chains';
+import { mainnet } from "viem/chains";
 import { create, type StoreApi, useStore as useZustandStore } from "zustand";
 import { devtools } from "zustand/middleware";
 
+import { CHAINS } from "@/constants/chains";
 import { createRootSlice, type RootState } from "@/store";
-import { CHAINS } from '@/constants/chains';
 
 export const DESIRED_CHAIN_ID = mainnet.id;
 export const chainInfoHelpers = initChainInformationConfig(CHAINS);

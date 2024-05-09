@@ -1,7 +1,7 @@
 import { type Config, writeContract } from "@wagmi/core";
 import { type Address, type Hex } from "viem";
 
-import { cccAbi }  from "@/web3Services/abi/crossChainControllerAbi";
+import { cccAbi } from "@/web3Services/abi/crossChainControllerAbi";
 
 export type RetryEnvelopeTxParams = {
   chainId: number;
@@ -13,7 +13,7 @@ export type RetryEnvelopeTxParams = {
     originChainId: bigint;
     destinationChainId: bigint;
     message: Address;
-  },
+  };
   gasLimit: bigint;
 };
 
@@ -32,12 +32,17 @@ export class CrossChainControllerTXsService {
     this.wagmiConfig = wagmiConfig;
   }
 
-  async retryEnvelope({ chainId, cccAddress, envelope, gasLimit }: RetryEnvelopeTxParams) {
+  async retryEnvelope({
+    chainId,
+    cccAddress,
+    envelope,
+    gasLimit,
+  }: RetryEnvelopeTxParams) {
     if (this.wagmiConfig) {
       return writeContract(this.wagmiConfig, {
         abi: cccAbi,
         address: cccAddress,
-        functionName: 'retryEnvelope',
+        functionName: "retryEnvelope",
         args: [envelope, gasLimit],
         chainId: chainId,
       });
@@ -51,13 +56,13 @@ export class CrossChainControllerTXsService {
     cccAddress,
     encodedTransaction,
     gasLimit,
-    bridgeAdaptersToRetry
+    bridgeAdaptersToRetry,
   }: RetryTransactionTxParams) {
     if (this.wagmiConfig) {
       return writeContract(this.wagmiConfig, {
         abi: cccAbi,
         address: cccAddress,
-        functionName: 'retryTransaction',
+        functionName: "retryTransaction",
         args: [encodedTransaction, gasLimit, bridgeAdaptersToRetry],
         chainId: chainId,
       });

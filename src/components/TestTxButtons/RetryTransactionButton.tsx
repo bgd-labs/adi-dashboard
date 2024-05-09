@@ -1,30 +1,36 @@
 "use client";
 
 import React, { useState } from "react";
+import { type Address, zeroAddress } from "viem";
 
+import { Button } from "@/components/Button";
+import { ModalForTestTx } from "@/components/TransactionsModals/ModalForTestTx";
 import { useLastTxLocalStatus } from "@/hooks/useLastTxLocalStatus";
 import { useStore } from "@/providers/ZustandStoreProvider";
 import { TxType } from "@/store/transactionsSlice";
-import { type RetryTransactionTxParams } from '@/web3Services/crossChainControllerTXsService';
-import { Button } from '@/components/Button';
-import { api } from '@/trpc/react';
-import { type Address, zeroAddress } from 'viem';
-import { ModalForTestTx } from '@/components/TransactionsModals/ModalForTestTx';
-import { textCenterEllipsis } from '@/utils/textCenterEllipsis';
+import { api } from "@/trpc/react";
+import { textCenterEllipsis } from "@/utils/textCenterEllipsis";
+import { type RetryTransactionTxParams } from "@/web3Services/crossChainControllerTXsService";
 
-export const RetryTransactionButton = (initialParams: Omit<RetryTransactionTxParams, 'cccAddress' | 'gasLimit'>) => {
+export const RetryTransactionButton = (
+  initialParams: Omit<RetryTransactionTxParams, "cccAddress" | "gasLimit">,
+) => {
   const retryTransaction = useStore((state) => state.retryTransaction);
 
-  const { data: initialCCCAddress } = api.address.getCrossChainControllerAddressByChainId.useQuery({ chainId: initialParams.chainId });
-  const cccAddress = initialCCCAddress as Address ?? zeroAddress;
+  const { data: initialCCCAddress } =
+    api.address.getCrossChainControllerAddressByChainId.useQuery({
+      chainId: initialParams.chainId,
+    });
+  const cccAddress = (initialCCCAddress as Address) ?? zeroAddress;
 
   const formattedParams = {
     ...initialParams,
     gasLimit: BigInt(0), // TODO: need calculate
     cccAddress,
-  }
+  };
 
-  const [isRetryTransactionModalOpen, setIsRetryTransactionModal] = useState(false);
+  const [isRetryTransactionModalOpen, setIsRetryTransactionModal] =
+    useState(false);
 
   const {
     executeTxWithLocalStatuses: retryTransactionExecute,
@@ -49,7 +55,8 @@ export const RetryTransactionButton = (initialParams: Omit<RetryTransactionTxPar
   return (
     <>
       <Button type="primary" onClick={handleRetryTransaction}>
-        Retry transaction: {textCenterEllipsis(initialParams.encodedTransaction, 5, 5)}
+        Retry transaction:{" "}
+        {textCenterEllipsis(initialParams.encodedTransaction, 5, 5)}
       </Button>
 
       <ModalForTestTx
