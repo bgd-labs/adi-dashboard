@@ -1,9 +1,10 @@
 import Image from "next/image";
-import { Box } from "@/components/Box";
 import Link from "next/link";
+
 import logo from "@/assets/logo.svg";
+import { Box } from "@/components/Box";
+import { WalletWidget } from "@/components/Wallet/Wallet";
 import { env } from "@/env";
-import { WalletWidget } from '@/components/wallet/Wallet';
 
 export const Header = () => {
   return (

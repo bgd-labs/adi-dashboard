@@ -4,8 +4,7 @@ import { type StoreApi } from "zustand";
 import {
   createCrossChainControllerTXsSlice,
   type ICrossChainControllerTXsSlice,
-} from "@/store/CrossChainControllerTXsSlice";
-import { createEnsSlice, type IEnsSlice } from "@/store/ensSlice";
+} from "@/store/crossChainControllerTXsSlice";
 import {
   createTransactionsSlice,
   type TransactionsSlice,
@@ -19,7 +18,6 @@ export type StoreSliceWithClients<T extends object, E extends object = T> = (
 ) => T;
 
 export type RootState = IWeb3Slice &
-  IEnsSlice &
   TransactionsSlice &
   ICrossChainControllerTXsSlice;
 
@@ -31,6 +29,5 @@ export const createRootSlice = (
 ) => ({
   ...createWeb3Slice(set, get),
   ...createTransactionsSlice(set, get, clients),
-  ...createEnsSlice(set, get, clients),
   ...createCrossChainControllerTXsSlice(set, get),
 });

@@ -18,8 +18,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/Modal";
-import { WalletActive } from "@/components/wallet/WalletActive";
-import { type Wallet, WalletItem } from "@/components/wallet/WalletItem";
+import { WalletActive } from "@/components/Wallet/WalletActive";
+import { type Wallet, WalletItem } from "@/components/Wallet/WalletItem";
 import { useStore } from "@/providers/ZustandStoreProvider";
 import { getLocalStorageLastConnectedWallet } from "@/utils/localStorage";
 
@@ -47,7 +47,7 @@ export const wallets: Wallet[] = [
   {
     walletType: WalletType.Safe,
     icon: gnosisSafe,
-    title: "Safe wallet",
+    title: "Safe Wallet",
     isVisible: typeof window !== "undefined" && window !== window.parent,
   },
 ];

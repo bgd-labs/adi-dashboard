@@ -1,3 +1,5 @@
+import { type Address } from "viem";
+
 export type Json =
   | string
   | number
@@ -9,6 +11,26 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      ENS: {
+        Row: {
+          address: Address;
+          lastUpdated: Date;
+          name: string | null;
+          avatar: string | null;
+        };
+        Insert: {
+          address: Address;
+          lastUpdated: Date;
+          name?: string | null;
+          avatar?: string | null;
+        };
+        Update: {
+          address?: Address;
+          lastUpdated: Date;
+          name?: string | null;
+          avatar?: string | null;
+        };
+      };
       AddressBook: {
         Row: {
           address: string;
