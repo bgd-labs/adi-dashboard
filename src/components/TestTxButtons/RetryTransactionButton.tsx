@@ -13,7 +13,7 @@ import { textCenterEllipsis } from "@/utils/textCenterEllipsis";
 import { type RetryTransactionTxParams } from "@/web3Services/crossChainControllerTXsService";
 
 export const RetryTransactionButton = (
-  initialParams: Omit<RetryTransactionTxParams, "cccAddress" | "gasLimit">,
+  initialParams: Omit<RetryTransactionTxParams, "cccAddress">,
 ) => {
   const retryTransaction = useStore((state) => state.retryTransaction);
 
@@ -25,7 +25,6 @@ export const RetryTransactionButton = (
 
   const formattedParams = {
     ...initialParams,
-    gasLimit: BigInt(0), // TODO: need calculate
     cccAddress,
   };
 

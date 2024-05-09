@@ -15,6 +15,9 @@ import { DESIRED_CHAIN_ID, useStore } from "@/providers/ZustandStoreProvider";
 const queryClient = new QueryClient();
 
 export const WagmiProvider = () => {
+  const getImpersonatedAddress = useStore(
+    (store) => store.getImpersonatedAddress,
+  );
   const setWagmiConfig = useStore((store) => store.setWagmiConfig);
   const setDefaultChainId = useStore((store) => store.setDefaultChainId);
   const changeActiveWalletAccount = useStore(
@@ -44,6 +47,7 @@ export const WagmiProvider = () => {
           },
         },
       },
+      getImpersonatedAccount: getImpersonatedAddress,
       ssr: true,
     });
   }, []);

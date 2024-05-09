@@ -7,21 +7,21 @@ export type RetryEnvelopeTxParams = {
   chainId: number;
   cccAddress: Address;
   envelope: {
-    nonce: bigint;
+    nonce: number;
     origin: Address;
     destination: Address;
-    originChainId: bigint;
-    destinationChainId: bigint;
+    originChainId: number;
+    destinationChainId: number;
     message: Address;
   };
-  gasLimit: bigint;
+  gasLimit: number;
 };
 
 export type RetryTransactionTxParams = {
   chainId: number;
   cccAddress: Address;
   encodedTransaction: Hex;
-  gasLimit: bigint;
+  gasLimit: number;
   bridgeAdaptersToRetry: Address[];
 };
 
@@ -43,7 +43,15 @@ export class CrossChainControllerTXsService {
         abi: cccAbi,
         address: cccAddress,
         functionName: "retryEnvelope",
-        args: [envelope, gasLimit],
+        args: [
+          {
+            ...envelope,
+            nonce: BigInt(envelope.nonce),
+            originChainId: BigInt(envelope.originChainId),
+            destinationChainId: BigInt(envelope.destinationChainId),
+          },
+          BigInt(gasLimit),
+        ],
         chainId: chainId,
       });
     } else {
@@ -63,7 +71,7 @@ export class CrossChainControllerTXsService {
         abi: cccAbi,
         address: cccAddress,
         functionName: "retryTransaction",
-        args: [encodedTransaction, gasLimit, bridgeAdaptersToRetry],
+        args: [encodedTransaction, BigInt(gasLimit), bridgeAdaptersToRetry],
         chainId: chainId,
       });
     } else {

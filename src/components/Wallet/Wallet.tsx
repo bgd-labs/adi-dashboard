@@ -9,6 +9,7 @@ import React, { useEffect, useState } from "react";
 import coinbase from "@/assets/wallets/coinbase.svg";
 import gnosisSafe from "@/assets/wallets/gnosisSafe.svg";
 import walletConnect from "@/assets/wallets/walletConnect.svg";
+import impersonated from "@/assets/wallets/impersonated.svg";
 import { Button } from "@/components/Button";
 import {
   Dialog,
@@ -22,6 +23,7 @@ import { WalletActive } from "@/components/Wallet/WalletActive";
 import { type Wallet, WalletItem } from "@/components/Wallet/WalletItem";
 import { useStore } from "@/providers/ZustandStoreProvider";
 import { getLocalStorageLastConnectedWallet } from "@/utils/localStorage";
+import { ImpersonatedForm } from "@/components/Wallet/ImpersonatedForm";
 
 const browserWalletLabelAndIcon = getBrowserWalletLabelAndIcon();
 
@@ -50,6 +52,12 @@ export const wallets: Wallet[] = [
     title: "Safe Wallet",
     isVisible: typeof window !== "undefined" && window !== window.parent,
   },
+  {
+    walletType: WalletType.Impersonated,
+    icon: impersonated,
+    title: "Impersonated",
+    isVisible: true,
+  },
 ];
 
 export const WalletWidget = () => {
@@ -64,6 +72,7 @@ export const WalletWidget = () => {
     (store) => store.walletConnectionError,
   );
 
+  const [impersonatedFormOpen, setImpersonatedFormOpen] = React.useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -106,17 +115,24 @@ export const WalletWidget = () => {
             </div>
           ) : (
             <>
-              {wallets.map((wallet) => (
-                <React.Fragment key={wallet.walletType}>
-                  {wallet.isVisible && (
-                    <WalletItem
-                      walletType={wallet.walletType}
-                      icon={wallet.icon}
-                      title={wallet.title}
-                    />
-                  )}
-                </React.Fragment>
-              ))}
+              {impersonatedFormOpen && !!setImpersonatedFormOpen ? (
+                <ImpersonatedForm />
+              ) : (
+                <>
+                  {wallets.map((wallet) => (
+                    <React.Fragment key={wallet.walletType}>
+                      {wallet.isVisible && (
+                        <WalletItem
+                          walletType={wallet.walletType}
+                          icon={wallet.icon}
+                          title={wallet.title}
+                          setOpenImpersonatedForm={setImpersonatedFormOpen}
+                        />
+                      )}
+                    </React.Fragment>
+                  ))}
+                </>
+              )}
             </>
           )}
         </div>

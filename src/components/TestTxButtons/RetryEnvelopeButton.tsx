@@ -12,7 +12,7 @@ import { api } from "@/trpc/react";
 import { type RetryEnvelopeTxParams } from "@/web3Services/crossChainControllerTXsService";
 
 export const RetryEnvelopeButton = (
-  initialParams: Omit<RetryEnvelopeTxParams, "cccAddress" | "gasLimit">,
+  initialParams: Omit<RetryEnvelopeTxParams, "cccAddress">,
 ) => {
   const retryEnvelope = useStore((state) => state.retryEnvelope);
 
@@ -25,7 +25,6 @@ export const RetryEnvelopeButton = (
 
   const formattedParams = {
     ...initialParams,
-    gasLimit: BigInt(0), // TODO: need calculate
     cccAddress,
   };
 

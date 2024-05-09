@@ -10,6 +10,7 @@ import { RetryTransactionButton } from "@/components/TestTxButtons/RetryTransact
 import { type RouterOutput } from "@/server/api/types";
 
 import { ChainIcon } from "./ChainIcon";
+import { getGasForTxByEnvelopeType } from "@/utils/getGasForTxByEnvelopeName";
 
 type Props = {
   failedAdapters: RouterOutput["envelopes"]["getBridgingState"]["failedAdapters"];
@@ -112,6 +113,9 @@ export const RetryButtons = ({ failedAdapters, envelope }: Props) => {
               return encoded_transactions.map((item) => (
                 <RetryTransactionButton
                   key={item.encoded_transaction}
+                  gasLimit={getGasForTxByEnvelopeType(
+                    envelope.decodedMessage?.type,
+                  )} // TODO: not sure about this
                   chainId={chainId}
                   encodedTransaction={item.encoded_transaction}
                   bridgeAdaptersToRetry={item.adapters}
@@ -123,12 +127,13 @@ export const RetryButtons = ({ failedAdapters, envelope }: Props) => {
 
         <RetryEnvelopeButton
           chainId={envelope.origin_chain_id!}
+          gasLimit={getGasForTxByEnvelopeType(envelope.decodedMessage?.type)}
           envelope={{
-            nonce: BigInt(envelope.nonce!),
+            nonce: envelope.nonce!,
             origin: envelope.origin! as Hex,
             destination: envelope.destination! as Hex,
-            originChainId: BigInt(envelope.origin_chain_id!),
-            destinationChainId: BigInt(envelope.destination_chain_id!),
+            originChainId: envelope.origin_chain_id!,
+            destinationChainId: envelope.destination_chain_id!,
             message: envelope.message,
           }}
         />
