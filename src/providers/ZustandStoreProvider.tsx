@@ -5,17 +5,16 @@ import {
   initChainInformationConfig,
 } from "@bgd-labs/frontend-web3-utils";
 import { createContext, type ReactNode, useContext, useRef } from "react";
-import { mainnet } from 'viem/chains';
+import { mainnet } from "viem/chains";
 import { create, type StoreApi, useStore as useZustandStore } from "zustand";
 import { devtools } from "zustand/middleware";
 
+import { CHAINS } from "@/constants/chains";
 import { createRootSlice, type RootState } from "@/store";
-import { CHAINS } from '@/constants/chains';
 
 export const DESIRED_CHAIN_ID = mainnet.id;
-const chainInfoHelpers = initChainInformationConfig(CHAINS);
+export const chainInfoHelpers = initChainInformationConfig(CHAINS);
 
-// TODO: need think if it's possible to pass here clients from server
 const clients: ClientsRecord = {};
 Object.entries(chainInfoHelpers.clientInstances).forEach(
   (value) => (clients[Number(value[0])] = value[1].instance),

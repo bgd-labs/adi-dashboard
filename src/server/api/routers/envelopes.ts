@@ -256,8 +256,10 @@ export const envelopesRouter = createTRPCRouter({
         }
 
         return {
+          txChainId: event.chain_id,
           chainId: event.destination_chain_id,
           address: event.destination_bridge_adapter,
+          encoded_transaction: event.encoded_transaction,
           status,
         };
       });

@@ -1,14 +1,12 @@
 import {
   createWalletSlice,
   type IWalletSlice,
-} from '@bgd-labs/frontend-web3-utils';
+  type StoreSlice,
+} from "@bgd-labs/frontend-web3-utils";
+import { produce } from "immer";
 
-import { type TransactionsSlice } from '@/store/transactionsSlice';
-import { ControllerRetryService } from '@/web3Services/controllerRetryService';
-import { zeroAddress } from 'viem';
-import { produce } from 'immer';
-import { type StoreSliceWithClients } from '@/store';
-import { DESIRED_CHAIN_ID } from '@/providers/ZustandStoreProvider';
+import { type TransactionsSlice } from "@/store/transactionsSlice";
+import { CrossChainControllerTXsService } from "@/web3Services/crossChainControllerTXsService";
 
 /**
  * web3Slice is required only to have a better control over providers state i.e
@@ -24,13 +22,12 @@ export type IWeb3Slice = IWalletSlice & {
   connectSigner: () => void;
 
   // services
-  controllerRetryService: ControllerRetryService;
+  crossChainControllerTXsService: CrossChainControllerTXsService;
 };
 
-export const createWeb3Slice: StoreSliceWithClients<IWeb3Slice, TransactionsSlice> = (
+export const createWeb3Slice: StoreSlice<IWeb3Slice, TransactionsSlice> = (
   set,
   get,
-  clients,
 ) => ({
   ...createWalletSlice({
     walletConnected: () => {
@@ -53,12 +50,10 @@ export const createWeb3Slice: StoreSliceWithClients<IWeb3Slice, TransactionsSlic
     const config = get().wagmiConfig;
     set({ walletConnectedTimeLock: true });
     if (config) {
-      get().controllerRetryService.connectSigner(config);
+      get().crossChainControllerTXsService.connectSigner(config);
     }
     setTimeout(() => set({ walletConnectedTimeLock: false }), 1000);
   },
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
-  controllerRetryService: new ControllerRetryService(clients[DESIRED_CHAIN_ID], zeroAddress), // TODO: need addresss
+  crossChainControllerTXsService: new CrossChainControllerTXsService(),
 });

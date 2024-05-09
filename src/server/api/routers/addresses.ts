@@ -91,4 +91,19 @@ export const addressRouter = createTRPCRouter({
 
       return data?.explorer_link ?? "";
     }),
+
+  getCrossChainControllerAddressByChainId: publicProcedure
+    .input(z.object({ chainId: z.number() }))
+    .query(async ({ input, ctx }) => {
+      const { chainId } = input;
+
+      const { data } = await ctx.supabaseAdmin
+        .from("CrossChainControllers")
+        .select("address")
+        .eq("chain_id", chainId)
+        .limit(1)
+        .single();
+
+      return data?.address ?? "";
+    }),
 });

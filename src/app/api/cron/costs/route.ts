@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
+import { type Hash } from "viem";
+
+import { env } from "@/env";
 import { calculateTxCosts } from "@/server/eventCollection/calculateTxCosts";
 import { api } from "@/trpc/server";
-import { env } from "@/env";
-import { type Hash } from "viem";
 
 export const maxDuration = 100;
 
@@ -21,7 +22,7 @@ export const GET = async (req: Request) => {
 
   for (let i = 0; i < unscannedTxs.length; i++) {
     const pair = unscannedTxs[i];
-    if (!pair || typeof pair.chain_id !== 'number') {
+    if (!pair || typeof pair.chain_id !== "number") {
       return;
     }
     try {
@@ -31,10 +32,7 @@ export const GET = async (req: Request) => {
         pair.transaction_hash as Hash,
         pair.chain_id,
       );
-      await calculateTxCosts(
-        pair.transaction_hash as Hash,
-        pair.chain_id as number,
-      );
+      await calculateTxCosts(pair.transaction_hash as Hash, pair.chain_id);
     } catch (error) {
       console.error("Error calculating transaction costs:", error);
     }

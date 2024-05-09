@@ -1,10 +1,11 @@
 "use client";
 
-import { forwardRef, type ForwardedRef } from "react";
-import { cn } from "@/utils/cn";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { type ForwardedRef, forwardRef } from "react";
+
 import { Spinner } from "@/components/Spinner";
+import { cn } from "@/utils/cn";
 
 type Props = {
   children: React.ReactNode;
@@ -19,6 +20,7 @@ type Props = {
   fullWidth?: boolean;
 };
 
+// eslint-disable-next-line react/display-name
 export const Button = forwardRef(
   (
     {
@@ -68,15 +70,14 @@ export const Button = forwardRef(
             },
           )}
         >
-          {loading && (
-            <Spinner className="h-5 w-5"/>
-          )}
+          {loading && <Spinner className="h-5 w-5" />}
           {children}
         </span>
       </>
     );
 
     if (href) {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       const searchParams = useSearchParams();
 
       const from = searchParams.get("from");

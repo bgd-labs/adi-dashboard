@@ -8,13 +8,16 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { useEffect, useMemo } from "react";
 import { mainnet } from "viem/chains";
 
-import { DESIRED_CHAIN_ID, useStore } from '@/providers/ZustandStoreProvider';
-import { env } from '@/env';
-import { CHAINS } from '@/constants/chains';
+import { CHAINS } from "@/constants/chains";
+import { env } from "@/env";
+import { DESIRED_CHAIN_ID, useStore } from "@/providers/ZustandStoreProvider";
 
 const queryClient = new QueryClient();
 
 export const WagmiProvider = () => {
+  const getImpersonatedAddress = useStore(
+    (store) => store.getImpersonatedAddress,
+  );
   const setWagmiConfig = useStore((store) => store.setWagmiConfig);
   const setDefaultChainId = useStore((store) => store.setDefaultChainId);
   const changeActiveWalletAccount = useStore(
@@ -44,10 +47,10 @@ export const WagmiProvider = () => {
           },
         },
       },
+      getImpersonatedAccount: getImpersonatedAddress,
       ssr: true,
     });
   }, []);
-
 
   return (
     <QueryClientProvider client={queryClient}>

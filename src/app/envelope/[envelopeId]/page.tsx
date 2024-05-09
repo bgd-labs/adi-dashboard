@@ -1,24 +1,25 @@
 import { notFound } from "next/navigation";
-import { EnvelopeIcon } from "@/components/EnvelopeIcon";
-import { CopyValueCard } from "@/components/CopyValueCard";
-import { FromTo } from "@/components/FromTo";
-import { Consensus } from "@/components/Consensus";
-import { Timestamp } from "@/components/Timestamp";
-import { ExplorerLink } from "@/components/ExplorerLink";
-import { Tooltip } from "@/components/Tooltip";
-import { api } from "@/trpc/server";
-import { RetryButtons } from "@/components/RetryButtons";
+import prettyMilliseconds from "pretty-ms";
+import { formatEther, formatGwei, type Hex } from "viem";
+
 import { Box } from "@/components/Box";
+import { Consensus } from "@/components/Consensus";
+import { CopyValueCard } from "@/components/CopyValueCard";
+import { EnvelopeDeliveryAttemptedEvent } from "@/components/EnvelopeDeliveryAttemptedEvent";
+import { EnvelopeGovernanceLinks } from "@/components/EnvelopeGovernanceLinks";
+import { EnvelopeIcon } from "@/components/EnvelopeIcon";
+import { EnvelopeMessage } from "@/components/EnvelopeMessage";
 import { EnvelopeRegisteredEvent } from "@/components/EnvelopeRegisteredEvent";
+import { ExplorerLink } from "@/components/ExplorerLink";
+import { FromTo } from "@/components/FromTo";
+import { RetryButtons } from "@/components/RetryButtons";
+import { Timestamp } from "@/components/Timestamp";
+import { Tooltip } from "@/components/Tooltip";
 import { TransactionForwardingAttemptedEvent } from "@/components/TransactionForwardingAttemptedEvent";
 import { TransactionReceivedEvent } from "@/components/TransactionReceivedEvent";
-import { EnvelopeDeliveryAttemptedEvent } from "@/components/EnvelopeDeliveryAttemptedEvent";
-import { EnvelopeMessage } from "@/components/EnvelopeMessage";
-import { truncateToTwoSignificantDigits } from "@/utils/truncateToTwoSignificantDigits";
-import { formatEther, formatGwei, type Hex } from "viem";
+import { api } from "@/trpc/server";
 import { cn } from "@/utils/cn";
-import { EnvelopeGovernanceLinks } from "@/components/EnvelopeGovernanceLinks";
-import prettyMilliseconds from "pretty-ms";
+import { truncateToTwoSignificantDigits } from "@/utils/truncateToTwoSignificantDigits";
 
 const EnvelopeDetailPage = async ({
   params,
@@ -104,10 +105,13 @@ const EnvelopeDetailPage = async ({
     return (
       <>
         {!envelope.is_delivered && (
-          <RetryButtons failedAdapters={bridgingState.failedAdapters} />
+          <RetryButtons
+            envelope={envelope}
+            failedAdapters={bridgingState.failedAdapters}
+          />
         )}
         <Box>
-          <div className="px-4 py-2 py-6 sm:px-6">
+          <div className="px-4 py-6 sm:px-6">
             <div className="flex items-center gap-1 sm:gap-3">
               <EnvelopeIcon isBig seed={envelope.id} />
               <div className="hidden translate-y-1 sm:block">
@@ -195,7 +199,7 @@ const EnvelopeDetailPage = async ({
               <h2 className="pl-0.5 text-xs font-semibold uppercase tracking-wider">
                 Envelope ID
               </h2>
-              <div className="flex hidden xl:block">
+              <div className="hidden xl:block">
                 <CopyValueCard value={params.envelopeId} isBig />
               </div>
               <div className="xl:hidden">
@@ -245,7 +249,7 @@ const EnvelopeDetailPage = async ({
           </div>
         </Box>
         <Box>
-          <div className="px-4 py-2 py-6 sm:px-6">
+          <div className="px-4 py-6 sm:px-6">
             {bridgingState.origin.length > 0 && (
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="grid gap-2">

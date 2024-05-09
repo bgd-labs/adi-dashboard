@@ -1,5 +1,5 @@
 import { api } from "@/trpc/server";
-import { ScanChart } from "../../components/ScanChart";
+import { ScanChart } from '@/components/ScanChart';
 import { getClients } from "@/server/eventCollection/getClients";
 import { getCrossChainControllers } from "@/server/eventCollection/getCrossChainControllers";
 import { prepareBlockIntervals } from "@/server/eventCollection/prepareBlockIntervals";

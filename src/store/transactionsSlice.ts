@@ -4,14 +4,21 @@ import {
   type BaseTx as BT,
   createTransactionsSlice as createBaseTransactionsSlice,
   type ITransactionsSlice,
-  type IWalletSlice, type TransactionStatus, type WalletType,
-} from '@bgd-labs/frontend-web3-utils';
-import {type Address, type Hex} from 'viem';
-import {type StoreSliceWithClients} from '@/store';
+  type IWalletSlice,
+  type TransactionStatus,
+  type WalletType,
+} from "@bgd-labs/frontend-web3-utils";
+import { type Hex } from "viem";
+
+import { type StoreSliceWithClients } from "@/store";
+import {
+  type RetryEnvelopeTxParams,
+  type RetryTransactionTxParams,
+} from "@/web3Services/crossChainControllerTXsService";
 
 export enum TxType {
-  retryEnvelope = 'retryEnvelope',
-  retryTransaction = 'retryTransaction',
+  retryEnvelope = "retryEnvelope",
+  retryTransaction = "retryTransaction",
 }
 
 type BaseTx = BT & {
@@ -22,21 +29,15 @@ type BaseTx = BT & {
 
 type RetryEnvelopeTx = BaseTx & {
   type: TxType.retryEnvelope;
-  payload: {
-    signer: Address; // need change
-  };
+  payload: RetryEnvelopeTxParams;
 };
 
 type RetryTransactionTx = BaseTx & {
   type: TxType.retryTransaction;
-  payload: {
-    signer: Address; // need change
-  };
+  payload: RetryTransactionTxParams;
 };
 
-export type TransactionUnion =
-  | RetryEnvelopeTx
-  | RetryTransactionTx
+export type TransactionUnion = RetryEnvelopeTx | RetryTransactionTx;
 
 export type TransactionsSlice = ITransactionsSlice<TransactionUnion>;
 
@@ -56,10 +57,12 @@ export const createTransactionsSlice: StoreSliceWithClients<
     txStatusChangedCallback: async (data) => {
       switch (data.type) {
         case TxType.retryEnvelope:
-          console.log(data.payload)
+          // TODO: need logic
+          console.log(data.payload);
           break;
         case TxType.retryTransaction:
-          console.log(data.payload)
+          // TODO: need logic
+          console.log(data.payload);
           break;
       }
     },

@@ -4,11 +4,11 @@ import {
   TransactionStatus,
 } from "@bgd-labs/frontend-web3-utils";
 import dayjs from "dayjs";
-import makeBlockie from "ethereum-blockies-base64";
 import React, { useEffect, useState } from "react";
-import { type Address, zeroAddress } from "viem";
+import { zeroAddress } from "viem";
 import { mainnet } from "viem/chains";
 
+import { Button } from "@/components/Button";
 import { Link } from "@/components/Link";
 import {
   Dialog,
@@ -20,12 +20,12 @@ import {
 } from "@/components/Modal";
 import { Spinner } from "@/components/Spinner";
 import { useStore } from "@/providers/ZustandStoreProvider";
-import { selectENSAvatar } from "@/store/ensSelectors";
+import { api } from "@/trpc/react";
 import { cn } from "@/utils/cn";
+import { checkAvatar } from "@/utils/ensHelpers";
+import { getChainName } from "@/utils/getChainName";
 import { getScanLink } from "@/utils/getScanLink";
 import { textCenterEllipsis } from "@/utils/textCenterEllipsis";
-import { getChainName } from "@/utils/getChainName";
-import { Button } from "@/components/Button";
 
 export const WalletActive = () => {
   const activeWallet = useStore((store) => store.activeWallet);
@@ -35,15 +35,12 @@ export const WalletActive = () => {
   const walletConnectedTimeLock = useStore(
     (store) => store.walletConnectedTimeLock,
   );
-  const ensData = useStore((store) => store.ensData);
-  const fetchEnsNameByAddress = useStore(
-    (store) => store.fetchEnsNameByAddress,
-  );
-  const fetchEnsAvatarByAddress = useStore(
-    (store) => store.fetchEnsAvatarByAddress,
-  );
 
   const activeAddress = activeWallet?.address ?? "";
+
+  const { data } = api.ens.get.useQuery({
+    walletAddress: activeWallet?.address ?? zeroAddress,
+  });
 
   const allTxsFromStore = useStore((store) =>
     selectAllTransactionsByWallet(
@@ -63,33 +60,6 @@ export const WalletActive = () => {
 
   const [lastTransactionSuccess, setLastTransactionSuccess] = useState(false);
   const [lastTransactionError, setLastTransactionError] = useState(false);
-  const [shownUserName, setShownUserName] = useState<string | undefined>(
-    activeAddress,
-  );
-  const [shownAvatar, setShownAvatar] = useState<string | undefined>(undefined);
-  const [isAvatarExists, setIsAvatarExists] = useState<boolean | undefined>(
-    undefined,
-  );
-
-  useEffect(() => {
-    if (activeAddress) {
-      setShownUserName(activeAddress);
-      // eslint-disable-next-line
-      fetchEnsNameByAddress(activeAddress).then(() => {
-        const addressData =
-          ensData[activeAddress.toLocaleLowerCase() as Address];
-        setShownUserName(addressData?.name ? addressData.name : activeAddress);
-        // eslint-disable-next-line
-        selectENSAvatar({
-          ensData,
-          fetchEnsAvatarByAddress,
-          address: activeAddress,
-          setAvatar: setShownAvatar,
-          setIsAvatarExists,
-        });
-      });
-    }
-  }, [ensData, activeAddress]);
 
   useEffect(() => {
     if (lastTransaction?.status && activeWallet && !walletConnectedTimeLock) {
@@ -103,9 +73,9 @@ export const WalletActive = () => {
     }
   }, [lastTransaction]);
 
-  // get all pending tx's from connected wallet
+  // get all pending tx's from connected Wallet
   const allPendingTransactions = activeAddress ? pendingTxsFromStore : [];
-  // filtered pending tx's, if now > tx.timestamp + 30 min, than remove tx from pending array to not show loading spinner in connect wallet button
+  // filtered pending tx's, if now > tx.timestamp + 30 min, than remove tx from pending array to not show loading spinner in connect Wallet button
   const filteredPendingTx = allPendingTransactions.filter(
     (tx) => dayjs().unix() <= dayjs.unix(tx.localTimestamp).unix() + 1800,
   );
@@ -114,15 +84,15 @@ export const WalletActive = () => {
     await disconnectActiveWallet();
   };
 
+  const shownUserName = !!data?.name ? data.name : activeAddress;
+  const avatar = !!data?.avatar
+    ? data.avatar
+    : checkAvatar({ walletAddress: activeAddress });
   const ensNameAbbreviated = shownUserName
     ? shownUserName.length > 11
       ? textCenterEllipsis(shownUserName, 5, 3)
       : shownUserName
     : undefined;
-
-  const avatar = !isAvatarExists
-    ? makeBlockie(activeAddress !== "" ? activeAddress : "default")
-    : shownAvatar;
 
   return (
     <Dialog>
@@ -172,10 +142,10 @@ export const WalletActive = () => {
         </DialogHeader>
 
         <div className="mt-4">
-          <div className="flex gap-3 items-center bg-brand-300 mb-6">
+          <div className="mb-6 flex items-center gap-3 bg-brand-300">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="w-10 h-10" src={avatar} alt="" />
-            <div className="font-mono truncate">
+            <img className="h-10 w-10" src={avatar} alt="" />
+            <div className="truncate font-mono">
               <Link
                 inNewWindow
                 className="break-all font-semibold tracking-wide"

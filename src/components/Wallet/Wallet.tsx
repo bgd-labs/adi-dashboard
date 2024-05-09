@@ -6,6 +6,11 @@ import {
 } from "@bgd-labs/frontend-web3-utils";
 import React, { useEffect, useState } from "react";
 
+import coinbase from "@/assets/wallets/coinbase.svg";
+import gnosisSafe from "@/assets/wallets/gnosisSafe.svg";
+import walletConnect from "@/assets/wallets/walletConnect.svg";
+import impersonated from "@/assets/wallets/impersonated.svg";
+import { Button } from "@/components/Button";
 import {
   Dialog,
   DialogContent,
@@ -14,17 +19,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/Modal";
-import { WalletActive } from "@/components/wallet/WalletActive";
-import { type Wallet, WalletItem } from "@/components/wallet/WalletItem";
+import { WalletActive } from "@/components/Wallet/WalletActive";
+import { type Wallet, WalletItem } from "@/components/Wallet/WalletItem";
 import { useStore } from "@/providers/ZustandStoreProvider";
 import { getLocalStorageLastConnectedWallet } from "@/utils/localStorage";
-import { Button } from "@/components/Button";
+import { ImpersonatedForm } from "@/components/Wallet/ImpersonatedForm";
 
 const browserWalletLabelAndIcon = getBrowserWalletLabelAndIcon();
-
-import coinbase from "@/assets/wallets/coinbase.svg";
-import walletConnect from "@/assets/wallets/walletConnect.svg";
-import gnosisSafe from "@/assets/wallets/gnosisSafe.svg";
 
 export const wallets: Wallet[] = [
   {
@@ -48,8 +49,14 @@ export const wallets: Wallet[] = [
   {
     walletType: WalletType.Safe,
     icon: gnosisSafe,
-    title: "Safe wallet",
+    title: "Safe Wallet",
     isVisible: typeof window !== "undefined" && window !== window.parent,
+  },
+  {
+    walletType: WalletType.Impersonated,
+    icon: impersonated,
+    title: "Impersonated",
+    isVisible: true,
   },
 ];
 
@@ -65,6 +72,7 @@ export const WalletWidget = () => {
     (store) => store.walletConnectionError,
   );
 
+  const [impersonatedFormOpen, setImpersonatedFormOpen] = React.useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -74,7 +82,11 @@ export const WalletWidget = () => {
   }, [lastConnectedWallet]);
 
   if (loading) {
-    return <Button loading className="text-sm">Loading...</Button>;
+    return (
+      <Button loading className="text-sm">
+        Loading...
+      </Button>
+    );
   }
 
   if (activeWallet) {
@@ -84,7 +96,9 @@ export const WalletWidget = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button loading={walletActivating} className="text-sm">Connect wallet</Button>
+        <Button loading={walletActivating} className="text-sm">
+          Connect wallet
+        </Button>
       </DialogTrigger>
 
       <DialogContent>
@@ -101,17 +115,24 @@ export const WalletWidget = () => {
             </div>
           ) : (
             <>
-              {wallets.map((wallet) => (
-                <React.Fragment key={wallet.walletType}>
-                  {wallet.isVisible && (
-                    <WalletItem
-                      walletType={wallet.walletType}
-                      icon={wallet.icon}
-                      title={wallet.title}
-                    />
-                  )}
-                </React.Fragment>
-              ))}
+              {impersonatedFormOpen && !!setImpersonatedFormOpen ? (
+                <ImpersonatedForm />
+              ) : (
+                <>
+                  {wallets.map((wallet) => (
+                    <React.Fragment key={wallet.walletType}>
+                      {wallet.isVisible && (
+                        <WalletItem
+                          walletType={wallet.walletType}
+                          icon={wallet.icon}
+                          title={wallet.title}
+                          setOpenImpersonatedForm={setImpersonatedFormOpen}
+                        />
+                      )}
+                    </React.Fragment>
+                  ))}
+                </>
+              )}
             </>
           )}
         </div>
