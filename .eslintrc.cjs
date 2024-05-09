@@ -7,7 +7,6 @@ const config = {
   "plugins": [
     "@typescript-eslint",
     "prettier",
-    "simple-import-sort",
   ],
   "extends": [
     "next/core-web-vitals",
@@ -41,13 +40,6 @@ const config = {
       }
     ],
     "prettier/prettier": "warn",
-    'simple-import-sort/imports': "warn",
-    'simple-import-sort/exports': "warn",
-    'import/first': "error",
-    'import/newline-after-import': "error",
-    'import/no-duplicates': "error",
-    'import/no-named-as-default': "error",
-    'import/no-unresolved': "off",
     "@typescript-eslint/no-explicit-any": 'warn',
     "@typescript-eslint/no-unsafe-assignment": 'warn',
     "@typescript-eslint/no-unsafe-return": 'warn',
