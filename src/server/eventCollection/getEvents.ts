@@ -29,7 +29,6 @@ export const getEvents = async ({
       console.log(
         `Found ${events.length} events for chain ${client.chain?.id}.`,
       );
-      revalidatePath("/", "layout");
 
       for (const event of events) {
         const { timestamp } = await client.getBlock({
@@ -73,7 +72,7 @@ export const getEvents = async ({
             } catch (error) {
               console.log("Failed to calculate tx costs: ", error);
             }
-
+            revalidatePath(`/envelope/${event.args.envelopeId}`);
             break;
 
           case "EnvelopeDeliveryAttempted":
@@ -102,6 +101,7 @@ export const getEvents = async ({
                 timestamp: dateString,
               },
             ]);
+            revalidatePath(`/envelope/${event.args.envelopeId}`);
             break;
 
           case "TransactionForwardingAttempted":
@@ -128,6 +128,7 @@ export const getEvents = async ({
                 timestamp: dateString,
               },
             ]);
+            revalidatePath(`/envelope/${event.args.envelopeId}`);
             break;
 
           case "TransactionReceived":
@@ -152,14 +153,13 @@ export const getEvents = async ({
                 timestamp: dateString,
               },
             ]);
+            revalidatePath(`/envelope/${event.args.envelopeId}`);
             break;
 
           default:
             console.log("Unknown event found");
             break;
         }
-
-        // upsert event
       }
     }
 
