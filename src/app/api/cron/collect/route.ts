@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { env } from "@/env";
 import { collectEvents } from "@/server/eventCollection";
 
@@ -9,7 +10,7 @@ export const GET = async (req: Request) => {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  await collectEvents()
+  await collectEvents();
 
   return NextResponse.json({ ok: true });
 };

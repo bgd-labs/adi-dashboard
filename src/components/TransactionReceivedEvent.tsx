@@ -1,8 +1,9 @@
-import { EventListItem } from "@/components/EventListItem";
 import { CopyValueCard } from "@/components/CopyValueCard";
+import { EventListItem } from "@/components/EventListItem";
 import { ExplorerLink } from "@/components/ExplorerLink";
-import { BridgeExplorerLink } from "./BridgeExplorerLink";
 import { type RouterOutput } from "@/server/api/types";
+
+import { BridgeExplorerLink } from "./BridgeExplorerLink";
 
 type TransactionReceivedEventProps = {
   event: RouterOutput["events"]["getTransactionReceivedEvents"][0];

@@ -1,13 +1,14 @@
-import { NextResponse } from "next/server";
 import crypto from "crypto";
+import { NextResponse } from "next/server";
+import { type Hash } from "viem";
+import * as chains from "viem/chains";
+
 import { env } from "@/env";
 import { supabaseAdmin } from "@/server/api/supabase";
-import * as chains from "viem/chains";
-import { msToTimeComponents } from "@/server/utils/msToTimeComponents";
-import { timeComponentsToString } from "@/server/utils/timeComponentsToString";
-import { sendSlackDeliveryWarning } from "@/server/utils/sendSlackDeliveryWarning";
 import { decodeEnvelopeMessage } from "@/server/utils/decodeEnvelopeMessage";
-import { type Hash } from "viem";
+import { msToTimeComponents } from "@/server/utils/msToTimeComponents";
+import { sendSlackDeliveryWarning } from "@/server/utils/sendSlackDeliveryWarning";
+import { timeComponentsToString } from "@/server/utils/timeComponentsToString";
 
 const DELIVERY_NOTIFICATION_TIMEOUT = 1000 * 60 * 60;
 
@@ -55,8 +56,10 @@ export const GET = async (req: Request) => {
         const now = new Date();
         const diff = now.getTime() - registeredAt.getTime();
 
-        const notificationHash = crypto.createHash("sha256").update(`${envelope.id}-${txId ?? "unknown"}`).digest("hex");
-
+        const notificationHash = crypto
+          .createHash("sha256")
+          .update(`${envelope.id}-${txId ?? "unknown"}`)
+          .digest("hex");
 
         if (diff > DELIVERY_NOTIFICATION_TIMEOUT) {
           const timeframe = timeComponentsToString(msToTimeComponents(diff));
@@ -68,7 +71,9 @@ export const GET = async (req: Request) => {
             .single();
 
           if (!wasAlreadyNotified) {
-            console.log(`🔔 Sending slack delivery notification: ${notificationHash}`)
+            console.log(
+              `🔔 Sending slack delivery notification: ${notificationHash}`,
+            );
 
             await sendSlackDeliveryWarning({
               envelopeId: envelope.id,
@@ -104,10 +109,13 @@ export const GET = async (req: Request) => {
         const now = new Date();
         const diff = now.getTime() - registeredAt.getTime();
 
-        const notificationHash = crypto.createHash("sha256").update(`${envelope.id}-${txId ?? "unknown"}`).digest("hex");
+        const notificationHash = crypto
+          .createHash("sha256")
+          .update(`${envelope.id}-${txId ?? "unknown"}`)
+          .digest("hex");
 
-        console.log("Notification hash:")
-        console.log(notificationHash)
+        console.log("Notification hash:");
+        console.log(notificationHash);
 
         if (diff > DELIVERY_NOTIFICATION_TIMEOUT) {
           const timeframe = timeComponentsToString(msToTimeComponents(diff));

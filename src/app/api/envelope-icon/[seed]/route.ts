@@ -1,10 +1,14 @@
-import { NextResponse, type NextRequest } from "next/server";
-import { createAvatar } from "@dicebear/core";
 import { identicon } from "@dicebear/collection";
+import { createAvatar } from "@dicebear/core";
+import { type NextRequest, NextResponse } from "next/server";
+
 import { env } from "@/env";
 
-export const GET = async (req: NextRequest, { params }: { params: { seed: string } }) => {
-  if (req.nextUrl.searchParams.get('key') !== env.ICON_GENERATOR_KEY) {
+export const GET = async (
+  req: NextRequest,
+  { params }: { params: { seed: string } },
+) => {
+  if (req.nextUrl.searchParams.get("key") !== env.ICON_GENERATOR_KEY) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const { seed } = params;
@@ -17,7 +21,6 @@ export const GET = async (req: NextRequest, { params }: { params: { seed: string
     backgroundColor: ["FCF9F5"],
   });
 
-
   const imageBuffer = await avatar.png().toArrayBuffer();
 
   return new NextResponse(imageBuffer, {
@@ -25,5 +28,4 @@ export const GET = async (req: NextRequest, { params }: { params: { seed: string
       "Content-Type": "image/png",
     },
   });
-
 };

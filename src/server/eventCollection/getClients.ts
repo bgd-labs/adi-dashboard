@@ -1,12 +1,13 @@
-import * as chains from "viem/chains";
 import {
-  type Transport,
   type Chain,
-  type PublicClient,
   createPublicClient,
   fallback,
   http,
+  type PublicClient,
+  type Transport,
 } from "viem";
+import * as chains from "viem/chains";
+
 import { type CrossChainController } from "./types";
 
 type getClientsProps = {
@@ -64,9 +65,11 @@ export const getClients = async ({
         multicall: true,
       },
       chain: chain,
-      transport: fallback(chainRpcUrls[chain.id]?.map((url) => http(url)) ?? []),
+      transport: fallback(
+        chainRpcUrls[chain.id]?.map((url) => http(url)) ?? [],
+      ),
     });
-  
+
     clients[chain.id] = client;
   });
 

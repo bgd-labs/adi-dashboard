@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { Tooltip } from "./Tooltip";
+import { useEffect, useState } from "react";
+
 import { cn } from "@/utils/cn";
+
+import { Tooltip } from "./Tooltip";
 
 export const Timestamp = ({ value }: { value: string | null }) => {
   const [isMounted, setIsMounted] = useState(false);

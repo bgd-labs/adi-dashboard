@@ -1,9 +1,11 @@
-import { type Hash } from "viem";
 import { Core, viem } from "@quicknode/sdk";
-import { erc20EventsAbi } from "@/server/constants/erc20EventsAbi";
+import { type Hash } from "viem";
+
 import { supabaseAdmin } from "@/server/api/supabase";
+import { erc20EventsAbi } from "@/server/constants/erc20EventsAbi";
 import { getErc20TokenInfo } from "@/server/utils/getErc20TokenInfo";
 import { getNativeTokenInfo } from "@/server/utils/getNativeTokenInfo";
+
 import { type Trace } from "./types";
 
 const ERC_20_TRANSFER_TOPIC =

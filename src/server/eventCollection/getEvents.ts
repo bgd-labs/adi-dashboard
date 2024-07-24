@@ -1,8 +1,10 @@
-import { type PublicClient, type Hash } from "viem";
-import { cccEventsAbi } from "../constants/cccEventsAbi";
-import { supabaseAdmin } from "@/server/api/supabase/server";
 import { revalidatePath } from "next/cache";
+import { type Hash, type PublicClient } from "viem";
+
+import { supabaseAdmin } from "@/server/api/supabase/server";
 import { calculateTxCosts } from "@/server/eventCollection/calculateTxCosts";
+
+import { cccEventsAbi } from "../constants/cccEventsAbi";
 
 export const getEvents = async ({
   address,

@@ -24,7 +24,7 @@ export const EnvelopeGovernanceLinks = ({
               className="group/payload-link border bg-brand-100 p-3 hover:border-brand-900"
               target="_blank"
             >
-              <div className="inline-block flex h-7 items-center font-mono text-xl leading-none opacity-60 group-hover/payload-link:opacity-100">
+              <div className="flex h-7 items-center font-mono text-xl leading-none opacity-60 group-hover/payload-link:opacity-100">
                 <span>{proposalId}</span>
                 <svg
                   className="ml-1 h-4 w-4"
@@ -55,7 +55,7 @@ export const EnvelopeGovernanceLinks = ({
               className="group/payload-link border bg-brand-100 p-3 hover:border-brand-900"
               target="_blank"
             >
-              <div className="inline-block flex h-7 items-center font-mono text-xl leading-none opacity-60 group-hover/payload-link:opacity-100">
+              <div className="flex h-7 items-center font-mono text-xl leading-none opacity-60 group-hover/payload-link:opacity-100">
                 <span>{payloadId}</span>
                 <svg
                   className="ml-1 h-4 w-4"

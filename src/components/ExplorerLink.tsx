@@ -1,9 +1,15 @@
-import { ChainIcon } from "@/components/ChainIcon";
+import {
+  IconVariant,
+  Web3IconType,
+} from "@bgd-labs/react-web3-icons/dist/utils/index";
+import React from "react";
 import * as chains from "viem/chains";
+
 import { ExplorerLinkCopyButton } from "@/components/ExplorerLinkCopyButton";
+import { Tooltip } from "@/components/Tooltip";
+import { Web3Icon } from "@/components/Web3Icon";
 import { api } from "@/trpc/server";
 import { cn } from "@/utils/cn";
-import { Tooltip } from "@/components/Tooltip";
 
 export const ExplorerLink = async ({
   type,
@@ -42,7 +48,6 @@ export const ExplorerLink = async ({
 
   if (tiny) {
     return (
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       <Tooltip value={label ? `${firstEight}...${lastEight}` : "Unknown"}>
         <a
           href={url}
@@ -73,7 +78,15 @@ export const ExplorerLink = async ({
                 },
               )}
             >
-              <ChainIcon chainId={chainId} />
+              <Web3Icon
+                iconInfo={{
+                  type: Web3IconType.chain,
+                  info: {
+                    chainId,
+                    variant: IconVariant.Full,
+                  },
+                }}
+              />
             </div>
             {label && (
               <div className="truncate rounded-r-full bg-brand-300 py-1 pl-1.5 pr-2 text-xs font-semibold text-brand-900">

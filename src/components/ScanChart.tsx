@@ -1,9 +1,15 @@
-import { ChainIcon } from "@/components/ChainIcon";
+import {
+  IconVariant,
+  Web3IconType,
+} from "@bgd-labs/react-web3-icons/dist/utils/index";
+import React from "react";
+
 import { Box } from "@/components/Box";
 import { ExplorerLink } from "@/components/ExplorerLink";
-import { type RangeStatus } from "@/server/eventCollection/types";
-import { type RouterOutput } from "@/server/api/types";
 import { Tooltip } from "@/components/Tooltip";
+import { Web3Icon } from "@/components/Web3Icon";
+import { type RouterOutput } from "@/server/api/types";
+import { type RangeStatus } from "@/server/eventCollection/types";
 import { cn } from "@/utils/cn";
 
 type ChartProps = {
@@ -50,7 +56,15 @@ export const ScanChart = ({
       <div className="bg-brand-100 px-6 pb-9 pt-5">
         <div className="mb-4 flex flex-col flex-wrap gap-2 sm:gap-2 md:flex-row md:items-center">
           <div className="flex gap-2 md:mr-auto">
-            <ChainIcon chainId={chainId} />
+            <Web3Icon
+              iconInfo={{
+                type: Web3IconType.chain,
+                info: {
+                  chainId,
+                  variant: IconVariant.Full,
+                },
+              }}
+            />
             <div className="color-brand-900 text-sm font-semibold">
               {title}
               <span className="ml-1 text-xs font-normal opacity-40">
@@ -132,7 +146,7 @@ export const ScanChart = ({
                     "bg-brand-300": status === "pending",
                   })}
                   style={{ width: `${width}%`, minWidth: "1px" }}
-                ></div>
+                />
               );
             })}
           </div>

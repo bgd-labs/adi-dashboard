@@ -1,20 +1,26 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import {
+  IconVariant,
+  Web3IconType,
+} from "@bgd-labs/react-web3-icons/dist/utils";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import React, { useCallback, useEffect, useState } from "react";
+
+import { Web3Icon } from "@/components/Web3Icon";
 import { useDebounce } from "@/hooks/useDebounce";
-import { Box } from "./Box";
-import { ChainIcon } from "./ChainIcon";
 import { type RouterOutput } from "@/server/api/types";
+
+import { Box } from "./Box";
+import { Input } from "./Input";
 import {
   Select,
   SelectContent,
   SelectItem,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
-  SelectSeparator,
 } from "./Select";
-import { Input } from "./Input";
 
 export const EnvelopeFilters = ({
   chains,
@@ -144,7 +150,15 @@ export const EnvelopeFilters = ({
             {chains.map((chain) => (
               <SelectItem key={chain.chain_id} value={String(chain.chain_id)}>
                 <div className="flex items-center gap-2">
-                  <ChainIcon chainId={chain.chain_id} />
+                  <Web3Icon
+                    iconInfo={{
+                      type: Web3IconType.chain,
+                      info: {
+                        chainId: chain.chain_id,
+                        variant: IconVariant.Full,
+                      },
+                    }}
+                  />
                   <span className="text-sm font-semibold">
                     {chain.chain_name_alias}
                   </span>
@@ -164,14 +178,14 @@ export const EnvelopeFilters = ({
             strokeLinejoin="round"
             strokeWidth="1.5"
             d="M13.75 6.75L19.25 12L13.75 17.25"
-          ></path>
+          />
           <path
             stroke="currentColor"
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth="1.5"
             d="M19 12H4.75"
-          ></path>
+          />
         </svg>
         <Select onValueChange={handleToValueChange} value={to}>
           <SelectTrigger className="grow bg-white md:w-[180px]">
@@ -187,7 +201,15 @@ export const EnvelopeFilters = ({
             {chains.map((chain) => (
               <SelectItem key={chain.chain_id} value={String(chain.chain_id)}>
                 <div className="flex items-center gap-2">
-                  <ChainIcon chainId={chain.chain_id} />
+                  <Web3Icon
+                    iconInfo={{
+                      type: Web3IconType.chain,
+                      info: {
+                        chainId: chain.chain_id,
+                        variant: IconVariant.Full,
+                      },
+                    }}
+                  />
                   <span className="text-sm font-semibold">
                     {chain.chain_name_alias}
                   </span>

@@ -1,7 +1,8 @@
 import Image from "next/image";
-import { Box } from "@/components/Box";
 import Link from "next/link";
+
 import logo from "@/assets/logo.svg";
+import { Box } from "@/components/Box";
 import { env } from "@/env";
 
 export const Header = () => {
@@ -38,13 +39,12 @@ export const Header = () => {
               status
             </span>
             <span className="relative flex h-2.5 w-2.5 items-center justify-center">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-60"></span>
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
             </span>
           </div>
         </Link>
-        <div className="flex items-end">
-        </div>
+        <div className="flex items-end" />
       </div>
     </Box>
   );

@@ -1,8 +1,9 @@
 "use client";
 
-import { cn } from "@/utils/cn";
 import { useState } from "react";
+
 import { CopyIcon } from "@/components/CopyIcon";
+import { cn } from "@/utils/cn";
 
 type Props = {
   link?: string;

@@ -23,7 +23,11 @@ export const getPayloadProposalRelation = async (
   const { data } = (await response.json()) as Data;
 
   for (const key in data) {
-    if (data[key]!.some((item) => item.id === Number(payloadId) && item.chainId === chainId)) {
+    if (
+      data[key]!.some(
+        (item) => item.id === Number(payloadId) && item.chainId === chainId,
+      )
+    ) {
       return key;
     }
   }

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { env } from "@/env";
 import { retryEvents } from "@/server/eventCollection";
 
@@ -9,7 +10,7 @@ export const GET = async (req: Request) => {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  await retryEvents()
+  await retryEvents();
 
   return NextResponse.json({ ok: true });
 };

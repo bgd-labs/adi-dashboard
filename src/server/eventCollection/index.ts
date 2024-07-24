@@ -1,9 +1,11 @@
-import { getCrossChainControllers } from "./getCrossChainControllers";
-import { getClients } from "./getClients";
-import { getEventsInSteps } from "./getEventsInSteps";
-import { getEvents } from "./getEvents";
-import { supabaseAdmin } from "../api/supabase/server";
 import { type Hash } from "viem";
+
+import { supabaseAdmin } from "@/server/api/supabase";
+
+import { getClients } from "./getClients";
+import { getCrossChainControllers } from "./getCrossChainControllers";
+import { getEvents } from "./getEvents";
+import { getEventsInSteps } from "./getEventsInSteps";
 
 export const collectEvents = async () => {
   const crossChainControllers = await getCrossChainControllers();
@@ -19,7 +21,7 @@ export const collectEvents = async () => {
 
       const currentBlock = Number((await client?.getBlockNumber()) - 8n);
 
-      console.log(`Current block on ${client.chain?.name} is ${currentBlock}`)
+      console.log(`Current block on ${client.chain?.name} is ${currentBlock}`);
 
       const from = controller.last_scanned_block ?? controller.created_block;
 

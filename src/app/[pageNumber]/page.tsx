@@ -1,5 +1,6 @@
-import { EnvelopeList } from "@/components/EnvelopeList";
 import { notFound } from "next/navigation";
+
+import { EnvelopeList } from "@/components/EnvelopeList";
 
 const EnvelopeListPage = async ({
   params,
@@ -13,7 +14,9 @@ const EnvelopeListPage = async ({
     notFound();
   }
 
-  return <EnvelopeList currentPage={page} perPage={15} searchParams={searchParams} />;
+  return (
+    <EnvelopeList currentPage={page} perPage={15} searchParams={searchParams} />
+  );
 };
 
 export default EnvelopeListPage;

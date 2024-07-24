@@ -1,6 +1,7 @@
-import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { formatEther, formatGwei } from "viem";
+import { z } from "zod";
+
+import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { truncateToTwoSignificantDigits } from "@/utils/truncateToTwoSignificantDigits";
 
 const CHAIN_ID_TO_CURRENCY: Record<number, string> = {

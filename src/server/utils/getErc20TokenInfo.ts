@@ -48,15 +48,12 @@ export const getErc20TokenInfo = async (
     const tokenDataJson = await tokenData.json();
 
     tokenInfo = {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       name: tokenDataJson.id,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       symbol: tokenDataJson.symbol,
     };
   }
 
   const tokenMarketDataOnDateData = await fetch(
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     `https://api.coingecko.com/api/v3/coins/${tokenInfo.name}/history?date=${formattedBlockDate}&localization=false&x_cg_demo_api_key=${env.COINGECKO_API_KEY}`,
   );
   if (!tokenMarketDataOnDateData.ok) {
@@ -65,9 +62,7 @@ export const getErc20TokenInfo = async (
     );
   }
   const tokenMarketDataOnDate = await tokenMarketDataOnDateData.json();
-  const tokenPriceOnDate =
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    tokenMarketDataOnDate.market_data.current_price.usd;
+  const tokenPriceOnDate = tokenMarketDataOnDate.market_data.current_price.usd;
 
   return {
     name: tokenInfo.name,
