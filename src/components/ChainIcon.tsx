@@ -17,13 +17,20 @@ export const ChainIcon = ({ chainId, isBig }: Props) => {
 
   return (
     <Tooltip value={chainName ?? "Unknown chain"}>
-      <CI
-        chainId={chainId}
-        className={cn("h-5 w-5 shrink-0", { ["h-7 w-7"]: isBig })}
-        loader={
-          <div className={cn("h-5 w-5 shrink-0", { ["h-7 w-7"]: isBig })} />
-        }
-      />
+      <div>
+        <CI
+          chainId={chainId}
+          className={cn("h-5 w-5 shrink-0", { ["h-7 w-7"]: isBig })}
+          loader={
+            <div
+              className={cn(
+                "h-5 w-5 shrink-0 animate-pulse rounded-full bg-brand-300",
+                { ["h-7 w-7"]: isBig },
+              )}
+            />
+          }
+        />
+      </div>
     </Tooltip>
   );
 };
