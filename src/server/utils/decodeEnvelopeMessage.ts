@@ -1,4 +1,4 @@
-import { type Hash, decodeAbiParameters } from "viem";
+import { decodeAbiParameters, type Hash } from "viem";
 
 const GOVERNANCE_FROM_ADDRESS = "0x9AEE0B04504CeF83A65AC3f0e838D0593BCb2BC7";
 const governanceAbi = [
@@ -87,12 +87,12 @@ export const decodeEnvelopeMessage = (from: string, messageData: Hash) => {
       votingPortalMessageWithTypeAbi,
       messageData,
     );
-  
+
     const decodedPayload = decodeAbiParameters(
       votingPortalPayloadAbi,
       decodedMessageWithType[1] as Hash,
     );
-  
+
     return {
       type: "Activate Voting Message",
       data: {

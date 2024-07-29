@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { env } from "@/env";
 import { supabaseAdmin } from "@/server/api/supabase";
 import { getPayloadAndProposalIds } from "@/server/utils/getPayloadAndProposalIds";
@@ -8,7 +9,7 @@ export const GET = async (req: Request) => {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  if (env.ENVIRONMENT_STAGE === 'PREPROD') {
+  if (env.ENVIRONMENT_STAGE === "PREPROD") {
     return NextResponse.json({ ok: true });
   }
 

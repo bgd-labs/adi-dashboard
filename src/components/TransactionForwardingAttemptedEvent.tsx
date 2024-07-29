@@ -1,8 +1,9 @@
-import { EventListItem } from "@/components/EventListItem";
 import { CopyValueCard } from "@/components/CopyValueCard";
+import { EventListItem } from "@/components/EventListItem";
 import { type RouterOutput } from "@/server/api/types";
-import { ExplorerLink } from "./ExplorerLink";
+
 import { BridgeExplorerLink } from "./BridgeExplorerLink";
+import { ExplorerLink } from "./ExplorerLink";
 
 type TransactionForwardingAttemptedEventProps = {
   event: RouterOutput["events"]["getForwardingAttemptEvents"][0];

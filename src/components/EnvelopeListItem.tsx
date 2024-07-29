@@ -1,10 +1,11 @@
-import { type RouterOutput } from "@/server/api/types";
-import { EnvelopeIcon } from "@/components/EnvelopeIcon";
 import Link from "next/link";
+
 import { Box } from "@/components/Box";
 import { Consensus } from "@/components/Consensus";
-import { Timestamp } from "@/components/Timestamp";
+import { EnvelopeIcon } from "@/components/EnvelopeIcon";
 import { FromTo } from "@/components/FromTo";
+import { Timestamp } from "@/components/Timestamp";
+import { type RouterOutput } from "@/server/api/types";
 
 export const EnvelopeListItem = ({
   envelope,
@@ -22,12 +23,12 @@ export const EnvelopeListItem = ({
             <div className="font-mono text-xs leading-none text-brand-500">
               {firstEight}...
             </div>
-            <div className="hidden lg:w-44 xl:w-52 text-sm font-semibold text-brand-900 md:block">
+            <div className="hidden text-sm font-semibold text-brand-900 md:block lg:w-44 xl:w-52">
               {envelope.decodedMessage?.type ?? (
                 <span className="text-brand-500">Unknown type</span>
               )}
             </div>
-            <div className="flex hidden gap-2 lg:flex">
+            <div className="hidden gap-2 lg:flex">
               {envelope.proposal_id !== null &&
                 envelope.proposal_id !== undefined && (
                   <div className="flex truncate font-mono text-xs font-normal text-brand-900 opacity-60">

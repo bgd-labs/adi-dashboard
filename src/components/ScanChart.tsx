@@ -1,9 +1,9 @@
-import { ChainIcon } from "@/components/ChainIcon";
 import { Box } from "@/components/Box";
+import { ChainIcon } from "@/components/ChainIcon";
 import { ExplorerLink } from "@/components/ExplorerLink";
-import { type RangeStatus } from "@/server/eventCollection/types";
-import { type RouterOutput } from "@/server/api/types";
 import { Tooltip } from "@/components/Tooltip";
+import { type RouterOutput } from "@/server/api/types";
+import { type RangeStatus } from "@/server/eventCollection/types";
 import { cn } from "@/utils/cn";
 
 type ChartProps = {
@@ -132,7 +132,7 @@ export const ScanChart = ({
                     "bg-brand-300": status === "pending",
                   })}
                   style={{ width: `${width}%`, minWidth: "1px" }}
-                ></div>
+                />
               );
             })}
           </div>

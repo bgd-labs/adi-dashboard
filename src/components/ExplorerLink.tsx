@@ -1,9 +1,11 @@
-import { ChainIcon } from "@/components/ChainIcon";
+import React from "react";
 import * as chains from "viem/chains";
+
+import { ChainIcon } from "@/components/ChainIcon";
 import { ExplorerLinkCopyButton } from "@/components/ExplorerLinkCopyButton";
+import { Tooltip } from "@/components/Tooltip";
 import { api } from "@/trpc/server";
 import { cn } from "@/utils/cn";
-import { Tooltip } from "@/components/Tooltip";
 
 export const ExplorerLink = async ({
   type,
@@ -42,7 +44,6 @@ export const ExplorerLink = async ({
 
   if (tiny) {
     return (
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       <Tooltip value={label ? `${firstEight}...${lastEight}` : "Unknown"}>
         <a
           href={url}

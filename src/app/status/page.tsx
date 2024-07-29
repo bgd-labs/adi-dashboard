@@ -1,11 +1,12 @@
-import { api } from "@/trpc/server";
-import { ScanChart } from "../../components/ScanChart";
+import { formatEther, type Hash } from "viem";
+
+import { ScanChart } from "@/components/ScanChart";
 import { getClients } from "@/server/eventCollection/getClients";
 import { getCrossChainControllers } from "@/server/eventCollection/getCrossChainControllers";
 import { prepareBlockIntervals } from "@/server/eventCollection/prepareBlockIntervals";
 import { type RangeStatus } from "@/server/eventCollection/types";
-import { type Hash, formatEther } from "viem";
 import { getBalance } from "@/server/utils/getBalance";
+import { api } from "@/trpc/server";
 import { truncateToTwoSignificantDigits } from "@/utils/truncateToTwoSignificantDigits";
 
 const CHAIN_IDS_FOR_BALANCE_RETRIEVAL = [1, 137, 43114];

@@ -1,9 +1,11 @@
 import "@/styles/globals.css";
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { TRPCReactProvider } from "@/trpc/react";
-import { Header, Footer } from "@/components";
+
+import { Footer, Header } from "@/components";
 import { env } from "@/env";
+import { TRPCReactProvider } from "@/trpc/react";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -30,7 +32,10 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="en">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1"
+        />
       </head>
       <body className={`font-sans ${inter.variable} bg-brand-100`}>
         <TRPCReactProvider>

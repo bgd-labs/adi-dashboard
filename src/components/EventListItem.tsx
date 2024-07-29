@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { type RouterOutput } from "@/server/api/types";
-import { ChainIcon } from "./ChainIcon";
-import { Timestamp } from "./Timestamp";
+import React, { useState } from "react";
+
 import { Box } from "@/components/Box";
+import { ChainIcon } from "@/components/ChainIcon";
+import { type RouterOutput } from "@/server/api/types";
+
+import { Timestamp } from "./Timestamp";
 
 type EventType =
   | "EnvelopeRegistered"
@@ -41,19 +43,17 @@ export const EventListItem = ({
         >
           <span className="flex items-center gap-2 sm:gap-4">
             <ChainIcon chainId={event.chain_id} />
-            <span className="text-sm font-semibold text-brand-900 truncate">{type}</span>
-            <span className="ml-auto text-right shrink-0">
+            <span className="truncate text-sm font-semibold text-brand-900">
+              {type}
+            </span>
+            <span className="ml-auto shrink-0 text-right">
               <Timestamp value={event.timestamp} />
             </span>
           </span>
         </button>
       </Box>
 
-      {isCollapsed && (
-        <Box className="bg-brand-100 px-6 py-4">
-          {children}
-        </Box>
-      )}
+      {isCollapsed && <Box className="bg-brand-100 px-6 py-4">{children}</Box>}
     </>
   );
 };

@@ -1,6 +1,7 @@
+import { getContract, type Hash } from "viem";
+
 import { getClients } from "@/server/eventCollection/getClients";
 import { getCrossChainControllers } from "@/server/eventCollection/getCrossChainControllers";
-import { type Hash, getContract } from "viem";
 
 const CHAIN_ID_TO_LINK_CONTRACT: Record<number, string> = {
   1: "0x514910771AF9Ca656af840dff83E8264EcF986CA",

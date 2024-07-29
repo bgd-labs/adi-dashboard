@@ -1,6 +1,7 @@
-import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { type Hash } from "viem";
+import { z } from "zod";
+
+import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { decodeEnvelopeMessage } from "@/server/utils/decodeEnvelopeMessage";
 import { getEnvelopeConsensus } from "@/server/utils/getEnvelopeConsensus";
 

@@ -1,12 +1,13 @@
-import * as chains from "viem/chains";
 import crypto from "crypto";
 import { NextResponse } from "next/server";
+import { formatEther, type Hash } from "viem";
+import * as chains from "viem/chains";
+
 import { env } from "@/env";
-import { getBalance } from "@/server/utils/getBalance";
-import { getCrossChainControllers } from "@/server/eventCollection/getCrossChainControllers";
-import { type Hash, formatEther } from "viem";
-import { sendSlackBalanceWarning } from "@/server/utils/sendSlackBalanceWarning";
 import { supabaseAdmin } from "@/server/api/supabase";
+import { getCrossChainControllers } from "@/server/eventCollection/getCrossChainControllers";
+import { getBalance } from "@/server/utils/getBalance";
+import { sendSlackBalanceWarning } from "@/server/utils/sendSlackBalanceWarning";
 
 const CHAIN_IDS_FOR_BALANCE_RETRIEVAL = [1, 137, 43114];
 const CHAIN_ID_TO_CURRENCY: Record<number, string> = {
@@ -115,7 +116,9 @@ export const GET = async (req: Request) => {
         .single();
 
       if (!wasAlreadyNotified) {
-        console.log(`🔔 Sending slack balance notification: ${notificationHash}`)
+        console.log(
+          `🔔 Sending slack balance notification: ${notificationHash}`,
+        );
         await sendSlackBalanceWarning({
           chainName: chain?.name ?? "Unknown",
           threshold: formatEther(thresholds.native),
@@ -153,7 +156,9 @@ export const GET = async (req: Request) => {
         .single();
 
       if (!wasAlreadyNotified) {
-        console.log(`🔔 Sending slack balance notification: ${notificationHash}`)
+        console.log(
+          `🔔 Sending slack balance notification: ${notificationHash}`,
+        );
         await sendSlackBalanceWarning({
           chainName: chain?.name ?? "Unknown",
           threshold: formatEther(thresholds.link),

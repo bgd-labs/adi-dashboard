@@ -1,11 +1,12 @@
 "use client";
 import { useState } from "react";
-import { Button } from "@/components/Button";
-import { type RouterOutput } from "@/server/api/types";
 import { type Hex } from "viem";
-import { timeComponentsToString } from "@/server/utils/timeComponentsToString";
-import { msToTimeComponents } from "@/server/utils/msToTimeComponents";
+
+import { Button } from "@/components/Button";
 import { CopyIcon } from "@/components/CopyIcon";
+import { type RouterOutput } from "@/server/api/types";
+import { msToTimeComponents } from "@/server/utils/msToTimeComponents";
+import { timeComponentsToString } from "@/server/utils/timeComponentsToString";
 
 export const EnvelopeMessage = ({
   decodedMessage,
@@ -139,7 +140,7 @@ const MessageValue = ({
         className="group/payload-link border bg-brand-100 p-3 hover:border-brand-900"
         target="_blank"
       >
-        <div className="inline-block flex h-7 items-center font-mono text-xl leading-none opacity-60 group-hover/payload-link:opacity-100">
+        <div className="flex h-7 items-center font-mono text-xl leading-none opacity-60 group-hover/payload-link:opacity-100">
           <span>{getDisplayValue(type, value)}</span>
           <svg
             className="ml-1 h-4 w-4"
@@ -171,7 +172,7 @@ const MessageValue = ({
         className="group/payload-link border bg-brand-100 p-3 hover:border-brand-900"
         target="_blank"
       >
-        <div className="inline-block flex h-7 items-center font-mono text-xl leading-none opacity-60 group-hover/payload-link:opacity-100">
+        <div className="flex h-7 items-center font-mono text-xl leading-none opacity-60 group-hover/payload-link:opacity-100">
           <span>{getDisplayValue(type, value)}</span>
           <svg
             className="ml-1 h-4 w-4"

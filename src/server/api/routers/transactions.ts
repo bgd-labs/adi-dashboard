@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 
 export const transactionsRouter = createTRPCRouter({
@@ -36,13 +37,13 @@ export const transactionsRouter = createTRPCRouter({
     const { data } = await ctx.supabaseAdmin.rpc(
       "get_unscanned_transactions_sql",
     );
-    
+
     if (!data) {
       return [];
     }
 
     // TODO: Avalanche rpc node doesn't support trace_transaction
-    const withoutAvalanche = data.filter(tx => tx.chain_id !== 43114);
+    const withoutAvalanche = data.filter((tx) => tx.chain_id !== 43114);
     return withoutAvalanche;
   }),
   getAll: publicProcedure.query(async ({ ctx }) => {
