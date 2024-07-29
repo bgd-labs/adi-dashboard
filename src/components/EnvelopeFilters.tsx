@@ -1,13 +1,9 @@
 "use client";
 
-import {
-  IconVariant,
-  Web3IconType,
-} from "@bgd-labs/react-web3-icons/dist/utils";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
 
-import { Web3Icon } from "@/components/Web3Icon";
+import { ChainIcon } from "@/components/ChainIcon";
 import { useDebounce } from "@/hooks/useDebounce";
 import { type RouterOutput } from "@/server/api/types";
 
@@ -150,15 +146,7 @@ export const EnvelopeFilters = ({
             {chains.map((chain) => (
               <SelectItem key={chain.chain_id} value={String(chain.chain_id)}>
                 <div className="flex items-center gap-2">
-                  <Web3Icon
-                    iconInfo={{
-                      type: Web3IconType.chain,
-                      info: {
-                        chainId: chain.chain_id,
-                        variant: IconVariant.Full,
-                      },
-                    }}
-                  />
+                  <ChainIcon chainId={chain.chain_id} />
                   <span className="text-sm font-semibold">
                     {chain.chain_name_alias}
                   </span>
@@ -201,15 +189,7 @@ export const EnvelopeFilters = ({
             {chains.map((chain) => (
               <SelectItem key={chain.chain_id} value={String(chain.chain_id)}>
                 <div className="flex items-center gap-2">
-                  <Web3Icon
-                    iconInfo={{
-                      type: Web3IconType.chain,
-                      info: {
-                        chainId: chain.chain_id,
-                        variant: IconVariant.Full,
-                      },
-                    }}
-                  />
+                  <ChainIcon chainId={chain.chain_id} />
                   <span className="text-sm font-semibold">
                     {chain.chain_name_alias}
                   </span>

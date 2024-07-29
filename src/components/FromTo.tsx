@@ -1,11 +1,4 @@
-import {
-  IconVariant,
-  Web3IconType,
-} from "@bgd-labs/react-web3-icons/dist/utils/index";
-import React from "react";
-import { mainnet } from "viem/chains";
-
-import { Web3Icon } from "@/components/Web3Icon";
+import { ChainIcon } from "@/components/ChainIcon";
 import { cn } from "@/utils/cn";
 
 type Props = {
@@ -17,16 +10,7 @@ type Props = {
 export const FromTo = ({ from, to, isBig }: Props) => {
   return (
     <div className="flex items-center gap-1 text-brand-500">
-      <Web3Icon
-        size={isBig ? 7 : 5}
-        iconInfo={{
-          type: Web3IconType.chain,
-          info: {
-            chainId: from ?? mainnet.id,
-            variant: IconVariant.Full,
-          },
-        }}
-      />
+      <ChainIcon chainId={from} isBig={isBig} />
       <svg
         className={cn("h-6 w-6", { ["h-7 w-7"]: isBig })}
         fill="none"
@@ -47,16 +31,7 @@ export const FromTo = ({ from, to, isBig }: Props) => {
           d="M19 12H4.75"
         />
       </svg>
-      <Web3Icon
-        size={isBig ? 7 : 5}
-        iconInfo={{
-          type: Web3IconType.chain,
-          info: {
-            chainId: to ?? mainnet.id,
-            variant: IconVariant.Full,
-          },
-        }}
-      />
+      <ChainIcon chainId={to} isBig={isBig} />
     </div>
   );
 };

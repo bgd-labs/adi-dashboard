@@ -1,13 +1,9 @@
-import {
-  IconVariant,
-  Web3IconType,
-} from "@bgd-labs/react-web3-icons/dist/utils/index";
 import React from "react";
 import * as chains from "viem/chains";
 
+import { ChainIcon } from "@/components/ChainIcon";
 import { ExplorerLinkCopyButton } from "@/components/ExplorerLinkCopyButton";
 import { Tooltip } from "@/components/Tooltip";
-import { Web3Icon } from "@/components/Web3Icon";
 import { api } from "@/trpc/server";
 import { cn } from "@/utils/cn";
 
@@ -78,15 +74,7 @@ export const ExplorerLink = async ({
                 },
               )}
             >
-              <Web3Icon
-                iconInfo={{
-                  type: Web3IconType.chain,
-                  info: {
-                    chainId,
-                    variant: IconVariant.Full,
-                  },
-                }}
-              />
+              <ChainIcon chainId={chainId} />
             </div>
             {label && (
               <div className="truncate rounded-r-full bg-brand-300 py-1 pl-1.5 pr-2 text-xs font-semibold text-brand-900">

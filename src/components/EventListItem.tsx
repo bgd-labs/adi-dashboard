@@ -1,14 +1,9 @@
 "use client";
 
-import {
-  IconVariant,
-  Web3IconType,
-} from "@bgd-labs/react-web3-icons/dist/utils/index";
 import React, { useState } from "react";
-import { mainnet } from "viem/chains";
 
 import { Box } from "@/components/Box";
-import { Web3Icon } from "@/components/Web3Icon";
+import { ChainIcon } from "@/components/ChainIcon";
 import { type RouterOutput } from "@/server/api/types";
 
 import { Timestamp } from "./Timestamp";
@@ -47,15 +42,7 @@ export const EventListItem = ({
           onClick={() => setIsCollapsed((prev) => !prev)}
         >
           <span className="flex items-center gap-2 sm:gap-4">
-            <Web3Icon
-              iconInfo={{
-                type: Web3IconType.chain,
-                info: {
-                  chainId: event.chain_id ?? mainnet.id,
-                  variant: IconVariant.Full,
-                },
-              }}
-            />
+            <ChainIcon chainId={event.chain_id} />
             <span className="truncate text-sm font-semibold text-brand-900">
               {type}
             </span>

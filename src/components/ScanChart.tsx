@@ -1,13 +1,7 @@
-import {
-  IconVariant,
-  Web3IconType,
-} from "@bgd-labs/react-web3-icons/dist/utils/index";
-import React from "react";
-
 import { Box } from "@/components/Box";
+import { ChainIcon } from "@/components/ChainIcon";
 import { ExplorerLink } from "@/components/ExplorerLink";
 import { Tooltip } from "@/components/Tooltip";
-import { Web3Icon } from "@/components/Web3Icon";
 import { type RouterOutput } from "@/server/api/types";
 import { type RangeStatus } from "@/server/eventCollection/types";
 import { cn } from "@/utils/cn";
@@ -56,15 +50,7 @@ export const ScanChart = ({
       <div className="bg-brand-100 px-6 pb-9 pt-5">
         <div className="mb-4 flex flex-col flex-wrap gap-2 sm:gap-2 md:flex-row md:items-center">
           <div className="flex gap-2 md:mr-auto">
-            <Web3Icon
-              iconInfo={{
-                type: Web3IconType.chain,
-                info: {
-                  chainId,
-                  variant: IconVariant.Full,
-                },
-              }}
-            />
+            <ChainIcon chainId={chainId} />
             <div className="color-brand-900 text-sm font-semibold">
               {title}
               <span className="ml-1 text-xs font-normal opacity-40">
