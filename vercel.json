@@ -17,10 +17,6 @@
       "schedule": "*/30 * * * *"
     },
     {
-      "path": "/api/cron/costs",
-      "schedule": "*/30 * * * *"
-    },
-    {
       "path": "/api/cron/proposals",
       "schedule": "*/3 * * * *"
     }
