@@ -1,11 +1,4 @@
-import { only } from "node:test";
-
-import {
-  Alchemy,
-  DebugCallTracer,
-  DebugTracerType,
-  Network,
-} from "alchemy-sdk";
+import { Alchemy, DebugTracerType, Network } from "alchemy-sdk";
 import { createClient, decodeEventLog, type Hash, http } from "viem";
 import { getBlock, getTransactionReceipt } from "viem/actions";
 import { avalanche, mainnet, polygon } from "viem/chains";
@@ -15,8 +8,6 @@ import { supabaseAdmin } from "@/server/api/supabase";
 import { erc20EventsAbi } from "@/server/constants/erc20EventsAbi";
 import { getErc20TokenInfo } from "@/server/utils/getErc20TokenInfo";
 import { getNativeTokenInfo } from "@/server/utils/getNativeTokenInfo";
-
-import { type Call } from "./types";
 
 type CallObject = {
   from: string;
