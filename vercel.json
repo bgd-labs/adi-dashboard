@@ -19,6 +19,10 @@
     {
       "path": "/api/cron/proposals",
       "schedule": "*/3 * * * *"
+    },
+    {
+      "path": "/api/cron/costs",
+      "schedule": "*/30 * * * *"
     }
   ],
   "functions": {

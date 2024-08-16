@@ -31,15 +31,3 @@ export type Result = {
   gasUsed: string;
   output: string;
 };
-
-export type Trace = {
-  action: Action;
-  blockHash: string;
-  blockNumber: number;
-  result: Result;
-  subtraces: number;
-  traceAddress: number[];
-  transactionHash: string;
-  transactionPosition: number;
-  type: string;
-};
