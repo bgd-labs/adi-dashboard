@@ -6,6 +6,34 @@ import { getClients } from "./getClients";
 import { getCrossChainControllers } from "./getCrossChainControllers";
 import { getEvents } from "./getEvents";
 import { getEventsInSteps } from "./getEventsInSteps";
+import { get } from "http";
+
+function getBlockOffset(chainId: number): bigint {
+  switch (chainId) {
+    case 1: // Ethereum Mainnet
+      return 10n;
+    case 10: // Optimism
+      return 50n;
+    case 56: // Binance Smart Chain
+      return 15n;
+    case 137: // Polygon
+      return 256n;
+    case 324: // zkSync Era
+      return 10n;
+    case 1088: // Metis Andromeda
+      return 50n;
+    case 8453: // Base
+      return 50n;
+    case 42161: // Arbitrum One
+      return 100n;
+    case 43114: // Avalanche C-Chain
+      return 50n;
+    case 534352: // Scroll
+      return 50n;
+    default:
+      return 10n;
+  }
+}
 
 export const collectEvents = async () => {
   const crossChainControllers = await getCrossChainControllers();
@@ -19,9 +47,13 @@ export const collectEvents = async () => {
         throw new Error(`No client found for chain ${controller.chain_id}`);
       }
 
-      const currentBlock = Number((await client?.getBlockNumber()) - 8n);
+      const currentBlock = Number(
+        (await client?.getBlockNumber()) - getBlockOffset(controller.chain_id),
+      );
 
-      console.log(`Current block on ${client.chain?.name} is ${currentBlock}`);
+      console.log(
+        `Scanning up to ${currentBlock} on ${client.chain?.name} (${getBlockOffset(controller.chain_id)} blocks offset)`,
+      );
 
       const from = controller.last_scanned_block ?? controller.created_block;
 

@@ -28,10 +28,6 @@ export const getEvents = async ({
     });
 
     if (events.length > 0) {
-      console.log(
-        `Found ${events.length} events for chain ${client.chain?.id}.`,
-      );
-
       for (const event of events) {
         const { timestamp } = await client.getBlock({
           blockNumber: event.blockNumber,
@@ -41,6 +37,9 @@ export const getEvents = async ({
 
         switch (event.eventName) {
           case "EnvelopeRegistered":
+            console.log(
+              `Envelope registered: ${event.args.envelopeId} on block ${event.blockNumber} on chain ${client.chain?.id}`,
+            );
             await supabaseAdmin.from("Envelopes").upsert([
               {
                 id: event.args.envelopeId!,
@@ -78,6 +77,9 @@ export const getEvents = async ({
             break;
 
           case "EnvelopeDeliveryAttempted":
+            console.log(
+              `Envelope delivery attempted: ${event.args.envelopeId} on block ${event.blockNumber} on chain ${client.chain?.id}`,
+            );
             await supabaseAdmin.from("Envelopes").upsert([
               {
                 id: event.args.envelopeId!,
@@ -107,6 +109,9 @@ export const getEvents = async ({
             break;
 
           case "TransactionForwardingAttempted":
+            console.log(
+              `Transaction forwarding attempted: ${event.args.envelopeId} on block ${event.blockNumber} on chain ${client.chain?.id}`,
+            );
             await supabaseAdmin.from("Envelopes").upsert([
               {
                 id: event.args.envelopeId!,
@@ -134,6 +139,9 @@ export const getEvents = async ({
             break;
 
           case "TransactionReceived":
+            console.log(
+              `Transaction received: ${event.args.envelopeId} on block ${event.blockNumber} on chain ${client.chain?.id}`,
+            );
             await supabaseAdmin.from("Envelopes").upsert([
               {
                 id: event.args.envelopeId!,
