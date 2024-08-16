@@ -114,8 +114,8 @@ export const GET = async (req: Request) => {
           .update(`${envelope.id}-${txId ?? "unknown"}`)
           .digest("hex");
 
-        console.log("Notification hash:");
-        console.log(notificationHash);
+        console.log(`Trying to send slack notification for ${envelope.id}`);
+        console.log(`Notification hash: ${notificationHash}`);
 
         if (diff > DELIVERY_NOTIFICATION_TIMEOUT) {
           const timeframe = timeComponentsToString(msToTimeComponents(diff));
