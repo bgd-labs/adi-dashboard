@@ -126,7 +126,7 @@ export const ScanChart = ({
               return (
                 <div
                   key={status + range[0] + range[1]}
-                  className={cn("h-2", {
+                  className={cn("h-1", {
                     "bg-green-400": status === "scanned",
                     "bg-red-500": status === "failed",
                     "bg-brand-300": status === "pending",

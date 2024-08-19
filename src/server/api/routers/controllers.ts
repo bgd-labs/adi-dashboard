@@ -1,7 +1,9 @@
-import { formatEther, formatGwei } from "viem";
+import { type Address, formatEther, formatGwei, getContract } from "viem";
 import { z } from "zod";
 
+import { env } from "@/env";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { getClient } from "@/server/eventCollection/getClient";
 import { truncateToTwoSignificantDigits } from "@/utils/truncateToTwoSignificantDigits";
 
 const CHAIN_ID_TO_CURRENCY: Record<number, string> = {
@@ -127,5 +129,53 @@ export const controllersRouter = createTRPCRouter({
         numberOfEnvelopes: envelopesCount,
         averageGasPrice,
       };
+    }),
+  getOptimalBandwidth: publicProcedure
+    .input(
+      z.object({
+        from: z.number(),
+        to: z.number(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const { client, crossChainController } = await getClient({
+        chainId: input.from,
+      });
+
+      if (env.ENVIRONMENT_STAGE === "PREPROD") {
+        return "-";
+      }
+
+      const contract = getContract({
+        address: crossChainController.address as Address,
+        abi: [
+          {
+            inputs: [
+              {
+                internalType: "uint256",
+                name: "chainId",
+                type: "uint256",
+              },
+            ],
+            name: "getOptimalBandwidthByChain",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+          },
+        ],
+        client: client,
+      });
+
+      const optimalBandwidth = await contract.read.getOptimalBandwidthByChain([
+        BigInt(input.to),
+      ]);
+
+      return Number(optimalBandwidth);
     }),
 });

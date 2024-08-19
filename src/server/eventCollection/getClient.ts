@@ -35,5 +35,5 @@ export const getClient = async ({
     transport: http(rpcUrl),
   });
 
-  return client;
+  return { client, crossChainController };
 };

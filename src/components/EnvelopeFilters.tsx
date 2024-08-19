@@ -4,11 +4,13 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
 
 import { ChainIcon } from "@/components/ChainIcon";
+import { env } from "@/env";
 import { useDebounce } from "@/hooks/useDebounce";
 import { type RouterOutput } from "@/server/api/types";
 
 import { Box } from "./Box";
 import { Input } from "./Input";
+import { OptimalBandWidth } from "./OptimalBandwidth";
 import {
   Select,
   SelectContent,
@@ -131,6 +133,11 @@ export const EnvelopeFilters = ({
           value={payloadId}
         />
       </div>
+
+      {from !== "any" &&
+        from !== undefined &&
+        to !== "any" &&
+        to !== undefined && <OptimalBandWidth from={+from} to={+to} />}
       <div className="flex w-full grow items-center gap-2 md:w-auto">
         <Select onValueChange={handleFromValueChange} value={from}>
           <SelectTrigger className="bg-white md:w-[180px]">
