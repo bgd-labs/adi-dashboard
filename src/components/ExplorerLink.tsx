@@ -43,6 +43,8 @@ export const ExplorerLink = async ({
   const [firstEight, lastEight] = [value.slice(0, 8), value.slice(-8)];
 
   if (tiny) {
+    label = label && skipAdapter ? label.replace(/adapter$/, "") : label;
+
     return (
       <Tooltip value={label ? `${firstEight}...${lastEight}` : "Unknown"}>
         <a
