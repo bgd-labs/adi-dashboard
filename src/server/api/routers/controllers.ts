@@ -12,6 +12,29 @@ const CHAIN_ID_TO_CURRENCY: Record<number, string> = {
   43114: "AVAX",
 };
 
+function aggregateBridgeAdapters(
+  events: { transaction_hash: string; bridge_adapter: string | null }[] | null,
+) {
+  if (!events) return [];
+
+  const adapterCounts = events.reduce(
+    (acc, event) => {
+      if (event.bridge_adapter) {
+        acc[event.bridge_adapter] = (acc[event.bridge_adapter] || 0) + 1;
+      }
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+
+  return Object.entries(adapterCounts)
+    .map(([address, count]) => ({
+      address,
+      count,
+    }))
+    .sort((a, b) => b.count - a.count); // Sort in descending order of count
+}
+
 export const controllersRouter = createTRPCRouter({
   getChains: publicProcedure.query(async ({ ctx }) => {
     const { data } = await ctx.supabaseAdmin
@@ -92,11 +115,12 @@ export const controllersRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const twoWeeksAgo = Date.now() - 2 * 7 * 24 * 60 * 60 * 1000;
 
-      const { count: bridgingEventsCount } = await ctx.supabaseAdmin
-        .from("TransactionForwardingAttempted")
-        .select("transaction_hash", { count: "exact" })
-        .eq("chain_id", input.chainId)
-        .gte("timestamp", new Date(twoWeeksAgo).toISOString());
+      const { data: bridgingEvents, count: bridgingEventsCount } =
+        await ctx.supabaseAdmin
+          .from("TransactionForwardingAttempted")
+          .select("transaction_hash, bridge_adapter", { count: "exact" })
+          .eq("chain_id", input.chainId)
+          .gte("timestamp", new Date(twoWeeksAgo).toISOString());
 
       const { count: envelopesCount } = await ctx.supabaseAdmin
         .from("EnvelopeRegistered")
@@ -123,11 +147,13 @@ export const controllersRouter = createTRPCRouter({
         )} gwei`;
       }
 
+      const usageStats = aggregateBridgeAdapters(bridgingEvents);
       return {
         chainId: input.chainId,
         numberOfBridgingEvents: bridgingEventsCount,
         numberOfEnvelopes: envelopesCount,
         averageGasPrice,
+        usageStats,
       };
     }),
   getOptimalBandwidth: publicProcedure
@@ -138,6 +164,10 @@ export const controllersRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input }) => {
+      if (!input.from || !input.to) {
+        return null;
+      }
+
       const { client, crossChainController } = await getClient({
         chainId: input.from,
       });
@@ -177,5 +207,62 @@ export const controllersRouter = createTRPCRouter({
       ]);
 
       return Number(optimalBandwidth);
+    }),
+  getAvailableAdapters: publicProcedure
+    .input(
+      z.object({
+        from: z.number(),
+        to: z.number(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const { client, crossChainController } = await getClient({
+        chainId: input.from,
+      });
+
+      const contract = getContract({
+        address: crossChainController.address as Address,
+        abi: [
+          {
+            inputs: [
+              {
+                internalType: "uint256",
+                name: "chainId",
+                type: "uint256",
+              },
+            ],
+            name: "getForwarderBridgeAdaptersByChain",
+            outputs: [
+              {
+                components: [
+                  {
+                    internalType: "address",
+                    name: "destinationBridgeAdapter",
+                    type: "address",
+                  },
+                  {
+                    internalType: "address",
+                    name: "currentChainBridgeAdapter",
+                    type: "address",
+                  },
+                ],
+                internalType: "struct ChainIdBridgeConfig[]",
+                name: "",
+                type: "tuple[]",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+          },
+        ],
+        client: client,
+      });
+
+      const availableAdapters =
+        await contract.read.getForwarderBridgeAdaptersByChain([
+          BigInt(input.to),
+        ]);
+
+      return availableAdapters;
     }),
 });

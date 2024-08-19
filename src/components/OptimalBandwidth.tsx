@@ -10,10 +10,15 @@ export const OptimalBandWidth = ({
   to: number;
 }) => {
   const { data: bandwidth, isLoading } =
-    api.controllers.getOptimalBandwidth.useQuery({
-      from,
-      to,
-    });
+    api.controllers.getOptimalBandwidth.useQuery(
+      {
+        from,
+        to,
+      },
+      {
+        enabled: !!from && !!to,
+      },
+    );
 
   return (
     <div className="flex shrink-0 items-center gap-2 text-sm">
