@@ -123,24 +123,58 @@ export const ScanChart = ({
                 <h2 className="mb-2 text-[11px] font-semibold uppercase tracking-wider">
                   Two week adapter usage:
                 </h2>
-                <div className="grid gap-1">
-                  {bridgingStats?.usageStats.map(({ address, count }) => (
-                    <div
-                      className="flex items-center gap-2"
-                      key={address + "-used"}
-                    >
-                      <div className="w-7 rounded bg-brand-300 px-1.5 py-0.5 text-center font-mono text-xs uppercase">
-                        {count}
+                <div className="grid rounded-md border">
+                  {bridgingStats?.usageStats.map(
+                    ({ chainId: destinationChainId, adapters }) => (
+                      <div
+                        key={destinationChainId + "-used"}
+                        className="flex items-center justify-start gap-5 border-b py-3 px-2 last:border-b-0"
+                      >
+                        <div className="flex items-center gap-2">
+                          <svg
+                            className="h-6 w-6 shrink-0 text-brand-500"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke="currentColor"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="1.5"
+                              d="M13.75 6.75L19.25 12L13.75 17.25"
+                            />
+                            <path
+                              stroke="currentColor"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="1.5"
+                              d="M19 12H4.75"
+                            />
+                          </svg>
+                          <ChainIcon chainId={destinationChainId} />
+                        </div>
+                        <div className="grid gap-1">
+                          {adapters.map(({ address, count }) => (
+                            <div
+                              className="flex items-center gap-2"
+                              key={address + destinationChainId}
+                            >
+                              <div className="w-7 rounded bg-brand-300 px-1.5 py-0.5 text-center font-mono text-xs uppercase">
+                                {count}
+                              </div>
+                              <ExplorerLink
+                                type="address"
+                                value={address}
+                                chainId={chainId}
+                                skipAdapter
+                                tiny
+                              />
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                      <ExplorerLink
-                        type="address"
-                        value={address}
-                        chainId={chainId}
-                        skipAdapter
-                        tiny
-                      />
-                    </div>
-                  ))}
+                    ),
+                  )}
                 </div>
               </div>
             </div>
