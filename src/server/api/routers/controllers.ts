@@ -12,27 +12,47 @@ const CHAIN_ID_TO_CURRENCY: Record<number, string> = {
   43114: "AVAX",
 };
 
-function aggregateBridgeAdapters(
-  events: { transaction_hash: string; bridge_adapter: string | null }[] | null,
+function aggregateBridgeAdaptersNew(
+  events:
+    | {
+        transaction_hash: string;
+        bridge_adapter: string | null;
+        destination_chain_id: number | null;
+      }[]
+    | null,
 ) {
   if (!events) return [];
 
   const adapterCounts = events.reduce(
     (acc, event) => {
-      if (event.bridge_adapter) {
-        acc[event.bridge_adapter] = (acc[event.bridge_adapter] || 0) + 1;
+      if (event.bridge_adapter && event.destination_chain_id) {
+        const chainId = event.destination_chain_id.toString();
+        if (!acc[chainId]) {
+          acc[chainId] = {};
+        }
+        acc[chainId][event.bridge_adapter] =
+          (acc[chainId][event.bridge_adapter] || 0) + 1;
       }
       return acc;
     },
-    {} as Record<string, number>,
+    {} as Record<string, Record<string, number>>,
   );
 
   return Object.entries(adapterCounts)
-    .map(([address, count]) => ({
-      address,
-      count,
+    .map(([chainId, adapters]) => ({
+      chainId: parseInt(chainId),
+      adapters: Object.entries(adapters)
+        .map(([address, count]) => ({
+          address,
+          count,
+        }))
+        .sort((a, b) => b.count - a.count),
     }))
-    .sort((a, b) => b.count - a.count); // Sort in descending order of count
+    .sort((a, b) => {
+      const countA = a.adapters[0]?.count ?? 0;
+      const countB = b.adapters[0]?.count ?? 0;
+      return countB - countA;
+    });
 }
 
 export const controllersRouter = createTRPCRouter({
@@ -118,7 +138,9 @@ export const controllersRouter = createTRPCRouter({
       const { data: bridgingEvents, count: bridgingEventsCount } =
         await ctx.supabaseAdmin
           .from("TransactionForwardingAttempted")
-          .select("transaction_hash, bridge_adapter", { count: "exact" })
+          .select("transaction_hash, bridge_adapter, destination_chain_id", {
+            count: "exact",
+          })
           .eq("chain_id", input.chainId)
           .gte("timestamp", new Date(twoWeeksAgo).toISOString());
 
@@ -147,7 +169,8 @@ export const controllersRouter = createTRPCRouter({
         )} gwei`;
       }
 
-      const usageStats = aggregateBridgeAdapters(bridgingEvents);
+      const usageStats = aggregateBridgeAdaptersNew(bridgingEvents);
+
       return {
         chainId: input.chainId,
         numberOfBridgingEvents: bridgingEventsCount,
