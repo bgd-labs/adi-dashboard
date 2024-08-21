@@ -52,7 +52,7 @@ export const ExplorerLink = async ({
           className="shrink translate-y-[1px] cursor-pointer truncate border-b border-dotted border-transparent font-mono text-xs leading-none opacity-60 hover:border-brand-900 hover:text-brand-900 hover:opacity-100"
           target="_blank"
         >
-          {label ?? <span>{`${firstEight}...${lastEight}`}</span>}
+          {label || <span>{`${firstEight}...${lastEight}`}</span>}
         </a>
       </Tooltip>
     );
