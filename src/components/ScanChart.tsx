@@ -123,12 +123,12 @@ export const ScanChart = ({
                 <h2 className="mb-2 text-[11px] font-semibold uppercase tracking-wider">
                   Two week adapter usage:
                 </h2>
-                <div className="grid gap-1">
+                <div className="grid rounded-md border">
                   {bridgingStats?.usageStats.map(
                     ({ chainId: destinationChainId, adapters }) => (
                       <div
                         key={destinationChainId + "-used"}
-                        className="flex items-center justify-start gap-5 rounded border p-2"
+                        className="flex items-center justify-start gap-5 border-b py-3 px-2 last:border-b-0"
                       >
                         <div className="flex items-center gap-2">
                           <svg
