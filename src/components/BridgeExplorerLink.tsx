@@ -6,8 +6,11 @@ type ExplorerLinkProps = {
   txHash: string;
 };
 
-export const BridgeExplorerLink = async ({ chainId, address, txHash }: ExplorerLinkProps) => {
-
+export const BridgeExplorerLink = async ({
+  chainId,
+  address,
+  txHash,
+}: ExplorerLinkProps) => {
   const bridgeExplorerLink = await api.address.getBridgeExplorerLink({
     address,
     chainId,
@@ -20,7 +23,11 @@ export const BridgeExplorerLink = async ({ chainId, address, txHash }: ExplorerL
   const link = `${bridgeExplorerLink}${txHash}`;
 
   return (
-    <a href={link} target="_blank" className="p-1 text-brand-900 text-sm bg-white inline-flex hover:border-brand-900 mb-4 gap-2 border pr-2">
+    <a
+      href={link}
+      target="_blank"
+      className="mb-4 inline-flex gap-2 border bg-white p-1 pr-2 text-sm text-brand-900 hover:border-brand-900"
+    >
       <svg
         className="h-5 w-5"
         viewBox="0 0 50 50"

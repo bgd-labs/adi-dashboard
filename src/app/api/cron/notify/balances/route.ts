@@ -24,7 +24,7 @@ type Thresholds = {
 const NOTIFICATION_THRESHOLDS: Record<number, Thresholds> = {
   1: {
     native: BigInt(8e16),
-    link: BigInt(10e18),
+    link: BigInt(8e18),
   },
   137: {
     native: BigInt(350e18),

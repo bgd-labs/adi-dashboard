@@ -92,7 +92,7 @@ export const controllersRouter = createTRPCRouter({
         .eq("chain_id", input.chainId)
         .ilike("from", input.address);
 
-      if (costs) {
+      if (costs && costs.length > 0) {
         const twoWeeksAgo = Date.now() - 2 * 7 * 24 * 60 * 60 * 1000;
         let twoWeeksLink = 0n;
         let twoWeeksNative = 0n;
@@ -103,28 +103,34 @@ export const controllersRouter = createTRPCRouter({
 
           if (costTimestamp >= twoWeeksAgo) {
             if (cost.token_address) {
-              twoWeeksLink += BigInt(cost.value!);
-            }
-            if (cost.token_address === null) {
-              twoWeeksNative += BigInt(cost.value!);
+              twoWeeksLink += BigInt(cost.value ?? 0);
+            } else {
+              twoWeeksNative += BigInt(cost.value ?? 0);
             }
           }
         }
 
+        const nativeValue = truncateToTwoSignificantDigits(
+          formatEther(twoWeeksNative),
+        );
+        const linkValue = truncateToTwoSignificantDigits(
+          formatEther(twoWeeksLink),
+        );
+
         return {
           address: input.address,
           chainId: input.chainId,
-          native:
-            truncateToTwoSignificantDigits(
-              formatEther(BigInt(twoWeeksNative)),
-            ) +
-            " " +
-            nativeSymbol,
-          link:
-            truncateToTwoSignificantDigits(formatEther(BigInt(twoWeeksLink))) +
-            " link",
+          native: nativeValue === "0" ? "0" : `${nativeValue} ${nativeSymbol}`,
+          link: linkValue === "0" ? "0" : `${linkValue} LINK`,
         };
       }
+
+      return {
+        address: input.address,
+        chainId: input.chainId,
+        native: "0",
+        link: "0",
+      };
     }),
   getBridgingStats: publicProcedure
     .input(
