@@ -1,10 +1,11 @@
 "use client";
 
-import { StaticChainIcon as CI } from "@bgd-labs/react-web3-icons";
-import { getChainName } from "@bgd-labs/react-web3-icons/dist/utils";
+import { Web3Icon } from "@bgd-labs/react-web3-icons";
+import { chainsIconsPack } from "@bgd-labs/react-web3-icons/dist/iconsPacks/chainsIconsPack";
 
 import { Tooltip } from "@/components/Tooltip";
 import { cn } from "@/utils/cn";
+import { getChainName } from "@/utils/getChainName";
 
 type Props = {
   chainId?: number | null;
@@ -13,22 +14,15 @@ type Props = {
 
 export const ChainIcon = ({ chainId, isBig }: Props) => {
   if (!chainId) return null;
-  const chainName = getChainName({ chainId });
+  const chainName = getChainName(chainId);
 
   return (
     <Tooltip value={chainName ?? "Unknown chain"}>
       <div>
-        <CI
+        <Web3Icon
           chainId={chainId}
           className={cn("h-5 w-5 shrink-0", { ["h-7 w-7"]: isBig })}
-          loader={
-            <div
-              className={cn(
-                "h-5 w-5 shrink-0 animate-pulse rounded-full bg-brand-300",
-                { ["h-7 w-7"]: isBig },
-              )}
-            />
-          }
+          iconsPack={chainsIconsPack}
         />
       </div>
     </Tooltip>
