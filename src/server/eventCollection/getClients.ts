@@ -30,13 +30,15 @@ export const getClients = async ({
     usedChainIds.includes(chain.id),
   );
 
-  if (chainsToUse.length !== usedChainIds.length) {
+  const uniqueChainIds = new Set(usedChainIds);
+  const supportedChainIds = new Set(chainsToUse.map((chain) => chain.id));
+
+  if (supportedChainIds.size !== uniqueChainIds.size) {
     throw new Error(
       "Couldn't create clients, some chains are not supported by VIEM.",
     );
   }
 
-  // Populate the rpcUrls with data from configuration
   const chainsWithUpdatedRpcUrls = chainsToUse.map((chain: Chain) => {
     const rpcUrls = {
       ...chain.rpcUrls,

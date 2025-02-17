@@ -37,7 +37,7 @@
     "superjson": "^2.2.1",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
-    "viem": "^2.17.11",
+    "viem": "^2.23.2",
     "zod": "^3.23.8",
     "zustand": "^4.5.4"
   },
@@ -65,6 +65,5 @@
     "typescript": "^5.5.4",
     "typescript-eslint": "^7.17.0",
     "webpack-node-externals": "^3.0.0"
-  },
-  "packageManager": "pnpm@8.15.5+sha1.a58c038faac410c947dbdb93eb30994037d0fce2"
+  }
 }
