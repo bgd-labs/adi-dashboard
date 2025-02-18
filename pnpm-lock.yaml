@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@bgd-labs/react-web3-icons':
-        specifier: ^1.10.0
-        version: 1.10.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.13.0
+        version: 1.13.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@dicebear/collection':
         specifier: 8.0.2
         version: 8.0.2(@dicebear/core@8.0.2(@resvg/resvg-js@2.6.2)(sharp@0.33.5))
@@ -179,8 +179,8 @@ packages:
     resolution: {integrity: sha512-aA63XwOkcl4xxQa3HjPMqOP6LiK0ZDv3mUPYEFXkpHbaFjtGggE1A61FjFzJnB+p7/oy2gA8E+rcBNl/zC1tMg==}
     engines: {node: '>=6.9.0'}
 
-  '@bgd-labs/react-web3-icons@1.10.0':
-    resolution: {integrity: sha512-OH2/MXtsbZN9Kj0pL/uPIWlqILwDhH2xGK/9FVh2FdxIaXMTz5ifYbiZCDumu9VJcSjsE3PZ/hnW1shCusI6GQ==}
+  '@bgd-labs/react-web3-icons@1.13.0':
+    resolution: {integrity: sha512-5KQ1HpSTt31L55UYXI12CDQtxY5vcQxba3gEIKVFH318Z64N7tjubLD3Qo5FI91EvUuyaTRtICzeF0xOGRu2Hg==}
     engines: {node: '>=18'}
     peerDependencies:
       react: '>=18.3.1 || ^19.0.0'
@@ -3127,7 +3127,7 @@ snapshots:
     dependencies:
       regenerator-runtime: 0.14.1
 
-  '@bgd-labs/react-web3-icons@1.10.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@bgd-labs/react-web3-icons@1.13.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@loadable/component': 5.16.4(react@18.3.1)
       react: 18.3.1
