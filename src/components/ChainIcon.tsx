@@ -23,6 +23,9 @@ export const ChainIcon = ({ chainId, isBig }: Props) => {
           chainId={chainId}
           className={cn("h-5 w-5 shrink-0", { ["h-7 w-7"]: isBig })}
           iconsPack={chainsIconsPack}
+          fallbackProps={{
+            className: cn("h-5 w-5 shrink-0", { ["h-7 w-7"]: isBig }),
+          }}
         />
       </div>
     </Tooltip>
