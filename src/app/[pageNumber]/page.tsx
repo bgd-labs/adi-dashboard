@@ -6,16 +6,22 @@ const EnvelopeListPage = async ({
   params,
   searchParams,
 }: {
-  params: { pageNumber: string };
-  searchParams: Record<string, string | undefined>;
+  params: Promise<{ pageNumber: string }>;
+  searchParams: Promise<Record<string, string | undefined>>;
 }) => {
-  const page = +params.pageNumber;
+  const resolvedParams = await params;
+  const page = +resolvedParams.pageNumber;
   if (isNaN(page)) {
     notFound();
   }
 
+  const resolvedSearchParams = await searchParams;
   return (
-    <EnvelopeList currentPage={page} perPage={15} searchParams={searchParams} />
+    <EnvelopeList
+      currentPage={page}
+      perPage={15}
+      searchParams={resolvedSearchParams}
+    />
   );
 };
 
