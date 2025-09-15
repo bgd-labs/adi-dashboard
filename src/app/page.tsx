@@ -3,10 +3,15 @@ import { EnvelopeList } from "@/components/EnvelopeList";
 const Home = async ({
   searchParams,
 }: {
-  searchParams: Record<string, string | undefined>;
+  searchParams: Promise<Record<string, string | undefined>>;
 }) => {
+  const resolvedSearchParams = await searchParams;
   return (
-    <EnvelopeList currentPage={1} perPage={15} searchParams={searchParams} />
+    <EnvelopeList
+      currentPage={1}
+      perPage={15}
+      searchParams={resolvedSearchParams}
+    />
   );
 };
 

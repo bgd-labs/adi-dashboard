@@ -6,12 +6,13 @@ import { env } from "@/env";
 
 export const GET = async (
   req: NextRequest,
-  { params }: { params: { seed: string } },
+  { params }: { params: Promise<{ seed: string }> },
 ) => {
   if (req.nextUrl.searchParams.get("key") !== env.ICON_GENERATOR_KEY) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const { seed } = params;
+  const resolvedParams = await params;
+  const { seed } = resolvedParams;
 
   const avatar = createAvatar(identicon, {
     seed,

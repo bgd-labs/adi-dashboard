@@ -26,27 +26,28 @@ const SKIPPED_STATUS_TIMEOUT_HOURS = 10;
 const EnvelopeDetailPage = async ({
   params,
 }: {
-  params: { envelopeId: string };
+  params: Promise<{ envelopeId: string }>;
 }) => {
   try {
+    const resolvedParams = await params;
     const envelope = await api.envelopes.get({
-      envelopeId: params.envelopeId,
+      envelopeId: resolvedParams.envelopeId,
     });
 
     const registeredEvents = await api.events.getRegisteredEvents({
-      envelopeId: params.envelopeId,
+      envelopeId: resolvedParams.envelopeId,
     });
     const forwardingAttemptEvents = await api.events.getForwardingAttemptEvents(
       {
-        envelopeId: params.envelopeId,
+        envelopeId: resolvedParams.envelopeId,
       },
     );
     const transactionReceivedEvents =
       await api.events.getTransactionReceivedEvents({
-        envelopeId: params.envelopeId,
+        envelopeId: resolvedParams.envelopeId,
       });
     const deliveryAttemptEvents = await api.events.getDeliveryAttemptEvents({
-      envelopeId: params.envelopeId,
+      envelopeId: resolvedParams.envelopeId,
     });
 
     const sortedEvents = [...forwardingAttemptEvents].sort(
@@ -120,7 +121,11 @@ const EnvelopeDetailPage = async ({
                 <h2 className="mb-1 pl-0.5 text-xs font-semibold uppercase tracking-wider">
                   Envelope ID
                 </h2>
-                <CopyValueCard value={params.envelopeId} isBig isShort />
+                <CopyValueCard
+                  value={resolvedParams.envelopeId}
+                  isBig
+                  isShort
+                />
               </div>
               <div className="ml-auto text-right">
                 <div className="flex items-center justify-end gap-5">
@@ -202,10 +207,14 @@ const EnvelopeDetailPage = async ({
                 Envelope ID
               </h2>
               <div className="hidden xl:block">
-                <CopyValueCard value={params.envelopeId} isBig />
+                <CopyValueCard value={resolvedParams.envelopeId} isBig />
               </div>
               <div className="xl:hidden">
-                <CopyValueCard value={params.envelopeId} isBig isShort />
+                <CopyValueCard
+                  value={resolvedParams.envelopeId}
+                  isBig
+                  isShort
+                />
               </div>
             </div>
           </div>

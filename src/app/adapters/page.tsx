@@ -6,15 +6,16 @@ import { api } from "@/trpc/server";
 const AdaptersPage = async ({
   searchParams,
 }: {
-  searchParams: Record<string, string | undefined>;
+  searchParams: Promise<Record<string, string | undefined>>;
 }) => {
-  const { from, to } = searchParams;
+  const resolvedSearchParams = await searchParams;
+  const { from, to } = resolvedSearchParams;
 
   const availableAdapters =
     from && to
       ? await api.controllers.getAvailableAdapters({
-          from: Number(searchParams.from),
-          to: Number(searchParams.to),
+          from: Number(resolvedSearchParams.from),
+          to: Number(resolvedSearchParams.to),
         })
       : [];
 
