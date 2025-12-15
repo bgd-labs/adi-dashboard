@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@bgd-labs/react-web3-icons':
-        specifier: ^1.35.0
-        version: 1.35.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        specifier: ^1.58.0
+        version: 1.58.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@dicebear/collection':
         specifier: 8.0.2
         version: 8.0.2(@dicebear/core@8.0.2(@resvg/resvg-js@2.6.2)(sharp@0.33.5))
@@ -49,7 +49,7 @@ importers:
         version: 11.0.0-rc.768(@trpc/server@11.0.0-rc.768(typescript@5.7.3))(typescript@5.7.3)
       '@trpc/next':
         specifier: next
-        version: 11.0.0-rc.768(@tanstack/react-query@5.66.5(react@19.1.1))(@trpc/client@11.0.0-rc.768(@trpc/server@11.0.0-rc.768(typescript@5.7.3))(typescript@5.7.3))(@trpc/react-query@11.0.0-rc.768(@tanstack/react-query@5.66.5(react@19.1.1))(@trpc/client@11.0.0-rc.768(@trpc/server@11.0.0-rc.768(typescript@5.7.3))(typescript@5.7.3))(@trpc/server@11.0.0-rc.768(typescript@5.7.3))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.7.3))(@trpc/server@11.0.0-rc.768(typescript@5.7.3))(next@15.5.7(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.7.3)
+        version: 11.0.0-rc.768(@tanstack/react-query@5.66.5(react@19.1.1))(@trpc/client@11.0.0-rc.768(@trpc/server@11.0.0-rc.768(typescript@5.7.3))(typescript@5.7.3))(@trpc/react-query@11.0.0-rc.768(@tanstack/react-query@5.66.5(react@19.1.1))(@trpc/client@11.0.0-rc.768(@trpc/server@11.0.0-rc.768(typescript@5.7.3))(typescript@5.7.3))(@trpc/server@11.0.0-rc.768(typescript@5.7.3))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.7.3))(@trpc/server@11.0.0-rc.768(typescript@5.7.3))(next@15.5.9(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.7.3)
       '@trpc/react-query':
         specifier: next
         version: 11.0.0-rc.768(@tanstack/react-query@5.66.5(react@19.1.1))(@trpc/client@11.0.0-rc.768(@trpc/server@11.0.0-rc.768(typescript@5.7.3))(typescript@5.7.3))(@trpc/server@11.0.0-rc.768(typescript@5.7.3))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.7.3)
@@ -63,8 +63,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       next:
-        specifier: 15.5.7
-        version: 15.5.7(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        specifier: 15.5.9
+        version: 15.5.9(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       pretty-ms:
         specifier: ^9.1.0
         version: 9.2.0
@@ -182,8 +182,8 @@ packages:
     resolution: {integrity: sha512-aA63XwOkcl4xxQa3HjPMqOP6LiK0ZDv3mUPYEFXkpHbaFjtGggE1A61FjFzJnB+p7/oy2gA8E+rcBNl/zC1tMg==}
     engines: {node: '>=6.9.0'}
 
-  '@bgd-labs/react-web3-icons@1.35.0':
-    resolution: {integrity: sha512-BlyPBdWLdEkyCuENRdDSzyFUyAbANYZfbpkCTHYByYcripH3egiktCWXaO64H5iZIrBug8w/DC1/w/CTlKZQEg==}
+  '@bgd-labs/react-web3-icons@1.58.0':
+    resolution: {integrity: sha512-uOioing2+SB3I6Ow57taFtEPVRl8DEVpGX9ZLYnD5fkCZwU12PCx7tSv92tObNxZGzU9NnZLjkQtrysnNUjVAQ==}
     engines: {node: '>=18'}
     peerDependencies:
       react: '>=18.3.1 || ^19.0.0'
@@ -807,8 +807,8 @@ packages:
     peerDependencies:
       react: ^16.3.0 || ^17.0.0 || ^18.0.0
 
-  '@next/env@15.5.7':
-    resolution: {integrity: sha512-4h6Y2NyEkIEN7Z8YxkA27pq6zTkS09bUSYC0xjd0NpwFxjnIKeZEeH591o5WECSmjpUhLn3H2QLJcDye3Uzcvg==}
+  '@next/env@15.5.9':
+    resolution: {integrity: sha512-4GlTZ+EJM7WaW2HEZcyU317tIQDjkQIyENDLxYJfSWlfqguN+dHkZgyQTV/7ykvobU7yEH5gKvreNrH4B6QgIg==}
 
   '@next/eslint-plugin-next@15.5.3':
     resolution: {integrity: sha512-SdhaKdko6dpsSr0DldkESItVrnPYB1NS2NpShCSX5lc7SSQmLZt5Mug6t2xbiuVWEVDLZSuIAoQyYVBYp0dR5g==}
@@ -2413,8 +2413,8 @@ packages:
   next-tick@1.1.0:
     resolution: {integrity: sha512-CXdUiJembsNjuToQvxayPZF9Vqht7hewsvy2sOWafLvi2awflj9mOC6bHIg50orX8IJvWKY9wYQ/zB2kogPslQ==}
 
-  next@15.5.7:
-    resolution: {integrity: sha512-+t2/0jIJ48kUpGKkdlhgkv+zPTEOoXyr60qXe68eB/pl3CMJaLeIGjzp5D6Oqt25hCBiBTt8wEeeAzfJvUKnPQ==}
+  next@15.5.9:
+    resolution: {integrity: sha512-agNLK89seZEtC5zUHwtut0+tNrc0Xw4FT/Dg+B/VLEo9pAcS9rtTKpek3V6kVcVwsB2YlqMaHdfZL4eLEVYuCg==}
     engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
     hasBin: true
     peerDependencies:
@@ -3274,7 +3274,7 @@ snapshots:
     dependencies:
       regenerator-runtime: 0.14.1
 
-  '@bgd-labs/react-web3-icons@1.35.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+  '@bgd-labs/react-web3-icons@1.58.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@loadable/component': 5.16.4(react@19.1.1)
       react: 19.1.1
@@ -3971,7 +3971,7 @@ snapshots:
       react: 19.1.1
       react-is: 16.13.1
 
-  '@next/env@15.5.7': {}
+  '@next/env@15.5.9': {}
 
   '@next/eslint-plugin-next@15.5.3':
     dependencies:
@@ -4425,11 +4425,11 @@ snapshots:
       '@trpc/server': 11.0.0-rc.768(typescript@5.7.3)
       typescript: 5.7.3
 
-  '@trpc/next@11.0.0-rc.768(@tanstack/react-query@5.66.5(react@19.1.1))(@trpc/client@11.0.0-rc.768(@trpc/server@11.0.0-rc.768(typescript@5.7.3))(typescript@5.7.3))(@trpc/react-query@11.0.0-rc.768(@tanstack/react-query@5.66.5(react@19.1.1))(@trpc/client@11.0.0-rc.768(@trpc/server@11.0.0-rc.768(typescript@5.7.3))(typescript@5.7.3))(@trpc/server@11.0.0-rc.768(typescript@5.7.3))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.7.3))(@trpc/server@11.0.0-rc.768(typescript@5.7.3))(next@15.5.7(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.7.3)':
+  '@trpc/next@11.0.0-rc.768(@tanstack/react-query@5.66.5(react@19.1.1))(@trpc/client@11.0.0-rc.768(@trpc/server@11.0.0-rc.768(typescript@5.7.3))(typescript@5.7.3))(@trpc/react-query@11.0.0-rc.768(@tanstack/react-query@5.66.5(react@19.1.1))(@trpc/client@11.0.0-rc.768(@trpc/server@11.0.0-rc.768(typescript@5.7.3))(typescript@5.7.3))(@trpc/server@11.0.0-rc.768(typescript@5.7.3))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.7.3))(@trpc/server@11.0.0-rc.768(typescript@5.7.3))(next@15.5.9(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.7.3)':
     dependencies:
       '@trpc/client': 11.0.0-rc.768(@trpc/server@11.0.0-rc.768(typescript@5.7.3))(typescript@5.7.3)
       '@trpc/server': 11.0.0-rc.768(typescript@5.7.3)
-      next: 15.5.7(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      next: 15.5.9(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
       typescript: 5.7.3
@@ -5675,9 +5675,9 @@ snapshots:
 
   next-tick@1.1.0: {}
 
-  next@15.5.7(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
+  next@15.5.9(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
     dependencies:
-      '@next/env': 15.5.7
+      '@next/env': 15.5.9
       '@swc/helpers': 0.5.15
       caniuse-lite: 1.0.30001741
       postcss: 8.4.31
