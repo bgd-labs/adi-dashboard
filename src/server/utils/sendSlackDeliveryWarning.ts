@@ -1,7 +1,6 @@
-import { IncomingWebhook } from "@slack/webhook";
-
 import { env } from "@/env";
 import { type RouterOutput } from "@/server/api/types";
+import { slackClient } from "@/server/utils/slackClient";
 
 type MessageInfoElement = {
   type: "mrkdwn";
@@ -23,8 +22,6 @@ export const sendSlackDeliveryWarning = async ({
   chainTo: string;
   decodedMessage?: RouterOutput["envelopes"]["get"]["decodedMessage"];
 }) => {
-  const webhook = new IncomingWebhook(env.SLACK_WEBHOOK_URL);
-
   const [firstEight, lastEight] = [
     envelopeId.slice(0, 8),
     envelopeId.slice(-8),
@@ -63,7 +60,8 @@ export const sendSlackDeliveryWarning = async ({
         },
       ];
 
-  await webhook.send({
+  await slackClient.chat.postMessage({
+    channel: env.SLACK_CHANNEL_ID,
     text: "Envelope wasn't delivered",
     blocks: [
       {

@@ -1,12 +1,11 @@
-import crypto from "crypto";
 import { NextResponse } from "next/server";
 import { formatEther, type Hash } from "viem";
 import * as chains from "viem/chains";
 
 import { env } from "@/env";
-import { supabaseAdmin } from "@/server/api/supabase";
 import { getCrossChainControllers } from "@/server/eventCollection/getCrossChainControllers";
 import { getBalance } from "@/server/utils/getBalance";
+import { sendNotification } from "@/server/utils/sendNotification";
 import { sendSlackBalanceWarning } from "@/server/utils/sendSlackBalanceWarning";
 
 const CHAIN_IDS_FOR_BALANCE_RETRIEVAL = [1, 137, 43114];
@@ -104,80 +103,45 @@ export const GET = async (req: Request) => {
         `🔴 Native token balance is below threshold on chain ${chain?.name} - ${formatEther(balance.native)}`,
       );
 
-      const notificationHash = crypto
-        .createHash("sha256")
-        .update(`${chain?.name}-${Number(balance.native)}`)
-        .digest("hex");
-
-      const { data: wasAlreadyNotified } = await supabaseAdmin
-        .from("SentNotifications")
-        .select("*")
-        .eq("notification_hash", notificationHash)
-        .single();
-
-      if (!wasAlreadyNotified) {
-        console.log(
-          `🔔 Sending slack balance notification: ${notificationHash}`,
-        );
-        await sendSlackBalanceWarning({
+      await sendNotification({
+        hashInput: `${chain?.name}-${Number(balance.native)}`,
+        data: {
+          type: "low_balance",
           chainName: chain?.name ?? "Unknown",
-          threshold: formatEther(thresholds.native),
           balance: formatEther(balance.native),
           tokenName: CHAIN_ID_TO_CURRENCY[Number(chainId)] ?? "",
-        });
-
-        await supabaseAdmin.from("SentNotifications").insert([
-          {
-            notification_hash: notificationHash,
-            data: {
-              type: "low_balance",
-              chainName: chain?.name ?? "Unknown",
-              balance: formatEther(balance.native),
-              tokenName: CHAIN_ID_TO_CURRENCY[Number(chainId)] ?? "",
-            },
-          },
-        ]);
-      }
+        },
+        send: () =>
+          sendSlackBalanceWarning({
+            chainName: chain?.name ?? "Unknown",
+            threshold: formatEther(thresholds.native),
+            balance: formatEther(balance.native),
+            tokenName: CHAIN_ID_TO_CURRENCY[Number(chainId)] ?? "",
+          }),
+      });
     }
+
     if (balance.link && balance.link < thresholds.link) {
       console.log(
         `🔴 LINK token balance is below threshold on chain ${chain?.name} - ${formatEther(balance.link)}`,
       );
 
-      const notificationHash = crypto
-        .createHash("sha256")
-        .update(`${chain?.name}-${Number(balance.link)}`)
-        .digest("hex");
-
-      const { data: wasAlreadyNotified } = await supabaseAdmin
-        .from("SentNotifications")
-        .select("*")
-        .eq("notification_hash", notificationHash)
-        .single();
-
-      if (!wasAlreadyNotified) {
-        console.log(
-          `🔔 Sending slack balance notification: ${notificationHash}`,
-        );
-        await sendSlackBalanceWarning({
+      await sendNotification({
+        hashInput: `${chain?.name}-${Number(balance.link)}`,
+        data: {
+          type: "low_balance",
           chainName: chain?.name ?? "Unknown",
-          threshold: formatEther(thresholds.link),
           balance: formatEther(balance.link),
           tokenName: "LINK",
-        });
-
-        await supabaseAdmin.from("SentNotifications").insert([
-          {
-            notification_hash: notificationHash,
-            data: {
-              type: "low_balance",
-              chainName: chain?.name ?? "Unknown",
-              balance: formatEther(balance.link),
-              tokenName: "LINK",
-            },
-          },
-        ]);
-      }
+        },
+        send: () =>
+          sendSlackBalanceWarning({
+            chainName: chain?.name ?? "Unknown",
+            threshold: formatEther(thresholds.link),
+            balance: formatEther(balance.link!),
+            tokenName: "LINK",
+          }),
+      });
     }
 
     if (

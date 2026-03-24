@@ -1,6 +1,5 @@
-import { IncomingWebhook } from "@slack/webhook";
-
 import { env } from "@/env";
+import { slackClient } from "@/server/utils/slackClient";
 
 export const sendSlackBalanceWarning = async ({
   chainName,
@@ -13,9 +12,8 @@ export const sendSlackBalanceWarning = async ({
   balance: string;
   tokenName: string;
 }) => {
-  const webhook = new IncomingWebhook(env.SLACK_WEBHOOK_URL);
-
-  await webhook.send({
+  await slackClient.chat.postMessage({
+    channel: env.SLACK_CHANNEL_ID,
     text: "Low balance",
     blocks: [
       {

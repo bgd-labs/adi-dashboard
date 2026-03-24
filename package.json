@@ -17,7 +17,7 @@
     "@radix-ui/react-select": "^2.1.1",
     "@radix-ui/react-tooltip": "^1.1.2",
     "@resvg/resvg-js": "^2.6.2",
-    "@slack/webhook": "^7.0.2",
+    "@slack/web-api": "^7.8.0",
     "@supabase/supabase-js": "^2.44.4",
     "@t3-oss/env-nextjs": "^0.11.0",
     "@tanstack/react-query": "^5.51.11",
