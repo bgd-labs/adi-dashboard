@@ -1,4 +1,3 @@
-import crypto from "crypto";
 import { NextResponse } from "next/server";
 import { type Hash } from "viem";
 import * as chains from "viem/chains";
@@ -7,6 +6,7 @@ import { env } from "@/env";
 import { supabaseAdmin } from "@/server/api/supabase";
 import { decodeEnvelopeMessage } from "@/server/utils/decodeEnvelopeMessage";
 import { msToTimeComponents } from "@/server/utils/msToTimeComponents";
+import { sendNotification } from "@/server/utils/sendNotification";
 import { sendSlackDeliveryWarning } from "@/server/utils/sendSlackDeliveryWarning";
 import { timeComponentsToString } from "@/server/utils/timeComponentsToString";
 
@@ -46,111 +46,44 @@ export const GET = async (req: Request) => {
 
     const decodedMessage = decodeEnvelopeMessage(envelope.origin!, messageData);
 
-    if (envelope.origin_chain_id === envelope.destination_chain_id) {
-      const isDelivered = envelope.TransactionForwardingAttempted.some(
-        (attempt) => attempt.adapter_successful,
-      );
+    const isSameChain =
+      envelope.origin_chain_id === envelope.destination_chain_id;
+    const isDelivered = isSameChain
+      ? envelope.TransactionForwardingAttempted.some(
+          (attempt) => attempt.adapter_successful,
+        )
+      : envelope.EnvelopeDeliveryAttempted.some(
+          (attempt) => attempt.is_delivered,
+        );
 
-      if (!isDelivered) {
-        const registeredAt = new Date(envelope.registered_at!);
-        const now = new Date();
-        const diff = now.getTime() - registeredAt.getTime();
+    if (isDelivered) continue;
 
-        const notificationHash = crypto
-          .createHash("sha256")
-          .update(`${envelope.id}-${txId ?? "unknown"}`)
-          .digest("hex");
+    const registeredAt = new Date(envelope.registered_at!);
+    const diff = Date.now() - registeredAt.getTime();
 
-        if (diff > DELIVERY_NOTIFICATION_TIMEOUT) {
-          const timeframe = timeComponentsToString(msToTimeComponents(diff));
+    if (diff <= DELIVERY_NOTIFICATION_TIMEOUT) continue;
 
-          const { data: wasAlreadyNotified } = await supabaseAdmin
-            .from("SentNotifications")
-            .select("*")
-            .eq("notification_hash", notificationHash)
-            .single();
+    const timeframe = timeComponentsToString(msToTimeComponents(diff));
 
-          if (!wasAlreadyNotified) {
-            console.log(
-              `🔔 Sending slack delivery notification: ${notificationHash}`,
-            );
-
-            await sendSlackDeliveryWarning({
-              envelopeId: envelope.id,
-              timeframe,
-              notificationThreshold: timeComponentsToString(
-                msToTimeComponents(DELIVERY_NOTIFICATION_TIMEOUT),
-              ),
-              chainFrom: originChain?.name ?? "Unknown",
-              chainTo: destinationChain?.name ?? "Unknown",
-              decodedMessage,
-            });
-            await supabaseAdmin.from("SentNotifications").insert([
-              {
-                notification_hash: notificationHash,
-                data: {
-                  type: "delivery",
-                  envelope_id: envelope.id,
-                  transaction_id: txId ?? "unknown",
-                },
-              },
-            ]);
-          }
-        }
-      }
-    }
-
-    if (envelope.origin_chain_id !== envelope.destination_chain_id) {
-      const isDelivered = envelope.EnvelopeDeliveryAttempted.some(
-        (attempt) => attempt.is_delivered,
-      );
-      if (!isDelivered) {
-        const registeredAt = new Date(envelope.registered_at!);
-        const now = new Date();
-        const diff = now.getTime() - registeredAt.getTime();
-
-        const notificationHash = crypto
-          .createHash("sha256")
-          .update(`${envelope.id}-${txId ?? "unknown"}`)
-          .digest("hex");
-
-        console.log(`Trying to send slack notification for ${envelope.id}`);
-        console.log(`Notification hash: ${notificationHash}`);
-
-        if (diff > DELIVERY_NOTIFICATION_TIMEOUT) {
-          const timeframe = timeComponentsToString(msToTimeComponents(diff));
-
-          const { data: wasAlreadyNotified } = await supabaseAdmin
-            .from("SentNotifications")
-            .select("*")
-            .eq("notification_hash", notificationHash)
-            .single();
-
-          if (!wasAlreadyNotified) {
-            await sendSlackDeliveryWarning({
-              envelopeId: envelope.id,
-              timeframe,
-              notificationThreshold: timeComponentsToString(
-                msToTimeComponents(DELIVERY_NOTIFICATION_TIMEOUT),
-              ),
-              chainFrom: originChain?.name ?? "Unknown",
-              chainTo: destinationChain?.name ?? "Unknown",
-              decodedMessage,
-            });
-            await supabaseAdmin.from("SentNotifications").insert([
-              {
-                notification_hash: notificationHash,
-                data: {
-                  type: "delivery",
-                  envelope_id: envelope.id,
-                  transaction_id: txId ?? "unknown",
-                },
-              },
-            ]);
-          }
-        }
-      }
-    }
+    await sendNotification({
+      hashInput: `${envelope.id}-${txId ?? "unknown"}`,
+      data: {
+        type: "delivery",
+        envelope_id: envelope.id,
+        transaction_id: txId ?? "unknown",
+      },
+      send: () =>
+        sendSlackDeliveryWarning({
+          envelopeId: envelope.id,
+          timeframe,
+          notificationThreshold: timeComponentsToString(
+            msToTimeComponents(DELIVERY_NOTIFICATION_TIMEOUT),
+          ),
+          chainFrom: originChain?.name ?? "Unknown",
+          chainTo: destinationChain?.name ?? "Unknown",
+          decodedMessage,
+        }),
+    });
   }
 
   return NextResponse.json({ ok: true });
