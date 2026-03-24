@@ -31,7 +31,7 @@ const byteaHex = customType<{ data: string; driverData: Uint8Array }>({
     return "\\x" + Buffer.from(value).toString("hex");
   },
   toDriver(value: string) {
-    const hex = value.startsWith("\\x") ? value.slice(2) : value;
+    const hex = value.replace(/^(\\x|0x)/, "");
     return Buffer.from(hex, "hex");
   },
 });
