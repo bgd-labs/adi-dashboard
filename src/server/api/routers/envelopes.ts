@@ -1,7 +1,9 @@
+import { and, desc, eq, sql } from "drizzle-orm";
 import { type Hash } from "viem";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { envelopes } from "@/server/db/schema";
 import { decodeEnvelopeMessage } from "@/server/utils/decodeEnvelopeMessage";
 import { getEnvelopeConsensus } from "@/server/utils/getEnvelopeConsensus";
 
@@ -10,13 +12,24 @@ export const envelopesRouter = createTRPCRouter({
     .input(z.object({ envelopeId: z.string() }))
     .query(async ({ input, ctx }) => {
       const { envelopeId } = input;
-      const { data: envelope } = await ctx.supabaseAdmin
-        .from("Envelopes")
-        .select(
-          `*, TransactionReceived(chain_id, transaction_id), EnvelopeDeliveryAttempted(chain_id, is_delivered), TransactionForwardingAttempted(chain_id, adapter_successful, timestamp)`,
-        )
-        .eq("id", envelopeId)
-        .maybeSingle();
+      const envelope = await ctx.db.query.envelopes.findFirst({
+        where: eq(envelopes.id, envelopeId),
+        with: {
+          TransactionReceived: {
+            columns: { chain_id: true, transaction_id: true },
+          },
+          EnvelopeDeliveryAttempted: {
+            columns: { chain_id: true, is_delivered: true },
+          },
+          TransactionForwardingAttempted: {
+            columns: {
+              chain_id: true,
+              adapter_successful: true,
+              timestamp: true,
+            },
+          },
+        },
+      });
 
       if (!envelope) {
         throw new Error("Envelope not found");
@@ -75,36 +88,55 @@ export const envelopesRouter = createTRPCRouter({
       const { page, pageSize } = input;
       const startIndex = (page - 1) * pageSize;
 
-      let query = ctx.supabaseAdmin
-        .from("Envelopes")
-        .select(
-          `*, TransactionReceived(chain_id, transaction_id), EnvelopeDeliveryAttempted(chain_id, is_delivered), TransactionForwardingAttempted(chain_id, adapter_successful, timestamp)`,
-          { count: "exact" },
-        )
-        .range(startIndex, startIndex + pageSize - 1)
-        .order("registered_at", { ascending: false });
+      const conditions = [
+        input.from
+          ? eq(envelopes.origin_chain_id, Number(input.from))
+          : undefined,
+        input.to
+          ? eq(envelopes.destination_chain_id, Number(input.to))
+          : undefined,
+        input.proposalId
+          ? eq(envelopes.proposal_id, Number(input.proposalId))
+          : undefined,
+        input.payloadId
+          ? eq(envelopes.payload_id, Number(input.payloadId))
+          : undefined,
+      ].filter(Boolean);
 
-      if (input.from) {
-        query = query.filter("origin_chain_id", "eq", input.from);
+      const where = conditions.length > 0 ? and(...conditions) : undefined;
+
+      const [countResult] = await ctx.db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(envelopes)
+        .where(where);
+
+      const count = countResult?.count ?? 0;
+
+      if (startIndex >= count) {
+        return { data: [], count };
       }
 
-      if (input.to) {
-        query = query.filter("destination_chain_id", "eq", input.to);
-      }
-
-      if (input.proposalId) {
-        query = query.filter("proposal_id", "eq", input.proposalId);
-      }
-
-      if (input.payloadId) {
-        query = query.filter("payload_id", "eq", input.payloadId);
-      }
-
-      const { data, error, count } = await query;
-
-      if (startIndex >= (count ?? 0) || !data) {
-        return { data: [], count: count ?? 0 };
-      }
+      const data = await ctx.db.query.envelopes.findMany({
+        where,
+        with: {
+          TransactionReceived: {
+            columns: { chain_id: true, transaction_id: true },
+          },
+          EnvelopeDeliveryAttempted: {
+            columns: { chain_id: true, is_delivered: true },
+          },
+          TransactionForwardingAttempted: {
+            columns: {
+              chain_id: true,
+              adapter_successful: true,
+              timestamp: true,
+            },
+          },
+        },
+        orderBy: [desc(envelopes.registered_at)],
+        limit: pageSize,
+        offset: startIndex,
+      });
 
       const envelopeWithDeliveryInfo = data.map((envelope) => {
         const isDelivered =
@@ -146,17 +178,12 @@ export const envelopesRouter = createTRPCRouter({
         };
       });
 
-      if (error) {
-        throw error;
-      }
-
-      return { data: envelopeWithDeliveryInfo, count: count ?? 0 };
+      return { data: envelopeWithDeliveryInfo, count };
     }),
   getAllSlugs: publicProcedure.query(async ({ ctx }) => {
-    const envelopes = await ctx.supabaseAdmin.from("Envelopes").select("id");
-    if (!envelopes.data) {
-      return [];
-    }
-    return envelopes.data.map((envelope) => envelope.id);
+    const data = await ctx.db
+      .select({ id: envelopes.id })
+      .from(envelopes);
+    return data.map((envelope) => envelope.id);
   }),
 });

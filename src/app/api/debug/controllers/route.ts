@@ -11,8 +11,7 @@ export const GET = async () => {
       controllersCount: controllers.length,
       controllers: controllers,
       environment: {
-        hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-        hasServiceKey: !!process.env.SUPABASE_SERVICE_KEY,
+        hasDatabaseUrl: !!process.env.DATABASE_URL,
         nodeEnv: process.env.NODE_ENV,
         vercelEnv: process.env.VERCEL_ENV,
         region: process.env.VERCEL_REGION,
@@ -26,8 +25,7 @@ export const GET = async () => {
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
         environment: {
-          hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-          hasServiceKey: !!process.env.SUPABASE_SERVICE_KEY,
+          hasDatabaseUrl: !!process.env.DATABASE_URL,
           nodeEnv: process.env.NODE_ENV,
           vercelEnv: process.env.VERCEL_ENV,
           region: process.env.VERCEL_REGION,

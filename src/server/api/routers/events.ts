@@ -1,6 +1,13 @@
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import {
+  envelopeDeliveryAttempted,
+  envelopeRegistered,
+  transactionForwardingAttempted,
+  transactionReceived,
+} from "@/server/db/schema";
 
 export const eventsRouter = createTRPCRouter({
   getRegisteredEvents: publicProcedure
@@ -11,12 +18,10 @@ export const eventsRouter = createTRPCRouter({
     )
     .query(async ({ input, ctx }) => {
       const { envelopeId } = input;
-      const { data } = await ctx.supabaseAdmin
-        .from("EnvelopeRegistered")
-        .select("*")
-        .eq("envelope_id", envelopeId);
-
-      return data ?? [];
+      return await ctx.db
+        .select()
+        .from(envelopeRegistered)
+        .where(eq(envelopeRegistered.envelope_id, envelopeId));
     }),
   getForwardingAttemptEvents: publicProcedure
     .input(
@@ -26,12 +31,10 @@ export const eventsRouter = createTRPCRouter({
     )
     .query(async ({ input, ctx }) => {
       const { envelopeId } = input;
-      const { data } = await ctx.supabaseAdmin
-        .from("TransactionForwardingAttempted")
-        .select("*")
-        .eq("envelope_id", envelopeId);
-
-      return data ?? [];
+      return await ctx.db
+        .select()
+        .from(transactionForwardingAttempted)
+        .where(eq(transactionForwardingAttempted.envelope_id, envelopeId));
     }),
   getTransactionReceivedEvents: publicProcedure
     .input(
@@ -41,12 +44,10 @@ export const eventsRouter = createTRPCRouter({
     )
     .query(async ({ input, ctx }) => {
       const { envelopeId } = input;
-      const { data } = await ctx.supabaseAdmin
-        .from("TransactionReceived")
-        .select("*")
-        .eq("envelope_id", envelopeId);
-
-      return data ?? [];
+      return await ctx.db
+        .select()
+        .from(transactionReceived)
+        .where(eq(transactionReceived.envelope_id, envelopeId));
     }),
   getDeliveryAttemptEvents: publicProcedure
     .input(
@@ -56,12 +57,10 @@ export const eventsRouter = createTRPCRouter({
     )
     .query(async ({ input, ctx }) => {
       const { envelopeId } = input;
-      const { data } = await ctx.supabaseAdmin
-        .from("EnvelopeDeliveryAttempted")
-        .select("*")
-        .eq("envelope_id", envelopeId);
-
-      return data ?? [];
+      return await ctx.db
+        .select()
+        .from(envelopeDeliveryAttempted)
+        .where(eq(envelopeDeliveryAttempted.envelope_id, envelopeId));
     }),
   getDeliveryConfirmedEvents: publicProcedure
     .input(
@@ -71,11 +70,9 @@ export const eventsRouter = createTRPCRouter({
     )
     .query(async ({ input, ctx }) => {
       const { envelopeId } = input;
-      const { data } = await ctx.supabaseAdmin
-        .from("EnvelopeDeliveryAttempted")
-        .select("*")
-        .eq("envelope_id", envelopeId);
-
-      return data ?? [];
+      return await ctx.db
+        .select()
+        .from(envelopeDeliveryAttempted)
+        .where(eq(envelopeDeliveryAttempted.envelope_id, envelopeId));
     }),
 });

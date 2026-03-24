@@ -1,6 +1,8 @@
+import { eq } from "drizzle-orm";
 import { type Hash } from "viem";
 
-import { supabaseAdmin } from "@/server/api/supabase";
+import { db } from "@/server/db";
+import { crossChainControllers, retries } from "@/server/db/schema";
 
 import { getClients } from "./getClients";
 import { getCrossChainControllers } from "./getCrossChainControllers";
@@ -17,11 +19,13 @@ function getBlockOffset(chainId: number): bigint {
 }
 
 export const collectEvents = async () => {
-  const crossChainControllers = await getCrossChainControllers();
-  const clients = await getClients({ crossChainControllers });
+  const crossChainControllersList = await getCrossChainControllers();
+  const clients = await getClients({
+    crossChainControllers: crossChainControllersList,
+  });
 
   await Promise.all(
-    crossChainControllers.map(async (controller) => {
+    crossChainControllersList.map(async (controller) => {
       const client = clients[controller.chain_id];
 
       if (!client) {
@@ -60,36 +64,38 @@ export const collectEvents = async () => {
 };
 
 export const retryEvents = async () => {
-  const crossChainControllers = await getCrossChainControllers();
-  const clients = await getClients({ crossChainControllers });
+  const crossChainControllersList = await getCrossChainControllers();
+  const clients = await getClients({
+    crossChainControllers: crossChainControllersList,
+  });
 
-  const retries = await supabaseAdmin.from("Retries").select("*");
+  const retriesData = await db.select().from(retries);
 
-  if (!retries.data?.length) {
+  if (!retriesData.length) {
     console.log("No retries found");
     return true;
   }
 
   await Promise.all(
-    retries.data.map(async (retry) => {
+    retriesData.map(async (retry) => {
       const client = clients[retry.chain_id];
 
       if (!client) {
         throw new Error(`No client found for chain ${retry.chain_id}`);
       }
 
-      const { data } = await supabaseAdmin
-        .from("CrossChainControllers")
-        .select("address")
-        .eq("chain_id", retry.chain_id)
-        .single();
+      const [data] = await db
+        .select({ address: crossChainControllers.address })
+        .from(crossChainControllers)
+        .where(eq(crossChainControllers.chain_id, retry.chain_id))
+        .limit(1);
 
       if (!data?.address) {
         throw new Error(`No controller found for chain ${retry.chain_id}`);
       }
 
       await getEvents({
-        address: data?.address as Hash,
+        address: data.address as Hash,
         from: retry.from_block,
         to: retry.to_block,
         client: client,

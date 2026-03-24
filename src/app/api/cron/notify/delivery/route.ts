@@ -3,7 +3,8 @@ import { type Hash } from "viem";
 import * as chains from "viem/chains";
 
 import { env } from "@/env";
-import { supabaseAdmin } from "@/server/api/supabase";
+import { db } from "@/server/db";
+import { envelopes } from "@/server/db/schema";
 import { decodeEnvelopeMessage } from "@/server/utils/decodeEnvelopeMessage";
 import { msToTimeComponents } from "@/server/utils/msToTimeComponents";
 import { sendNotification } from "@/server/utils/sendNotification";
@@ -17,17 +18,26 @@ export const GET = async (req: Request) => {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { data: envelopes } = await supabaseAdmin
-    .from("Envelopes")
-    .select(
-      "*, TransactionForwardingAttempted(adapter_successful, transaction_id, timestamp), EnvelopeDeliveryAttempted(is_delivered)",
-    );
+  const envelopesList = await db.query.envelopes.findMany({
+    with: {
+      TransactionForwardingAttempted: {
+        columns: {
+          adapter_successful: true,
+          transaction_id: true,
+          timestamp: true,
+        },
+      },
+      EnvelopeDeliveryAttempted: {
+        columns: { is_delivered: true },
+      },
+    },
+  });
 
-  if (!envelopes) {
+  if (!envelopesList) {
     throw new Error("No envelopes found");
   }
 
-  for (const envelope of envelopes) {
+  for (const envelope of envelopesList) {
     const originChain = Object.values(chains).find(
       (chain) => chain.id === envelope.origin_chain_id,
     );

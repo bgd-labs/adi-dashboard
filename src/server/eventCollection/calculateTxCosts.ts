@@ -1,10 +1,16 @@
+import { eq, sql } from "drizzle-orm";
 import { Alchemy, DebugTracerType, Network } from "alchemy-sdk";
 import { createClient, decodeEventLog, type Hash, http } from "viem";
 import { getBlock, getTransactionReceipt } from "viem/actions";
 import { avalanche, mainnet, polygon } from "viem/chains";
 
 import { env } from "@/env";
-import { supabaseAdmin } from "@/server/api/supabase";
+import { db } from "@/server/db";
+import {
+  crossChainControllers,
+  transactionCosts,
+  transactionGasCosts,
+} from "@/server/db/schema";
 import { erc20EventsAbi } from "@/server/constants/erc20EventsAbi";
 import { getErc20TokenInfo } from "@/server/utils/getErc20TokenInfo";
 import { getNativeTokenInfo } from "@/server/utils/getNativeTokenInfo";
@@ -68,13 +74,16 @@ const ERC_20_TRANSFER_TOPIC =
   "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
 
 export const calculateTxCosts = async (txHash: Hash, chainId: number) => {
-  const { data: chainConfig } = await supabaseAdmin
-    .from("CrossChainControllers")
-    .select(
-      "address, analytics_rpc_url, native_token_name, native_token_symbol",
-    )
-    .eq("chain_id", chainId)
-    .maybeSingle();
+  const [chainConfig] = await db
+    .select({
+      address: crossChainControllers.address,
+      analytics_rpc_url: crossChainControllers.analytics_rpc_url,
+      native_token_name: crossChainControllers.native_token_name,
+      native_token_symbol: crossChainControllers.native_token_symbol,
+    })
+    .from(crossChainControllers)
+    .where(eq(crossChainControllers.chain_id, chainId))
+    .limit(1);
 
   if (!chainConfig?.address) {
     throw new Error(`No CCC address found for chain ${chainId}`);
@@ -202,8 +211,9 @@ export const calculateTxCosts = async (txHash: Hash, chainId: number) => {
     });
 
   try {
-    await supabaseAdmin.from("TransactionGasCosts").upsert([
-      {
+    await db
+      .insert(transactionGasCosts)
+      .values({
         transaction_hash: txHash,
         chain_id: chainId,
         gas_price: Number(transactionReceipt.effectiveGasPrice),
@@ -213,9 +223,22 @@ export const calculateTxCosts = async (txHash: Hash, chainId: number) => {
         token_name: nativeTokenInfo.name,
         token_symbol: nativeTokenInfo.symbol,
         timestamp: dateString,
-      },
-    ]);
-    await supabaseAdmin.from("TransactionCosts").upsert([
+      })
+      .onConflictDoUpdate({
+        target: transactionGasCosts.transaction_hash,
+        set: {
+          chain_id: sql`excluded.chain_id`,
+          gas_price: sql`excluded.gas_price`,
+          transaction_fee: sql`excluded.transaction_fee`,
+          transaction_fee_usd: sql`excluded.transaction_fee_usd`,
+          token_usd_price: sql`excluded.token_usd_price`,
+          token_name: sql`excluded.token_name`,
+          token_symbol: sql`excluded.token_symbol`,
+          timestamp: sql`excluded.timestamp`,
+        },
+      });
+
+    const costRows = [
       ...erc20transfers.map((transfer) => {
         const usdValue = (Number(transfer.value) / 1e18) * transfer.price;
 
@@ -250,7 +273,31 @@ export const calculateTxCosts = async (txHash: Hash, chainId: number) => {
           timestamp: dateString,
         };
       }),
-    ]);
+    ];
+
+    if (costRows.length > 0) {
+      await db
+        .insert(transactionCosts)
+        .values(costRows)
+        .onConflictDoUpdate({
+          target: [
+            transactionCosts.transaction_hash,
+            transactionCosts.from,
+            transactionCosts.to,
+            transactionCosts.log_index,
+          ],
+          set: {
+            chain_id: sql`excluded.chain_id`,
+            token_address: sql`excluded.token_address`,
+            value: sql`excluded.value`,
+            value_usd: sql`excluded.value_usd`,
+            token_usd_price: sql`excluded.token_usd_price`,
+            token_name: sql`excluded.token_name`,
+            token_symbol: sql`excluded.token_symbol`,
+            timestamp: sql`excluded.timestamp`,
+          },
+        });
+    }
   } catch (error) {
     throw new Error(
       `Error upserting transaction costs for ${txHash} on chain ${chainId}`,

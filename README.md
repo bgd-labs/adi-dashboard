@@ -8,50 +8,53 @@ This application performs scans on configured chains every two minutes, capturin
 
 Delivery of an envelope is confirmed upon reaching consensus and logging a successful `EnvelopeDeliveryAttempted` event. Envelopes not delivered within 60 minutes are marked as delivery failures, triggering a notification on Slack.
 
-The application uses [Supabase](https://supabase.io/) for event data storage and retrieval, and [tRPC](https://trpc.io/) for type-safe data operations. The front-end interface is built with [Next.js](https://nextjs.org/), and styled with [Tailwind CSS](https://tailwindcss.com/). The app also relies on [Vercel Cron Jobs](https://vercel.com/guides/how-to-setup-cron-jobs-on-vercel) for scheduled scans and [Slack Incoming Webhooks](https://api.slack.com/messaging/webhooks) for notifications.
+The application uses [PostgreSQL](https://www.postgresql.org/) with [Drizzle ORM](https://orm.drizzle.team/) for data storage, and [tRPC](https://trpc.io/) for type-safe data operations. The front-end is built with [Next.js](https://nextjs.org/) and styled with [Tailwind CSS](https://tailwindcss.com/). Scheduled scans run via [Vercel Cron Jobs](https://vercel.com/guides/how-to-setup-cron-jobs-on-vercel) and notifications are sent through the [Slack API](https://api.slack.com/).
 
 ## Getting started
 
-First, clone the repository and navigate to the project directory.
+Clone the repository:
 
 ```bash
 git clone git@github.com:bgd-labs/adi-dashboard.git
 cd adi-dashboard
 ```
 
-### Set up Supabase
+### Set up the database
 
-Create a new project on [Supabase](https://supabase.io/) and set up a new database. use `schema.sql` to create the required tables and views. Next, update the app configuration by editing `CrossChainControllers` and `AddressBook` tables with the addresses of the deployed contracts.
+Create a PostgreSQL database and run `schema.sql` to create the required tables. Then populate the `CrossChainControllers` and `AddressBook` tables with the addresses of the deployed contracts.
 
-### Set Environment Variables
+The Drizzle schema is defined in `src/server/db/schema.ts` and must match the database structure.
 
-Copy the `.env.example` file to `.env.local` and fill in the required environment variables (See comments in `.env.example` file for reference).
+### Set environment variables
 
-```bash
-cp .env.example .env.local
-```
-
-To get started, you will need to install the dependencies and run the development server.
+Copy `.env.example` to `.env` and fill in the values:
 
 ```bash
-npm install
-npm run dev
+cp .env.example .env
 ```
 
-### Update/Generate Database Types
+The key variable is `DATABASE_URL` — a PostgreSQL connection string. If using Supabase, use the connection pooler URL (port 6543). See `.env.example` for the format.
 
-When the database structure is updated, in order to generate files, you can generate type definitions for the database using the Supabase CLI:
+### Install and run
 
 ```bash
-npm install -g @supabase/cli
+pnpm install
+pnpm dev
 ```
 
-```bash
-cd ./src/server/api && supabase gen types typescript --project-id YOUR_SUPABASE_PROJECT_ID > ./database.types.ts
-```
+## Deployment
 
-Alternatively, you can use download the types from the Supabase dashboard and place them in the `./src/server/api` folder.
+The app is designed for [Vercel](https://vercel.com/). Set these environment variables in your Vercel project:
 
+- `DATABASE_URL` — PostgreSQL connection string
+- `CRON_SECRET` — protects cron API endpoints
+- `SLACK_BOT_TOKEN` / `SLACK_CHANNEL_ID` — Slack notifications
+- `ICON_GENERATOR_KEY` — protects the icon generator endpoint
+- `ENVIRONMENT_STAGE` — `PROD` or `PREPROD`
+- `COINGECKO_API_KEY` — for token price data
+- `ALCHEMY_API_KEY` — for transaction tracing
+
+Cron schedules are configured in `vercel.json`.
 
 ## License
 

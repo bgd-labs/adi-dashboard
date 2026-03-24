@@ -1,6 +1,13 @@
+import { eq, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import {
+  envelopeRegistered,
+  transactionCosts,
+  transactionForwardingAttempted,
+  transactionGasCosts,
+} from "@/server/db/schema";
 
 export const transactionsRouter = createTRPCRouter({
   getTransactionCosts: publicProcedure
@@ -11,12 +18,11 @@ export const transactionsRouter = createTRPCRouter({
     )
     .query(async ({ input, ctx }) => {
       const { txHashes } = input;
-      const { data } = await ctx.supabaseAdmin
-        .from("TransactionCosts")
-        .select("*")
-        .in("transaction_hash", txHashes);
-
-      return data ?? [];
+      if (txHashes.length === 0) return [];
+      return await ctx.db
+        .select()
+        .from(transactionCosts)
+        .where(inArray(transactionCosts.transaction_hash, txHashes));
     }),
   getGasCosts: publicProcedure
     .input(
@@ -26,34 +32,32 @@ export const transactionsRouter = createTRPCRouter({
     )
     .query(async ({ input, ctx }) => {
       const { txHashes } = input;
-      const { data } = await ctx.supabaseAdmin
-        .from("TransactionGasCosts")
-        .select("*")
-        .in("transaction_hash", txHashes);
-
-      return data ?? [];
+      if (txHashes.length === 0) return [];
+      return await ctx.db
+        .select()
+        .from(transactionGasCosts)
+        .where(inArray(transactionGasCosts.transaction_hash, txHashes));
     }),
   getUnscannedTransactions: publicProcedure.query(async ({ ctx }) => {
-    const { data } = await ctx.supabaseAdmin.rpc(
-      "get_unscanned_transactions_sql",
+    const data = await ctx.db.execute(
+      sql`SELECT * FROM get_unscanned_transactions_sql()`,
     );
 
-    if (!data) {
+    if (!data.length) {
       return [];
     }
 
     // TODO: Avalanche rpc node doesn't support trace_transaction
-    const withoutAvalanche = data.filter((tx) => tx.chain_id !== 43114);
+    const withoutAvalanche = data.filter(
+      (tx) => Number(tx.chain_id) !== 43114,
+    );
     return withoutAvalanche;
   }),
   getAll: publicProcedure.query(async ({ ctx }) => {
-    const { data } = await ctx.supabaseAdmin
-      .from("TransactionForwardingAttempted")
-      .select("*");
+    const data = await ctx.db
+      .select()
+      .from(transactionForwardingAttempted);
 
-    if (!data) {
-      return [];
-    }
     const uniqueTransactionHash = new Set();
 
     const uniqueData = data.filter((item) => {
@@ -68,21 +72,19 @@ export const transactionsRouter = createTRPCRouter({
     return uniqueData;
   }),
   get: publicProcedure.input(z.string()).query(async ({ input, ctx }) => {
-    const { data } = await ctx.supabaseAdmin
-      .from("TransactionForwardingAttempted")
-      .select("*")
-      .eq("transaction_hash", input);
-
-    return data;
+    return await ctx.db
+      .select()
+      .from(transactionForwardingAttempted)
+      .where(eq(transactionForwardingAttempted.transaction_hash, input));
   }),
   checkMultiEnvelope: publicProcedure
     .input(z.string())
     .query(async ({ input, ctx }) => {
-      const { data } = await ctx.supabaseAdmin
-        .from("EnvelopeRegistered")
-        .select("*")
-        .eq("transaction_hash", input);
+      const data = await ctx.db
+        .select()
+        .from(envelopeRegistered)
+        .where(eq(envelopeRegistered.transaction_hash, input));
 
-      return (data?.length ?? 0) > 1;
+      return data.length > 1;
     }),
 });
