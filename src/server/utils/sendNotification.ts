@@ -17,35 +17,28 @@ export const sendNotification = async ({
     .update(hashInput)
     .digest("hex");
 
-  // Atomic claim: insert returns nothing if row already exists (unique constraint on notification_hash)
-  const { data: inserted, error } = await supabaseAdmin
+  // Check if already sent (unique constraint on notification_hash)
+  const { count } = await supabaseAdmin
     .from("SentNotifications")
-    .insert({ notification_hash: notificationHash, data })
-    .select()
-    .maybeSingle();
+    .select("*", { count: "exact", head: true })
+    .eq("notification_hash", notificationHash);
 
-  if (error) {
-    // Unique constraint violation → already notified, skip
-    if (error.code === "23505") {
-      return false;
-    }
-    throw error;
-  }
-
-  if (!inserted) {
+  if (count && count > 0) {
     return false;
   }
 
-  try {
-    console.log(`🔔 Sending notification: ${notificationHash}`);
-    await send();
-  } catch (error) {
-    // Roll back the claim so next run can retry
-    await supabaseAdmin
-      .from("SentNotifications")
-      .delete()
-      .eq("notification_hash", notificationHash);
-    throw error;
+  console.log(`🔔 Sending notification: ${notificationHash}`);
+  await send();
+
+  // Record after successful send — a crash here may cause a duplicate on next run,
+  // but will never silently drop a notification.
+  const { error } = await supabaseAdmin
+    .from("SentNotifications")
+    .insert({ notification_hash: notificationHash, data });
+
+  if (error && error.code !== "23505") {
+    // Log but don't throw — the notification was already delivered
+    console.error(`Failed to record sent notification ${notificationHash}:`, error);
   }
 
   return true;
