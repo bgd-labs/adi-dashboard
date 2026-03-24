@@ -44,6 +44,8 @@ pnpm dev
 
 ## Deployment
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Faave-dao%2Fadi-dashboard&env=DATABASE_URL,CRON_SECRET,SLACK_BOT_TOKEN,SLACK_CHANNEL_ID,ICON_GENERATOR_KEY,ENVIRONMENT_STAGE,COINGECKO_API_KEY,ALCHEMY_API_KEY)
+
 The app is designed for [Vercel](https://vercel.com/). Set these environment variables in your Vercel project:
 
 - `DATABASE_URL` — PostgreSQL connection string
