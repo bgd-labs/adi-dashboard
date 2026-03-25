@@ -89,7 +89,9 @@ export const envelopeRegistered = pgTable(
     chain_id: integer("chain_id"),
     timestamp: timestamp("timestamp", { withTimezone: true, mode: "string" }),
   },
-  (table) => [primaryKey({ columns: [table.transaction_hash, table.log_index] })],
+  (table) => [
+    primaryKey({ columns: [table.transaction_hash, table.log_index] }),
+  ],
 );
 
 export const envelopeDeliveryAttempted = pgTable(
@@ -103,7 +105,9 @@ export const envelopeDeliveryAttempted = pgTable(
     chain_id: integer("chain_id"),
     timestamp: timestamp("timestamp", { withTimezone: true, mode: "string" }),
   },
-  (table) => [primaryKey({ columns: [table.transaction_hash, table.log_index] })],
+  (table) => [
+    primaryKey({ columns: [table.transaction_hash, table.log_index] }),
+  ],
 );
 
 export const transactionForwardingAttempted = pgTable(
@@ -123,7 +127,9 @@ export const transactionForwardingAttempted = pgTable(
     encoded_transaction: byteaHex("encoded_transaction"),
     timestamp: timestamp("timestamp", { withTimezone: true, mode: "string" }),
   },
-  (table) => [primaryKey({ columns: [table.transaction_hash, table.log_index] })],
+  (table) => [
+    primaryKey({ columns: [table.transaction_hash, table.log_index] }),
+  ],
 );
 
 export const transactionReceived = pgTable(
@@ -142,7 +148,9 @@ export const transactionReceived = pgTable(
     encoded_envelope: byteaHex("encoded_envelope"),
     timestamp: timestamp("timestamp", { withTimezone: true, mode: "string" }),
   },
-  (table) => [primaryKey({ columns: [table.transaction_hash, table.log_index] })],
+  (table) => [
+    primaryKey({ columns: [table.transaction_hash, table.log_index] }),
+  ],
 );
 
 export const addressBook = pgTable(
@@ -205,12 +213,7 @@ export const transactionCosts = pgTable(
   },
   (table) => [
     primaryKey({
-      columns: [
-        table.transaction_hash,
-        table.from,
-        table.to,
-        table.log_index,
-      ],
+      columns: [table.transaction_hash, table.from, table.to, table.log_index],
     }),
   ],
 );

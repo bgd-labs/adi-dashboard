@@ -156,9 +156,7 @@ export const GET = async (req: Request) => {
           balance.link &&
           balance.link > thresholds.link
         ) {
-          console.log(
-            `🟢 All balances are above threshold on ${chain?.name}`,
-          );
+          console.log(`🟢 All balances are above threshold on ${chain?.name}`);
         }
       } catch (error) {
         console.error(`Failed to check balance for chain ${chainId}:`, error);

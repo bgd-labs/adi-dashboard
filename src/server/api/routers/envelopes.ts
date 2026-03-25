@@ -181,9 +181,7 @@ export const envelopesRouter = createTRPCRouter({
       return { data: envelopeWithDeliveryInfo, count };
     }),
   getAllSlugs: publicProcedure.query(async ({ ctx }) => {
-    const data = await ctx.db
-      .select({ id: envelopes.id })
-      .from(envelopes);
+    const data = await ctx.db.select({ id: envelopes.id }).from(envelopes);
     return data.map((envelope) => envelope.id);
   }),
 });
