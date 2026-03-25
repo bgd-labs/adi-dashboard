@@ -10,6 +10,12 @@ Delivery of an envelope is confirmed upon reaching consensus and logging a succe
 
 The application uses [PostgreSQL](https://www.postgresql.org/) with [Drizzle ORM](https://orm.drizzle.team/) for data storage, and [tRPC](https://trpc.io/) for type-safe data operations. The front-end is built with [Next.js](https://nextjs.org/) and styled with [Tailwind CSS](https://tailwindcss.com/). Scheduled scans run via [Vercel Cron Jobs](https://vercel.com/guides/how-to-setup-cron-jobs-on-vercel) and notifications are sent through the [Slack API](https://api.slack.com/).
 
+## Prerequisites
+
+- [Node.js](https://nodejs.org/) >= 18
+- [pnpm](https://pnpm.io/)
+- [PostgreSQL](https://www.postgresql.org/) database
+
 ## Getting started
 
 Clone the repository:
@@ -21,9 +27,10 @@ cd adi-dashboard
 
 ### Set up the database
 
-Create a PostgreSQL database and run `schema.sql` to create the required tables. Then populate the `CrossChainControllers` and `AddressBook` tables with the addresses of the deployed contracts.
+Create a PostgreSQL database and set up the schema using one of:
 
-The Drizzle schema is defined in `src/server/db/schema.ts` and must match the database structure.
+- **Drizzle Kit** (recommended): `npx drizzle-kit push` — pushes the schema defined in `src/server/db/schema.ts` directly to your database.
+- **Manual SQL**: Run `schema.sql` against your database.
 
 ### Set environment variables
 
@@ -33,7 +40,7 @@ Copy `.env.example` to `.env` and fill in the values:
 cp .env.example .env
 ```
 
-The key variable is `DATABASE_URL` — a PostgreSQL connection string. If using Supabase, use the connection pooler URL (port 6543). See `.env.example` for the format.
+The key variable is `DATABASE_URL` — a PostgreSQL connection string (e.g. `postgresql://user:password@host:5432/dbname`).
 
 ### Install and run
 
