@@ -2,7 +2,7 @@
 
 ![AAVE Delivery Infrastructure Dashboard](https://github.com/bgd-labs/adi-dashboard/assets/2552715/f3889a91-0385-4dd0-9b98-b59fdb6c4363)
 
-This Dashboard facilitates monitoring of the [Aave Delivery Infrastructure](https://github.com/bgd-labs/aave-delivery-infrastructure), offering a simplified interface for browsing envelopes, reading messages, and examining payloads. Links to the Governance V3 interface are provided for easy access to proposals and payloads. The dashboard also includes Slack integration for alerts on events requiring immediate attention.
+Dashboard for monitoring the [Aave Delivery Infrastructure](https://github.com/bgd-labs/aave-delivery-infrastructure) — browse envelopes, messages, and payloads with links to Governance V3 proposals. Includes Slack alerts for events requiring immediate attention.
 
 This application performs scans on configured chains every two minutes, capturing new events emitted by `CrossChainController` contracts and storing them in a database. In the event of an RPC query range failure, the application will automatically retry during the next retry cycle, which occurs every 5 minutes. The app's status page provides an overview of the scan progress and details of the specific ranges.
 
@@ -98,10 +98,6 @@ Scanning starts automatically on the next cron cycle (every 2 minutes).
 
 ## License
 
-Copyright © 2024, Aave DAO, represented by its governance smart contracts.
+[MIT](./LICENSE) © 2026 Aave DAO
 
 Created by [BGD Labs](https://bgdlabs.com/).
-
-The default license of this repository is [BUSL1.1](./LICENSE).
-
-**IMPORTANT**. The BUSL1.1 license of this repository allows for any usage of the software, if respecting the _Additional Use Grant_ limitations, forbidding any use case damaging anyhow the Aave DAO's interests.
