@@ -66,6 +66,36 @@ The app is designed for [Vercel](https://vercel.com/). Set these environment var
 
 Cron schedules are configured in `vercel.json`.
 
+## Adding a new chain
+
+To monitor a new chain, the chain must be supported by the [viem/chains](https://viem.sh/docs/chains/introduction) package.
+
+Insert a new row into the `CrossChainControllers` table:
+
+```sql
+INSERT INTO "CrossChainControllers" (
+  chain_id, address, created_block, rpc_urls, rpc_block_limit,
+  chain_name_alias, native_token_name, native_token_symbol
+) VALUES (
+  42161,
+  '0x...CrossChainController address...',
+  12345678,
+  ARRAY['https://arb1.arbitrum.io/rpc'],
+  500,
+  'Arbitrum',
+  'Ethereum',
+  'ETH'
+);
+```
+
+**Required fields:** `chain_id`, `address`, `created_block`, `rpc_urls`
+
+**Optional fields:** `rpc_block_limit` (default 500), `chain_name_alias`, `analytics_rpc_url`, `native_token_name`, `native_token_symbol`
+
+To enable low-balance alerts for the new chain, add thresholds in `src/app/api/cron/notify/balances/route.ts`.
+
+Scanning starts automatically on the next cron cycle (every 2 minutes).
+
 ## License
 
 Copyright © 2024, Aave DAO, represented by its governance smart contracts.
