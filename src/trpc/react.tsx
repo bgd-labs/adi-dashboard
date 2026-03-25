@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { loggerLink, unstable_httpBatchStreamLink } from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
 import { useState } from "react";
-// eslint-disable-next-line import/default
 import SuperJSON from "superjson";
 
 import { type AppRouter } from "@/server/api/root";

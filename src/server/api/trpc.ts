@@ -1,14 +1,12 @@
 import { initTRPC } from "@trpc/server";
-// eslint-disable-next-line import/default
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { supabase, supabaseAdmin } from "./supabase";
+import { db } from "@/server/db";
 
 export const createTRPCContext = async (opts: { headers?: Headers }) => {
   return {
-    supabase,
-    supabaseAdmin,
+    db,
     ...opts,
   };
 };

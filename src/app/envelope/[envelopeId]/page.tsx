@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-// eslint-disable-next-line import/default
 import prettyMilliseconds from "pretty-ms";
 import { formatEther, formatGwei, type Hex } from "viem";
 

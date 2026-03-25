@@ -128,7 +128,7 @@ export const ScanChart = ({
                     ({ chainId: destinationChainId, adapters }) => (
                       <div
                         key={destinationChainId + "-used"}
-                        className="flex items-center justify-start gap-5 border-b py-3 px-2 last:border-b-0"
+                        className="flex items-center justify-start gap-5 border-b px-2 py-3 last:border-b-0"
                       >
                         <div className="flex items-center gap-2">
                           <svg

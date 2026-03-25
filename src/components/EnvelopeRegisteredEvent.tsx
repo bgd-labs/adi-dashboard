@@ -1,7 +1,8 @@
-import { EventListItem } from "@/components/EventListItem";
 import { CopyValueCard } from "@/components/CopyValueCard";
-import { ExplorerLink } from "./ExplorerLink";
+import { EventListItem } from "@/components/EventListItem";
 import { type RouterOutput } from "@/server/api/types";
+
+import { ExplorerLink } from "./ExplorerLink";
 
 type EnvelopeRegisteredEventProps = {
   event: RouterOutput["events"]["getRegisteredEvents"][0];

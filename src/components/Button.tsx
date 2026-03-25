@@ -1,8 +1,9 @@
 "use client";
 
-import { cn } from "@/utils/cn";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+
+import { cn } from "@/utils/cn";
 
 type Props = {
   children: React.ReactNode;

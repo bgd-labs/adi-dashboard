@@ -4,7 +4,7 @@ import { z } from "zod";
 export const env = createEnv({
   server: {
     NODE_ENV: z.enum(["development", "test", "production"]),
-    SUPABASE_SERVICE_KEY: z.string(),
+    DATABASE_URL: z.string(),
     CRON_SECRET: z.string(),
     SLACK_BOT_TOKEN: z.string(),
     SLACK_CHANNEL_ID: z.string(),
@@ -13,16 +13,11 @@ export const env = createEnv({
     COINGECKO_API_KEY: z.string(),
     ALCHEMY_API_KEY: z.string(),
   },
-  client: {
-    NEXT_PUBLIC_SUPABASE_URL: z.string(),
-    NEXT_PUBLIC_SUPABASE_KEY: z.string(),
-  },
+  client: {},
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
-    SUPABASE_SERVICE_KEY: process.env.SUPABASE_SERVICE_KEY,
+    DATABASE_URL: process.env.DATABASE_URL,
     CRON_SECRET: process.env.CRON_SECRET,
-    NEXT_PUBLIC_SUPABASE_KEY: process.env.NEXT_PUBLIC_SUPABASE_KEY,
-    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     SLACK_BOT_TOKEN: process.env.SLACK_BOT_TOKEN,
     SLACK_CHANNEL_ID: process.env.SLACK_CHANNEL_ID,
     ICON_GENERATOR_KEY: process.env.ICON_GENERATOR_KEY,
