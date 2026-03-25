@@ -1,4 +1,4 @@
-import { eq, isNull, and } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { env } from "@/env";

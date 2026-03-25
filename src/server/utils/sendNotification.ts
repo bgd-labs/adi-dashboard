@@ -1,9 +1,8 @@
 import crypto from "crypto";
-
 import { eq, sql } from "drizzle-orm";
 
 import { db } from "@/server/db";
-import { sentNotifications, type Json } from "@/server/db/schema";
+import { type Json, sentNotifications } from "@/server/db/schema";
 
 const MAX_RETRIES = 2;
 const RETRY_DELAY_MS = 1000;
