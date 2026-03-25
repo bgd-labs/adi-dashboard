@@ -1,4 +1,4 @@
-import { eq, inArray, sql } from "drizzle-orm";
+import { eq, inArray, notInArray } from "drizzle-orm";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
@@ -39,24 +39,35 @@ export const transactionsRouter = createTRPCRouter({
         .where(inArray(transactionGasCosts.transaction_hash, txHashes));
     }),
   getUnscannedTransactions: publicProcedure.query(async ({ ctx }) => {
-    const data = await ctx.db.execute(
-      sql`SELECT * FROM get_unscanned_transactions_sql()`,
-    );
+    const scannedHashes = ctx.db
+      .select({ hash: transactionCosts.transaction_hash })
+      .from(transactionCosts)
+      .union(
+        ctx.db
+          .select({ hash: transactionGasCosts.transaction_hash })
+          .from(transactionGasCosts),
+      );
+
+    const data = await ctx.db
+      .select()
+      .from(transactionForwardingAttempted)
+      .where(
+        notInArray(
+          transactionForwardingAttempted.transaction_hash,
+          scannedHashes,
+        ),
+      );
 
     if (!data.length) {
       return [];
     }
 
     // TODO: Avalanche rpc node doesn't support trace_transaction
-    const withoutAvalanche = data.filter(
-      (tx) => Number(tx.chain_id) !== 43114,
-    );
+    const withoutAvalanche = data.filter((tx) => Number(tx.chain_id) !== 43114);
     return withoutAvalanche;
   }),
   getAll: publicProcedure.query(async ({ ctx }) => {
-    const data = await ctx.db
-      .select()
-      .from(transactionForwardingAttempted);
+    const data = await ctx.db.select().from(transactionForwardingAttempted);
 
     const uniqueTransactionHash = new Set();
 

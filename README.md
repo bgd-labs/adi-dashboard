@@ -27,10 +27,11 @@ cd adi-dashboard
 
 ### Set up the database
 
-Create a PostgreSQL database and set up the schema using one of:
+Create a PostgreSQL database and push the schema:
 
-- **Drizzle Kit** (recommended): `npx drizzle-kit push` — pushes the schema defined in `src/server/db/schema.ts` directly to your database.
-- **Manual SQL**: Run `schema.sql` against your database.
+```bash
+npx drizzle-kit push
+```
 
 ### Set environment variables
 
