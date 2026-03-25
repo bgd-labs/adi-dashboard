@@ -5,6 +5,27 @@ import { eq, sql } from "drizzle-orm";
 import { db } from "@/server/db";
 import { sentNotifications, type Json } from "@/server/db/schema";
 
+const MAX_RETRIES = 2;
+const RETRY_DELAY_MS = 1000;
+
+async function withRetry(fn: () => Promise<void>): Promise<void> {
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      await fn();
+      return;
+    } catch (error) {
+      if (attempt === MAX_RETRIES) throw error;
+      console.warn(
+        `Notification send failed (attempt ${attempt + 1}/${MAX_RETRIES + 1}), retrying...`,
+        error instanceof Error ? error.message : error,
+      );
+      await new Promise((resolve) =>
+        setTimeout(resolve, RETRY_DELAY_MS * 2 ** attempt),
+      );
+    }
+  }
+}
+
 export const sendNotification = async ({
   hashInput,
   data,
@@ -30,7 +51,7 @@ export const sendNotification = async ({
   }
 
   console.log(`🔔 Sending notification: ${notificationHash}`);
-  await send();
+  await withRetry(send);
 
   // Record after successful send — a crash here may cause a duplicate on next run,
   // but will never silently drop a notification.
