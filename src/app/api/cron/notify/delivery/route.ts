@@ -125,7 +125,10 @@ export const GET = async (req: Request) => {
       }
     }
 
-    return NextResponse.json({ ok: true, errors });
+    if (errors.length > 0) {
+      return NextResponse.json({ ok: false, errors }, { status: 500 });
+    }
+    return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("Delivery notification cron failed:", error);
     return NextResponse.json(

@@ -1,8 +1,8 @@
 import { relations } from "drizzle-orm";
 import {
+  bigint,
   boolean,
   customType,
-  integer,
   jsonb,
   pgTable,
   primaryKey,
@@ -48,12 +48,16 @@ export type Json =
 // ─── Tables ──────────────────────────────────────────────────────────────────
 
 export const crossChainControllers = pgTable("CrossChainControllers", {
-  chain_id: integer("chain_id").primaryKey(),
+  chain_id: bigint("chain_id", { mode: "number" }).primaryKey(),
   address: varchar("address").notNull().default(""),
-  rpc_block_limit: integer("rpc_block_limit").notNull().default(500),
-  created_block: integer("created_block").notNull().default(0),
+  rpc_block_limit: bigint("rpc_block_limit", { mode: "number" })
+    .notNull()
+    .default(500),
+  created_block: bigint("created_block", { mode: "number" })
+    .notNull()
+    .default(0),
   rpc_urls: text("rpc_urls").array(),
-  last_scanned_block: integer("last_scanned_block"),
+  last_scanned_block: bigint("last_scanned_block", { mode: "number" }),
   chain_name_alias: text("chain_name_alias"),
   analytics_rpc_url: text("analytics_rpc_url"),
   native_token_name: text("native_token_name"),
@@ -68,25 +72,25 @@ export const envelopes = pgTable("Envelopes", {
   message: byteaHex("message"),
   origin: varchar("origin"),
   destination: varchar("destination"),
-  origin_chain_id: integer("origin_chain_id"),
-  destination_chain_id: integer("destination_chain_id"),
-  nonce: integer("nonce"),
+  origin_chain_id: bigint("origin_chain_id", { mode: "number" }),
+  destination_chain_id: bigint("destination_chain_id", { mode: "number" }),
+  nonce: bigint("nonce", { mode: "number" }),
   registered_at: timestamp("registered_at", {
     withTimezone: true,
     mode: "string",
   }),
-  proposal_id: integer("proposal_id"),
-  payload_id: integer("payload_id"),
+  proposal_id: bigint("proposal_id", { mode: "number" }),
+  payload_id: bigint("payload_id", { mode: "number" }),
 });
 
 export const envelopeRegistered = pgTable(
   "EnvelopeRegistered",
   {
     transaction_hash: varchar("transaction_hash").notNull(),
-    log_index: integer("log_index").notNull(),
+    log_index: bigint("log_index", { mode: "number" }).notNull(),
     envelope_id: text("envelope_id"),
-    block_number: integer("block_number"),
-    chain_id: integer("chain_id"),
+    block_number: bigint("block_number", { mode: "number" }),
+    chain_id: bigint("chain_id", { mode: "number" }),
     timestamp: timestamp("timestamp", { withTimezone: true, mode: "string" }),
   },
   (table) => [
@@ -98,11 +102,11 @@ export const envelopeDeliveryAttempted = pgTable(
   "EnvelopeDeliveryAttempted",
   {
     transaction_hash: varchar("transaction_hash").notNull(),
-    log_index: integer("log_index").notNull(),
+    log_index: bigint("log_index", { mode: "number" }).notNull(),
     envelope_id: text("envelope_id"),
-    block_number: integer("block_number"),
+    block_number: bigint("block_number", { mode: "number" }),
     is_delivered: boolean("is_delivered").notNull().default(false),
-    chain_id: integer("chain_id"),
+    chain_id: bigint("chain_id", { mode: "number" }),
     timestamp: timestamp("timestamp", { withTimezone: true, mode: "string" }),
   },
   (table) => [
@@ -114,12 +118,12 @@ export const transactionForwardingAttempted = pgTable(
   "TransactionForwardingAttempted",
   {
     transaction_hash: varchar("transaction_hash").notNull(),
-    log_index: integer("log_index").notNull(),
+    log_index: bigint("log_index", { mode: "number" }).notNull(),
     envelope_id: text("envelope_id"),
-    block_number: integer("block_number"),
-    chain_id: integer("chain_id"),
+    block_number: bigint("block_number", { mode: "number" }),
+    chain_id: bigint("chain_id", { mode: "number" }),
     transaction_id: text("transaction_id"),
-    destination_chain_id: integer("destination_chain_id"),
+    destination_chain_id: bigint("destination_chain_id", { mode: "number" }),
     bridge_adapter: text("bridge_adapter"),
     destination_bridge_adapter: text("destination_bridge_adapter"),
     adapter_successful: boolean("adapter_successful"),
@@ -136,15 +140,15 @@ export const transactionReceived = pgTable(
   "TransactionReceived",
   {
     transaction_hash: varchar("transaction_hash").notNull(),
-    log_index: integer("log_index").notNull(),
+    log_index: bigint("log_index", { mode: "number" }).notNull(),
     envelope_id: text("envelope_id").notNull(),
-    block_number: integer("block_number").notNull(),
-    chain_id: integer("chain_id"),
+    block_number: bigint("block_number", { mode: "number" }).notNull(),
+    chain_id: bigint("chain_id", { mode: "number" }),
     transaction_id: text("transaction_id"),
-    origin_chain_id: integer("origin_chain_id"),
+    origin_chain_id: bigint("origin_chain_id", { mode: "number" }),
     bridge_adapter: text("bridge_adapter"),
-    confirmations: integer("confirmations"),
-    nonce: integer("nonce"),
+    confirmations: bigint("confirmations", { mode: "number" }),
+    nonce: bigint("nonce", { mode: "number" }),
     encoded_envelope: byteaHex("encoded_envelope"),
     timestamp: timestamp("timestamp", { withTimezone: true, mode: "string" }),
   },
@@ -157,7 +161,7 @@ export const addressBook = pgTable(
   "AddressBook",
   {
     address: varchar("address").notNull(),
-    chain_id: integer("chain_id").notNull(),
+    chain_id: bigint("chain_id", { mode: "number" }).notNull(),
     name: text("name"),
   },
   (table) => [primaryKey({ columns: [table.address, table.chain_id] })],
@@ -166,7 +170,7 @@ export const addressBook = pgTable(
 export const bridgeExplorers = pgTable(
   "BridgeExplorers",
   {
-    chain_id: integer("chain_id").notNull(),
+    chain_id: bigint("chain_id", { mode: "number" }).notNull(),
     address: varchar("address").notNull(),
     explorer_link: text("explorer_link"),
   },
@@ -176,9 +180,9 @@ export const bridgeExplorers = pgTable(
 export const retries = pgTable(
   "Retries",
   {
-    from_block: integer("from_block").notNull(),
-    to_block: integer("to_block").notNull(),
-    chain_id: integer("chain_id").notNull(),
+    from_block: bigint("from_block", { mode: "number" }).notNull(),
+    to_block: bigint("to_block", { mode: "number" }).notNull(),
+    chain_id: bigint("chain_id", { mode: "number" }).notNull(),
   },
   (table) => [
     primaryKey({
@@ -205,10 +209,10 @@ export const transactionCosts = pgTable(
     token_usd_price: numericNumber("token_usd_price"),
     from: varchar("from").notNull(),
     to: varchar("to").notNull(),
-    chain_id: integer("chain_id"),
+    chain_id: bigint("chain_id", { mode: "number" }),
     token_symbol: text("token_symbol"),
     value_usd: numericNumber("value_usd"),
-    log_index: integer("log_index").notNull(),
+    log_index: bigint("log_index", { mode: "number" }).notNull(),
     timestamp: timestamp("timestamp", { withTimezone: true, mode: "string" }),
   },
   (table) => [
@@ -220,7 +224,7 @@ export const transactionCosts = pgTable(
 
 export const transactionGasCosts = pgTable("TransactionGasCosts", {
   transaction_hash: varchar("transaction_hash").primaryKey(),
-  chain_id: integer("chain_id"),
+  chain_id: bigint("chain_id", { mode: "number" }),
   gas_price: numericNumber("gas_price"),
   transaction_fee: numericNumber("transaction_fee"),
   transaction_fee_usd: numericNumber("transaction_fee_usd"),
