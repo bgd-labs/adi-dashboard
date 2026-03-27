@@ -54,7 +54,7 @@ export const EnvelopeMessage = ({
           </h2>
           <textarea
             className="w-full resize-none font-mono text-sm opacity-60 outline-none"
-            value={message}
+            value={message ?? ""}
             readOnly
           />
         </div>

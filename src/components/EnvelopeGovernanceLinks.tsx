@@ -6,7 +6,7 @@ export const EnvelopeGovernanceLinks = ({
   chainId,
   payloadsControllerAddress,
 }: {
-  proposalId?: number | null;
+  proposalId?: string | number | null;
   payloadId?: number | null;
   chainId: number;
   payloadsControllerAddress: Hex;

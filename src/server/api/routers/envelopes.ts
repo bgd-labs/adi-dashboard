@@ -35,11 +35,6 @@ export const envelopesRouter = createTRPCRouter({
         throw new Error("Envelope not found");
       }
 
-      const messageData = Buffer.from(
-        envelope.message!.slice(2),
-        "hex",
-      ).toString("utf8") as Hash;
-
       const isDelivered =
         envelope.origin_chain_id === envelope.destination_chain_id
           ? envelope.TransactionForwardingAttempted.some(
@@ -57,7 +52,7 @@ export const envelopesRouter = createTRPCRouter({
 
       const decodedMessage = decodeEnvelopeMessage(
         envelope.origin!,
-        messageData,
+        envelope.message! as Hash,
       );
 
       const envelopeConsensus = getEnvelopeConsensus(envelope);
@@ -66,7 +61,6 @@ export const envelopesRouter = createTRPCRouter({
         ...envelope,
         is_delivered: isDelivered,
         is_pending: isPending,
-        message: messageData,
         decodedMessage,
         ...envelopeConsensus,
       };
@@ -96,7 +90,7 @@ export const envelopesRouter = createTRPCRouter({
           ? eq(envelopes.destination_chain_id, Number(input.to))
           : undefined,
         input.proposalId
-          ? eq(envelopes.proposal_id, Number(input.proposalId))
+          ? eq(envelopes.proposal_id, input.proposalId)
           : undefined,
         input.payloadId
           ? eq(envelopes.payload_id, Number(input.payloadId))
@@ -154,21 +148,16 @@ export const envelopesRouter = createTRPCRouter({
 
         const isPending = registeredAt > oneHourAgo && !isDelivered;
 
-        const messageData = Buffer.from(
-          envelope.message!.slice(2),
-          "hex",
-        ).toString("utf8") as Hash;
-
         const decodedMessage = decodeEnvelopeMessage(
           envelope.origin!,
-          messageData,
+          envelope.message! as Hash,
         );
 
         const envelopeConsensus = getEnvelopeConsensus(envelope);
 
         return {
           ...envelope,
-          message: messageData,
+          message: envelope.message,
           decodedMessage,
           is_delivered: isDelivered,
           is_pending: isPending,
