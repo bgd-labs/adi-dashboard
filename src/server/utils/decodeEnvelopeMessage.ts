@@ -81,9 +81,9 @@ export const decodeEnvelopeMessage = (from: string, messageData: Hash) => {
     return {
       type: "Payload Execution Message",
       data: {
-        payloadId: decodedMessage[0] as number,
-        accessLevel: decodedMessage[1] as number,
-        timestamp: decodedMessage[2] as number,
+        payloadId: Number(decodedMessage[0]),
+        accessLevel: Number(decodedMessage[1]),
+        timestamp: Number(decodedMessage[2]),
       },
     };
   }
@@ -102,9 +102,9 @@ export const decodeEnvelopeMessage = (from: string, messageData: Hash) => {
     return {
       type: "Activate Voting Message",
       data: {
-        proposalId: decodedPayload[0] as number,
+        proposalId: String(decodedPayload[0]),
         blockHash: decodedPayload[1] as string,
-        votingDuration: decodedPayload[2] as number,
+        votingDuration: Number(decodedPayload[2]),
       },
     };
   }
@@ -118,9 +118,9 @@ export const decodeEnvelopeMessage = (from: string, messageData: Hash) => {
     return {
       type: "Voting Results Message",
       data: {
-        proposalId: decodedPayload[0] as number,
-        forVotes: decodedPayload[1] as number,
-        againstVotes: decodedPayload[2] as number,
+        proposalId: String(decodedPayload[0]),
+        forVotes: String(decodedPayload[1]),
+        againstVotes: String(decodedPayload[2]),
       },
     };
   }

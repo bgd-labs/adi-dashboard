@@ -16,6 +16,23 @@ import { calculateTxCosts } from "@/server/eventCollection/calculateTxCosts";
 
 import { cccEventsAbi } from "../constants/cccEventsAbi";
 
+const revalidateEnvelopePath = (envelopeId: string) => {
+  try {
+    revalidatePath(`/envelope/${envelopeId}`);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+
+    if (message.includes("static generation store missing")) {
+      console.warn(
+        `Skipping revalidation for envelope ${envelopeId} outside Next.js request context`,
+      );
+      return;
+    }
+
+    throw error;
+  }
+};
+
 export const getEvents = async ({
   address,
   client,
@@ -107,7 +124,7 @@ export const getEvents = async ({
             } catch (error) {
               console.log("Failed to calculate tx costs: ", error);
             }
-            revalidatePath(`/envelope/${event.args.envelopeId}`);
+            revalidateEnvelopePath(event.args.envelopeId!);
             break;
 
           case "EnvelopeDeliveryAttempted":
@@ -163,7 +180,7 @@ export const getEvents = async ({
                   timestamp: sql`excluded.timestamp`,
                 },
               });
-            revalidatePath(`/envelope/${event.args.envelopeId}`);
+            revalidateEnvelopePath(event.args.envelopeId!);
             break;
 
           case "TransactionForwardingAttempted":
@@ -213,7 +230,7 @@ export const getEvents = async ({
                   timestamp: sql`excluded.timestamp`,
                 },
               });
-            revalidatePath(`/envelope/${event.args.envelopeId}`);
+            revalidateEnvelopePath(event.args.envelopeId!);
             break;
 
           case "TransactionReceived":
@@ -261,7 +278,7 @@ export const getEvents = async ({
                   timestamp: sql`excluded.timestamp`,
                 },
               });
-            revalidatePath(`/envelope/${event.args.envelopeId}`);
+            revalidateEnvelopePath(event.args.envelopeId!);
             break;
 
           default:

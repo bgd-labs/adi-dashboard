@@ -68,14 +68,9 @@ export const GET = async (req: Request) => {
         )[0];
         const txId = latestTransaction?.transaction_id;
 
-        const messageData = Buffer.from(
-          envelope.message.slice(2),
-          "hex",
-        ).toString("utf8") as Hash;
-
         const decodedMessage = decodeEnvelopeMessage(
           envelope.origin,
-          messageData,
+          envelope.message as Hash,
         );
 
         const isSameChain =

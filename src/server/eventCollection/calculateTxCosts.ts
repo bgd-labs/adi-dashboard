@@ -91,6 +91,12 @@ export const calculateTxCosts = async (txHash: Hash, chainId: number) => {
   if (!chainConfig?.analytics_rpc_url) {
     throw new Error(`No analytics endpoint found for chain ${chainId}`);
   }
+  if (!chainConfig.native_token_name || !chainConfig.native_token_symbol) {
+    console.warn(
+      `Skipping tx cost calculation for chain ${chainId}: missing native token metadata`,
+    );
+    return;
+  }
 
   const batchConfig = { multicall: true } as const;
   const httpConfig = { timeout: 30_000, batch: true } as const;
@@ -183,8 +189,8 @@ export const calculateTxCosts = async (txHash: Hash, chainId: number) => {
 
   const nativeTokenInfo = await getNativeTokenInfo(
     formattedBlockDate,
-    chainConfig.native_token_name!,
-    chainConfig.native_token_symbol!,
+    chainConfig.native_token_name,
+    chainConfig.native_token_symbol,
   );
 
   const gasUsed =

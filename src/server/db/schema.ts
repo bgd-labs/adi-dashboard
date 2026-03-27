@@ -21,14 +21,20 @@ const numericNumber = customType<{ data: number; driverData: string }>({
   },
 });
 
-// Custom type: bytea columns returned as hex strings (matching Supabase PostgREST behavior)
-// Supabase returns bytea as `\xABCD...`, code does `.slice(2)` to strip prefix
+const HEX_LITERAL_REGEX = /^(?:0x|\\x)[0-9a-f]+$/i;
+
+// Custom type: bytea columns returned as 0x-prefixed hex strings
 const byteaHex = customType<{ data: string; driverData: Uint8Array }>({
   dataType() {
     return "bytea";
   },
   fromDriver(value: Uint8Array) {
-    return "\\x" + Buffer.from(value).toString("hex");
+    const asciiValue = Buffer.from(value).toString("utf8");
+    if (HEX_LITERAL_REGEX.test(asciiValue)) {
+      return asciiValue.replace(/^\\x/i, "0x");
+    }
+
+    return "0x" + Buffer.from(value).toString("hex");
   },
   toDriver(value: string) {
     const hex = value.replace(/^(\\x|0x)/, "");
@@ -79,7 +85,7 @@ export const envelopes = pgTable("Envelopes", {
     withTimezone: true,
     mode: "string",
   }),
-  proposal_id: bigint("proposal_id", { mode: "number" }),
+  proposal_id: text("proposal_id"),
   payload_id: bigint("payload_id", { mode: "number" }),
 });
 

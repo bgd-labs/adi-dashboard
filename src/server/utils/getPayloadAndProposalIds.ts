@@ -8,11 +8,7 @@ export const getPayloadAndProposalIds = async (
   message: string,
   chainId: number,
 ) => {
-  const messageData = Buffer.from(message!.slice(2), "hex").toString(
-    "utf8",
-  ) as Hash;
-
-  const decodedMessage = decodeEnvelopeMessage(origin, messageData);
+  const decodedMessage = decodeEnvelopeMessage(origin, message as Hash);
 
   let proposal_id = null;
   let payload_id = null;
@@ -41,8 +37,8 @@ export const getPayloadAndProposalIds = async (
 
   return [
     proposal_id !== null && proposal_id !== undefined
-      ? Number(proposal_id)
+      ? String(proposal_id)
       : null,
     payload_id !== null && payload_id !== undefined ? Number(payload_id) : null,
-  ];
+  ] as [string | null, number | null];
 };
